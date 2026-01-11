@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Banner from "../../../Banner";
+import Banner from "../../Banner";
 import { ArrowLeft, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
-const QAExamResults = ({ toggle, theme }) => {
+const QAExamResults = () => {
   const [filters, setFilters] = useState({
     cie: "",
     batch: "",
@@ -71,35 +71,9 @@ const QAExamResults = ({ toggle, theme }) => {
     setLoading(false);
   };
 
-  const handleDownload = async (fileUrl, fileName) => {
-    try {
-      const res = await axios.get(fileUrl, {
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Download failed", error);
-
-      Swal.fire({
-        title: "Error",
-        text: "Failed to download Excel file",
-        icon: "error",
-      });
-    }
-  };
-
   return (
     <>
       <Banner
-        toggle={toggle}
-        theme={theme}
         backgroundImage="./Banners/examsbanner.webp"
         headerText="office of controller of examinations"
         subHeaderText="COE"
@@ -123,7 +97,7 @@ const QAExamResults = ({ toggle, theme }) => {
               className="qa-logout-btn"
               onClick={() => {
                 sessionStorage.removeItem("userSession");
-                navigate("/login");
+                navigate("/");
               }}
               title="Log out"
               type="button"
@@ -198,17 +172,6 @@ const QAExamResults = ({ toggle, theme }) => {
                     <TableCell>{item.examType}</TableCell>
 
                     <TableCell>
-                      {/* <button
-                        onClick={() =>
-                          handleDownload(
-                            item.fileUrl,
-                            item.fileUrl.split("/").pop()
-                          )
-                        }
-                        className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs font-medium"
-                      >
-                        Download
-                      </button> */}
                       <a href={item.fileUrl} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs font-medium" >Download</a>
                     </TableCell>
                   </tr>
