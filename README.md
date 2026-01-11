@@ -60,11 +60,11 @@ The system supports exam scheduling, session monitoring, violation tracking, off
 
 Developed & Maintained By
 
-WebOps VEC Team
-Velammal Engineering College
+- WebOps VEC Team
+- Velammal Engineering College
 
 📄 License
 
-This project is for educational and academic use.
-Feel free to modify and enhance it.
+- This project is for educational and academic use.
+- Feel free to modify and enhance it.
 
