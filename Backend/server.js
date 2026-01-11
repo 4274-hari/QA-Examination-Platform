@@ -1,39 +1,27 @@
 const express = require("express");
-const compression = require('compression')
-const backendroutes = require("./routes");
-const connectToDatabase = require('./config/db');
-const session = require("express-session");
-const {MongoStore} = require("connect-mongo");
-require('dotenv').config();
+const compression = require("compression");
+require("dotenv").config();
 
+const connectToDatabase = require("./config/db");
+const backendroutes = require("./routes");
+
+const corsMiddleware = require("./middlewares/cors");
+const sessionMiddleware = require("./middlewares/session");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Required for secure cookies behind Nginx / AWS
+app.set("trust proxy", 1);
+
+// Middlewares
+app.use(corsMiddleware);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(compression());
+app.use(sessionMiddleware());
 
-// Session
-app.use(session({
-  name: "qa.sid",
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: "sessions",
-    ttl: 4 * 60 * 60
-  }),
-
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 4 * 60 * 60 * 1000
-  }
-}));
-
+// Keep session alive
 app.use((req, res, next) => {
   if (req.session?.user) {
     req.session.touch();
@@ -41,24 +29,31 @@ app.use((req, res, next) => {
   next();
 });
 
+// Session check
+app.get("/api/main-backend/check-session", (req, res) => {
+  if (!req.session?.user) {
+    return res.status(401).json({ session: "expired" });
+  }
+  res.json({ session: "active", user: req.session.user });
+});
 
-app.get('/api/main-backend/check-session', (req, res) => {
-  const sessionExists = !! req.session;
-  res.json({ 
-    session: sessionExists ?  'exists' : 'not exists'
+// Routes
+app.use("/api/main-backend", backendroutes);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("Global Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error"
   });
 });
 
-// main route to index
-app.use('/api/main-backend', backendroutes);
-
-
-// initiating server
+// Start server
 async function startServer() {
   await connectToDatabase();
-
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running on http://localhost:${port}`);
   });
 }
 

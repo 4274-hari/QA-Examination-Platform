@@ -99,7 +99,7 @@ async function storeExamSchedule(req, res) {
 const conflictQuery = {
   date,
   batch,
-  status: { $ne: "cancelled" },
+  status: { $ne: "inactive" },
   $or: [
     department ? { department } : null,
     registerNo && registerNo.length
@@ -160,7 +160,10 @@ if (existingSchedule) {
 async function cancelExamSchedule(req, res) {
   try {
     const db = getDb();
+
     const collection = db.collection("qa_schedule");
+
+    const examCollection = db.collection("qa_exam");
 
     const { scheduleId } = req.body;
 
@@ -171,8 +174,10 @@ async function cancelExamSchedule(req, res) {
       });
     }
 
+    const scheduleObjectId = new ObjectId(scheduleId);
+
     const exam = await collection.findOne({
-      _id: new ObjectId(scheduleId)
+      _id: scheduleObjectId
     });
 
     if (!exam) {
@@ -182,24 +187,12 @@ async function cancelExamSchedule(req, res) {
       });
     }
 
-    if (exam.status === "cancelled") {
-      return res.status(400).json({
-        success: false,
-        message: "Exam schedule already cancelled"
-      });
-    }
+    await collection.deleteOne(
+      { _id: scheduleObjectId }
+    );
 
-    await collection.updateOne(
-      { _id: new ObjectId(scheduleId) },
-      {
-        $set: {
-          status: "cancelled",
-          examCode: null,
-          validFrom: null,
-          validTill: null,
-          cancelledAt: new Date()
-        }
-      }
+    await examCollection.deleteOne(
+      { scheduleId: scheduleObjectId }
     );
 
     return res.status(200).json({

@@ -12,7 +12,7 @@ const deleteSchedules = async () => {
     );
 
     const result = await collection.deleteMany({
-      status: { $in: ["inactive", "cancelled"] },
+      status: { $in: ["inactive"] },
       createdAt: { $lte: tenDaysAgo }
     });
 

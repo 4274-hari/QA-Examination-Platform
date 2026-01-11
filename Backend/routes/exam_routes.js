@@ -4,10 +4,11 @@ const { getRemainingTime } = require('../controllers/exam_controllers/exam_time_
 const { markOffline, resumeSession, getResumeData, getResumeQuestions } = require('../controllers/exam_controllers/exam_offline_controller');
 const { registerViolation } = require('../controllers/exam_controllers/exam_violation_controller');
 const { getSessionStatus } = require('../controllers/exam_controllers/exam_status_controller');
-const requireAuth = require('../middlewares/requireAuth');
+const requireAuth = require('../middlewares/Auth');
 const loadExamSession = require('../middlewares/loadExamSession');
 const requireActiveSession = require('../middlewares/requireActiveSession');
 const { startExam } = require('../controllers/exam_controllers/exam_start_controller');
+const { forceExit } = require('../controllers/exam_controllers/exam_forceexit_controller');
 const router = express.Router();
 
 // router.use("/qa/session", requireAuth, loadExamSession);
@@ -22,5 +23,6 @@ router.get('/qa/session/status', requireAuth,loadExamSession,requireActiveSessio
 router.get('/qa/session/time', loadExamSession,requireActiveSession, getRemainingTime);
 router.get("/qa/session/resume-data", requireAuth, loadExamSession, getResumeData);
 router.get("/qa/session/questions", requireAuth, loadExamSession, getResumeQuestions);
+router.get("/qa/session/forceexit",loadExamSession, forceExit);
 
 module.exports = router
