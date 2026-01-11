@@ -18,8 +18,53 @@ export default function StudentLoginPage() {
     year: ""
   });
   
-  const DEPARTMENTS = ["CSE", "ECE", "EEE", "MECH", "IT", "AI&DS", "EIE", "AUTO", "CIVIL", "CSE(CS)"];
-  const YEARS = ["2023-2027", "2024-2028", "2025-2029"];
+  const [departments, setDepartments] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Fetch departments and batches from backend
+  useEffect(() => {
+    const fetchFormData = async () => {
+      try {
+        setIsLoadingData(true);
+        const response = await axios.get("/api/main-backend/auth/qastudentform");
+        const data = response.data;
+        
+        console.log(data);
+        
+        // Map full department names to short codes
+        const deptMap = {
+          "ARTIFICIAL INTELLIGENCE AND DATA SCIENCE": "AI&DS",
+          "ELECTRONICS AND COMMUNICATION ENGINEERING": "ECE",
+          "COMPUTER SCIENCE AND ENGINEERING": "CSE",
+          "ELECTRICAL AND ELECTRONICS ENGINEERING": "EEE",
+          "ELECTRONICS AND INSTRUMENTATION ENGINEERING": "EIE",
+          "INFORMATION TECHNOLOGY": "IT",
+          "MECHANICAL ENGINEERING": "MECH",
+          "AUTOMOBILE ENGINEERING": "AUTO",
+          "CIVIL ENGINEERING": "CIVIL",
+          "CSE(CYBER SECURITY)": "CSE(CS)",
+        };
+
+        const mappedDepartments = data.departments?.map(dept => deptMap[dept.toUpperCase()] || dept) || [];
+        
+        setDepartments(mappedDepartments);
+        setBatches(data.batches || []);
+      } catch (error) {
+        console.error("Error fetching form data:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Failed to Load Data",
+          text: "Could not load departments and batches. Please refresh the page.",
+          confirmButtonColor: "#800000",
+        });
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchFormData();
+  }, []);
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +84,7 @@ export default function StudentLoginPage() {
       "CSE(CS)": "CSE(CYBER SECURITY)",
     };
 
-    return axios.post("/api/main-backend/studentlogin", {
+    return axios.post("/api/main-backend/auth/studentlogin", {
       registerno: formData.registerno,
       password: formData.password,
       department: deptMap[formData.department],
@@ -266,10 +311,11 @@ export default function StudentLoginPage() {
               name="department"
               value={formData.department}
               onChange={handleChange}
+              disabled={isLoadingData}
               required
             >
               <option value="" disabled hidden></option>
-              {DEPARTMENTS.map((dept) => (
+              {departments.map((dept) => (
                 <option key={dept} value={dept}>
                   {dept}
                 </option>
@@ -283,10 +329,11 @@ export default function StudentLoginPage() {
               name="year"
               value={formData.year}
               onChange={handleChange}
+              disabled={isLoadingData}
               required
             >
               <option value="" disabled hidden></option>
-              {YEARS.map((yr) => (
+              {batches.map((yr) => (
                 <option key={yr} value={yr}>
                   {yr}
                 </option>
@@ -295,8 +342,8 @@ export default function StudentLoginPage() {
             <label>Batch*</label>
           </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Entering..." : "Enter into Exam"}
+          <button type="submit" disabled={loading || isLoadingData}>
+            {loading ? "Entering..." : isLoadingData ? "Loading..." : "Enter into Exam"}
           </button>
         </form>
       </div>

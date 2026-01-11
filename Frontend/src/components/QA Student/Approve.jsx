@@ -82,7 +82,7 @@ export default function InstructionPage() {
 
     try {
       setCodeLoading(true);
-      const response = await axios.post("/api/main-backend/validate-exam-code", { 
+      const response = await axios.post("/api/main-backend/student/validate-exam-code", { 
         code: secretCode,
       });
 
@@ -137,7 +137,7 @@ export default function InstructionPage() {
     try {
       setStartExamLoading(true);
       
-      const response = await axios.post("/api/main-backend/qa/session/start-exam", {
+      const response = await axios.post("/api/main-backend/exam/qa/session/start-exam", {
         scheduleId: examData.scheduleId,
         examId: examData.examId
       });

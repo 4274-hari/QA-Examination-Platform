@@ -7,7 +7,7 @@ const QuestionUploadPage = () => {
       title="Question Data Upload"
       description="Upload Excel file containing QA/VR/BS Questions"
       options={["QA", "VR", "BS"]}
-      apiUrl="/api/main-backend/excelupload"
+      apiUrl="/api/main-backend/examiner/excelupload"
       uploadFor="question"
     />
   );
