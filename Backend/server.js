@@ -1,4 +1,5 @@
 const express = require("express");
+const compression = require('compression')
 const backendroutes = require("./routes");
 const connectToDatabase = require('./config/db');
 const session = require("express-session");
@@ -10,6 +11,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(compression());
 
 // Session
 app.use(session({

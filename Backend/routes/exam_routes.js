@@ -1,6 +1,6 @@
 const express = require('express');
 const { heartbeat, ping } = require('../controllers/exam_controller/exam_heartbeat_controller');
-const { getRemainingTime } = require('../controllers/exam_controller/exam_time_comtroller');
+const { getRemainingTime } = require('../controllers/exam_controller/exam_time_controller');
 const { markOffline, resumeSession, getResumeData, getResumeQuestions } = require('../controllers/exam_controller/exam_offline_controller');
 const { registerViolation } = require('../controllers/exam_controller/exam_violation_controller');
 const { getSessionStatus } = require('../controllers/exam_controller/exam_status_controller');
