@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Banner from "../../Banner";
+import Banner from "../Banner";
 import { ArrowLeft, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
@@ -36,7 +36,7 @@ const QAExamResults = () => {
 
     try {
       const response = await axios.post(
-        "/api/main-backend/result",
+        "/api/main-backend/examiner/result",
         {
           cie: cieMap[filters.cie],
           batch: filters.batch,
@@ -172,7 +172,7 @@ const QAExamResults = () => {
                     <TableCell>{item.examType}</TableCell>
 
                     <TableCell>
-                      <a href={item.fileUrl} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs font-medium" >Download</a>
+                      <a href={item.fileUrl} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs font-medium cursor-pointer" >Download</a>
                     </TableCell>
                   </tr>
                 ))}

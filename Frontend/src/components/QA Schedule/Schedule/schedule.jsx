@@ -51,8 +51,8 @@ const Schedule = () => {
           : { department: departments, batch: year }
 
         const url = isRetest
-          ? "/api/main-backend/get_register_no_retest"
-          : "/api/main-backend/get_register_no"
+          ? "/api/main-backend/examiner/get_all_register_no"
+          : "/api/main-backend/examiner/get_register_no"
 
         const res = await axios.post(url, payload)
 
@@ -75,7 +75,7 @@ const Schedule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/api/main-backend/form")
+        const res = await axios.get("/api/main-backend/examiner/form")
         const data = res.data
         setYears(data.batch || [])
         setDepartmentOptions(data.departments || "")
@@ -214,7 +214,7 @@ const Schedule = () => {
     })
 
     try {
-      const res = await fetch("/api/main-backend/exam_schedule", {
+      const res = await fetch("/api/main-backend/examiner/exam_schedule", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -383,7 +383,7 @@ const Schedule = () => {
               CIE Details Entry
             </h2>
 
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-slate-700">Retest</label>
               <input
                 type="checkbox"
@@ -391,7 +391,7 @@ const Schedule = () => {
                 onChange={(e) => setIsRetest(e.target.checked)}
                 className="h-4 w-4 accent-[#800000] cursor-pointer"
               />
-            </div>
+            </div> */}
           </div>
 
           <SearchableInput

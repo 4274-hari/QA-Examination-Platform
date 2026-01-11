@@ -16,8 +16,8 @@ const alertBox = (title, text, icon = "info") => {
 // ✅ REAL INTERNET CHECK - Not just network adapter
 const checkRealInternet = async () => {
   try {
-    await axios.get("/api/main-backend/qa/session/ping", {
-      timeout: 5000,
+    await axios.get("/api/main-backend/exam/qa/session/ping", {
+      timeout: 10000,
       headers: { "Cache-Control": "no-cache" }
     });
     return true;
@@ -73,7 +73,7 @@ const QuestionPage = () => {
   useEffect(() => {
     const fetchRemainingTime = async () => {
       try {
-        const res = await axios.get("/api/main-backend/qa/session/time");
+        const res = await axios.get("/api/main-backend/exam/qa/session/time");
         setTimeLeft(res.data.remainingSeconds);
       } catch (err) {
         if (err.response?.data?.status === "TIME_UP") {
@@ -112,7 +112,7 @@ const QuestionPage = () => {
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const res = await axios.get("/api/main-backend/qa/session/status");
+        const res = await axios.get("/api/main-backend/exam/qa/session/status");
         if (res.data.status !== "ACTIVE") {
           forceExit(res.data);
         }
@@ -127,7 +127,7 @@ const QuestionPage = () => {
   useEffect(() => {
     const resumeExam = async () => {
       try {
-        const res = await axios.get("/api/main-backend/qa/session/resume-data");
+        const res = await axios.get("/api/main-backend/exam/qa/session/resume-data");
         const { currentQuestionIndex, selectedAnswers } = res.data;
 
         const normalizedSelected = {};
@@ -153,7 +153,7 @@ const QuestionPage = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        await axios.post("/api/main-backend/qa/session/heartbeat");
+        await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
         forceExit(err.response?.data || {});
       }
@@ -166,14 +166,14 @@ const QuestionPage = () => {
   useEffect(() => {
     const onUnload = () => {
       const beaconSent = navigator.sendBeacon(
-        "/api/main-backend/qa/session/offline",
+        "/api/main-backend/exam/qa/session/offline",
         JSON.stringify({ registerno: student?.registerno })
       );
       
       if (!beaconSent) {
         try {
           const xhr = new XMLHttpRequest();
-          xhr.open("POST", "/api/main-backend/qa/session/offline", false);
+          xhr.open("POST", "/api/main-backend/exam/qa/session/offline", false);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send(JSON.stringify({ registerno: student?.registerno }));
         } catch (err) {
@@ -218,12 +218,6 @@ const QuestionPage = () => {
         offlineAlertShown.current = true;
         setIsOnline(false);
 
-        // try {
-        //   await axios.post("/api/main-backend/qa/session/offline");
-        // } catch (err) {
-        //   console.error("Failed to notify offline status:", err);
-        // }
-
         Swal.fire({
           title: "Connection Lost",
           text: "Internet connection lost. Exam paused. Reconnect to continue.",
@@ -244,9 +238,9 @@ const QuestionPage = () => {
         Swal.close();
 
         try {
-          await axios.post("/api/main-backend/qa/session/resume");
+          await axios.post("/api/main-backend/exam/qa/session/resume");
           
-          const res = await axios.get("/api/main-backend/qa/session/resume-data");
+          const res = await axios.get("/api/main-backend/exam/qa/session/resume-data");
           setCurrent(res.data.currentQuestionIndex || 0);
           setSelected(res.data.selectedAnswers || {});
           setVisited(res.data.selectedAnswers || {});
@@ -289,7 +283,7 @@ const QuestionPage = () => {
   // VIOLATION TRACKING
   const registerViolation = async (type, message) => {
     try {
-      const res = await axios.post("/api/main-backend/qa/session/violation", {
+      const res = await axios.post("/api/main-backend/exam/qa/session/violation", {
         type,
       });
       
@@ -524,15 +518,30 @@ const QuestionPage = () => {
   }, [current]);
 
   // ACTIONS
-  const forceExit = (data) => {
-    Swal.fire({
-      title: "Exam Ended",
-      text: data.reason || data.message || "Your exam session is no longer active.",
-      icon: "error",
-      allowOutsideClick: false,
-    }).then(() => {
-      navigate("/QA/qaexam", { replace: true });
-    });
+  const forceExit = async (data) => {
+    const reason = data.reason || data.message || "Exam session is no longer active";
+    
+    try {
+      // Call backend to update session status
+      await axios.post("/api/main-backend/exam/qa/session/forceexit", {
+        reason,
+        registerno: student.registerno
+      });
+    } catch (error) {
+      console.error("Force exit error:", error);
+    } finally {
+      // Show alert and redirect regardless of backend response
+      Swal.fire({
+        title: "Exam Ended",
+        text: reason,
+        icon: "error",
+        allowOutsideClick: false,
+      }).then(() => {
+        // Clear local storage
+        localStorage.removeItem("exam_data");
+        navigate("/QA/qaexam", { replace: true });
+      });
+    }
   };
 
   const selectOption = (opt) => {
@@ -561,7 +570,7 @@ const QuestionPage = () => {
       setLoading(true);
       const currentQuestion = questions[current];
 
-      await axios.post("/api/main-backend/next", {
+      await axios.post("/api/main-backend/student/next", {
         question: currentQuestion.question,
         choosedOption: selected[current],
         questionIndex: current,
@@ -582,6 +591,12 @@ const QuestionPage = () => {
   };
 
   const submitExam = async (forced = false) => {
+    // Skip validation if forced (time up)
+    if (!forced && !selected[current]) {
+      alertBox("Required", "Please select an option before continuing.", "info");
+      return;
+    }
+
     if (selected[current]) {
       await submitCurrentAnswer();
     }
@@ -589,14 +604,26 @@ const QuestionPage = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post("/api/main-backend/studentresult", {
+      const res = await axios.post("/api/main-backend/student/studentresult", {
         scheduleId: exam.scheduleId
       });
 
       const { registerno, name, department, batch, totalMarks } = res.data;
 
+      // If forced (time up), update backend session status to COMPLETED
+      if (forced) {
+        try {
+          await axios.post("/api/main-backend/exam/qa/session/forceexit", {
+            reason: "Time up",
+            registerno
+          });
+        } catch (err) {
+          console.error("Failed to update session status:", err);
+        }
+      }
+
       Swal.fire({
-        title: "Exam Result",
+        title: forced ? "Time's Up! - Exam Auto-Submitted" : "Exam Result",
         icon: "success",
         html: `
           <div style="text-align:left;font-size:15px">
@@ -606,13 +633,14 @@ const QuestionPage = () => {
             <p><b>Year:</b> ${batch}</p>
             <hr/>
             <h3 style="text-align:center;color:#16a34a">
-              Total Marks: ${totalMarks}
+              Total Marks: ${totalMarks}/50
             </h3>
           </div>
         `,
         confirmButtonText: "Finish",
         allowOutsideClick: false,
       }).then(() => {
+        localStorage.removeItem("examSession");
         navigate("/QA/qaexam", { replace: true });
       });
     } catch (error) {

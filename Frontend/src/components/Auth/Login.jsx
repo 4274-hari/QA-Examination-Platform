@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -12,6 +13,7 @@ export default function LoginForm() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -20,13 +22,14 @@ export default function LoginForm() {
     setSuccess("")
 
     try {
-      const res = await fetch("/api/main-backend/stafflogin", {
+      const res = await fetch("/api/main-backend/auth/stafflogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.identifier,
           password: formData.password,
         }),
+        credentials: 'include'
       })
 
       const data = await res.json()
@@ -35,17 +38,13 @@ export default function LoginForm() {
         throw new Error(data.message || "Login failed")
       }
 
-      sessionStorage.clear()
+      const sessionData = {
+        token: data.token,
+        role: data.role,
+        session: data.session,
+      }
 
-      sessionStorage.setItem(
-        "userSession",
-        JSON.stringify({
-          token: data.token,
-          role: data.role,
-          session: data.session,
-        })
-      )
-
+      login(sessionData)
       setSuccess("Login successful! Redirecting...")
 
       const redirectPath =

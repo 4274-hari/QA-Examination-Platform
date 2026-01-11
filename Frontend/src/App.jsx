@@ -7,6 +7,8 @@ import LoadComp from "./components/LoadComp.jsx";
 import AptitudeHeader from "./components/QA Student/AptitudeHeader.jsx";
 import Boot from "./components/BootUp/BootUp.jsx";
 import AuthPage from "./components/Auth/auth.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import "./App.css"
 
 /* Lazy Loaded Pages */
@@ -126,6 +128,7 @@ const App = () => {
   return (
     <>
     <GlobalStyle />
+    <AuthProvider>
     <AppContainer>
       {location.pathname === "/" && showBoot && (
         <Boot isAuth={isAuth} isLoaded={loaded} />
@@ -147,14 +150,31 @@ const App = () => {
               <Route path="/QA/confirm" element={<InstructionPage />} />
               <Route path="/QA/questions" element={<QuestionPage />} />
 
-              <Route path="/staff-dashboard" element={<Schedule />} />
-              <Route path="/upload" element={<UploadContainer />} />
-              <Route path="/scheduled-exam" element={<ScheduledExam />} />
-              <Route path="/qaresult" element={<QAExamResults />} />
+              <Route path="/staff-dashboard" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <Schedule />
+                </ProtectedRoute>
+              } />
+              <Route path="/upload" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <UploadContainer />
+                </ProtectedRoute>
+              } />
+              <Route path="/scheduled-exam" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <ScheduledExam />
+                </ProtectedRoute>
+              } />
+              <Route path="/qaresult" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <QAExamResults />
+                </ProtectedRoute>
+              } />
             </Routes>
           </Suspense>
         </MainContentWrapper>
     </AppContainer>
+    </AuthProvider>
     </>
   );
 };

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Banner from "../../Banner";
+import Banner from "../Banner";
 import { ArrowLeft, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
@@ -17,7 +17,7 @@ const ScheduledExam = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responce = await axios.get("/api/main-backend/exam_code_view");
+        const responce = await axios.get("/api/main-backend/examiner/exam_code_view");
 
         setExamData(responce.data.exams);
         
@@ -56,7 +56,7 @@ const ScheduledExam = () => {
 
     try {
       const response = await axios.post(
-        "/api/main-backend/exam_schedule/cancel",
+        "/api/main-backend/examiner/exam_schedule/cancel",
         { scheduleId }
       );
 
