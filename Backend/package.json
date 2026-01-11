@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.966.0",
+    "bcrypt": "^6.0.0",
+    "busboy": "^1.6.0",
+    "compression": "^1.8.1",
+    "connect-mongo": "^6.0.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.0.0",
+    "node-cron": "^4.2.1",
+    "nodemon": "^3.1.11",
+    "path": "^0.12.7",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5"
+  }
+}
