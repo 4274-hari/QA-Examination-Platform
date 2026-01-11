@@ -60,3 +60,18 @@ The system supports exam scheduling, session monitoring, violation tracking, off
 
 ## 📂 Project Structure
 
+👨‍💻 Author
+
+Hariprasath V
+B.Tech – Artificial Intelligence & Data Science
+Velammal Engineering College
+
+GitHub: https://github.com/4274-hari
+
+LinkedIn: https://www.linkedin.com/in/hariprasath4274
+
+📄 License
+
+This project is for educational and academic use.
+Feel free to modify and enhance it.
+
