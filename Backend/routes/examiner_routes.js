@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { viewExamCode } = require('../controllers/code_controllers/code_view_controllers')
-const { storeExamSchedule, cancelExamSchedule } = require('../controllers/schedule_controllers/exam_schedule_controllers');
+const { viewExamCode } = require('../controllers/code_controllers/code_view_controller')
+const { storeExamSchedule, cancelExamSchedule } = require('../controllers/schedule_controllers/exam_schedule_controller');
 const { allowRoles  } = require('../middlewares/role_access_middleware')
-const {exportMarks} = require('../controllers/result_excel_controllers');
-const {qa_form, getQaForm, qa_form_all_student} = require('../controllers/form_controllers/form_controllers');
+const {exportMarks} = require('../controllers/result_excel_controller');
+const {qa_form, getQaForm, qa_form_all_student} = require('../controllers/form_controllers/form_controller');
 
 
 

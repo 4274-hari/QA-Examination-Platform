@@ -1,13 +1,13 @@
 const express = require('express');
-const { heartbeat, ping } = require('../controllers/exam_controller/exam_heartbeat_controller');
-const { getRemainingTime } = require('../controllers/exam_controller/exam_time_controller');
-const { markOffline, resumeSession, getResumeData, getResumeQuestions } = require('../controllers/exam_controller/exam_offline_controller');
-const { registerViolation } = require('../controllers/exam_controller/exam_violation_controller');
-const { getSessionStatus } = require('../controllers/exam_controller/exam_status_controller');
+const { heartbeat, ping } = require('../controllers/exam_controllers/exam_heartbeat_controller');
+const { getRemainingTime } = require('../controllers/exam_controllers/exam_time_controller');
+const { markOffline, resumeSession, getResumeData, getResumeQuestions } = require('../controllers/exam_controllers/exam_offline_controller');
+const { registerViolation } = require('../controllers/exam_controllers/exam_violation_controller');
+const { getSessionStatus } = require('../controllers/exam_controllers/exam_status_controller');
 const requireAuth = require('../middlewares/requireAuth');
 const loadExamSession = require('../middlewares/loadExamSession');
 const requireActiveSession = require('../middlewares/requireActiveSession');
-const { startExam } = require('../controllers/exam_controller/exam_start_controller');
+const { startExam } = require('../controllers/exam_controllers/exam_start_controller');
 const router = express.Router();
 
 // router.use("/qa/session", requireAuth, loadExamSession);

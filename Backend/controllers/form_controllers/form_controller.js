@@ -1,5 +1,5 @@
 const { getDb } = require("../../config/db");
-const { getStudentsByDeptbatch, getStudentsByBatch } = require("./getstudent_controllers");
+const { getStudentsByDeptbatch, getStudentsByBatch } = require("./getstudent_controller");
 
 async function qa_form(req, res) {
   try {

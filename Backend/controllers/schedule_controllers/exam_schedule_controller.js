@@ -1,7 +1,7 @@
 const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
-const {scheduleExamActivation} = require("../code_controllers/code_generator_controllers");
-const { createExamFromSchedule } = require("./exam_student_controllers");
+const {scheduleExamActivation} = require("../code_controllers/code_generator_controller");
+const { createExamFromSchedule } = require("./exam_student_controller");
 
 
 async function storeExamSchedule(req, res) {

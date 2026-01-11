@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const { getDb } = require("../../config/db");
-const { generateExam } = require("../question_controllers/questionassigner_controllers");
+const { generateExam } = require("../question_controllers/question_assigner_controller");
 
 /* ---------------------------------------------------
    Time utilities

@@ -1,5 +1,5 @@
 const { getDb } = require("../../config/db");
-const { getSubjectQuestions } = require("./questiongenerator_controllers");
+const { getSubjectQuestions } = require("./question_generator_controller");
 
 function shuffle(arr) {
   const a = [...arr];
