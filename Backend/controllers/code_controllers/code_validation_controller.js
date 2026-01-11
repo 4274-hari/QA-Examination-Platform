@@ -163,6 +163,7 @@ if (now < validFrom || now > validTill) {
       {
         $project: {
           _id: 0,
+          name: "$students.name",
           questions: {
             $map: {
               input: "$students.questions",
@@ -194,6 +195,7 @@ if (now < validFrom || now > validTill) {
       success: true,
       message: "Exam code validated successfully. You are eligible to take this exam.",
       isResume: false,
+      name:result[0].name,
       examDetails: {
         scheduleId: schedule._id.toString(),
         examId: exam._id.toString(),
