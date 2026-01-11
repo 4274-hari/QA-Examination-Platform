@@ -9,6 +9,11 @@ async function signup(req, res) {
 
     const{ name, role, email, password, phone_no }  = req.body;
 
+    if (!name || !role || !email || !password || !phone_no) {
+  return res.status(400).json({ message: "All fields are required" });
+}
+
+
     // check if exists
     const existingAdmin = await collection.findOne({ email });
     if (existingAdmin) {
@@ -54,12 +59,10 @@ async function stafflogin(req, res) {
     req.session.user = {
       id: user._id,
       role: user.role,
-      token
     };
 
     res.json({
       message: "Login successful",
-      token,
       role: user.role
     });
 
@@ -137,14 +140,14 @@ async function studentlogin(req, res) {
             batch: student.batch
           }
         });}
-      //  else {
-      //   // Genuinely active session
-      //   return res.status(403).json({
-      //     success: false,
-      //     code: "ALREADY_LOGGED_IN",
-      //     message: "You are already attending the exam. Multiple logins are not allowed."
-      //   });
-      // }
+        else {
+        // Genuinely active session
+        return res.status(403).json({
+        success: false,
+        code: "ALREADY_LOGGED_IN",
+        message: "You are already attending the exam. Multiple logins are not allowed."
+         });
+      }
     }
 
     const blockedSession = await sessionCol.findOne({
@@ -196,13 +199,11 @@ async function studentlogin(req, res) {
       registerno: student.registerno,
       department: student.department,
       batch: student.batch,
-      token
     };
 
     // 7️⃣ Success response
     return res.json({
       message: "Student login successful",
-      token,
       student: {
         name: student.name,
         registerno: student.registerno,
