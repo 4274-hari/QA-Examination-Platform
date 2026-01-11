@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Banner from "../../../Banner";
+import Banner from "../../Banner";
 import { ArrowLeft, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
-const ScheduledExam = ({ toggle, theme }) => {
+const ScheduledExam = () => {
   const [filters, setFilters] = useState({
     department: "",
     year: "",
@@ -103,8 +103,6 @@ const ScheduledExam = ({ toggle, theme }) => {
   return (
     <>
     <Banner
-      toggle={toggle}
-      theme={theme}
       backgroundImage="./Banners/examsbanner.webp"
       headerText="office of controller of examinations"
       subHeaderText="COE"
@@ -125,7 +123,7 @@ const ScheduledExam = ({ toggle, theme }) => {
               className="qa-logout-btn"
               onClick={() => {
                 sessionStorage.removeItem("userSession");
-                navigate("/login");
+                navigate("/");
               }}
               title="Log out"
               type="button"

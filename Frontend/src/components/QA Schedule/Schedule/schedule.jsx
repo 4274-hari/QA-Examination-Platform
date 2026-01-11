@@ -9,12 +9,12 @@ import {
   Power,
 } from "lucide-react"
 import { Dropdown, MultiSearchDropdown, SearchableInput } from "./searchableInput"
-import Banner from "../../../../Banner"
+import Banner from "../../Banner"
 import { useNavigate } from "react-router"
 import Swal from "sweetalert2"
 import axios from "axios"
 
-const Schedule = ({ toggle, theme }) => {
+const Schedule = () => {
   const [year, setYear] = useState("")
   const [departments, setDepartments] = useState("")
   const [registerState, setRegisterState] = useState({
@@ -261,8 +261,6 @@ const Schedule = ({ toggle, theme }) => {
   return (
     <>
       <Banner
-        toggle={toggle}
-        theme={theme}
         backgroundImage="./Banners/examsbanner.webp"
         headerText="office of controller of examinations"
         subHeaderText="QA"
@@ -293,7 +291,7 @@ const Schedule = ({ toggle, theme }) => {
               text-sm font-medium
               shadow-sm
               hover:bg-[#800000]
-              hover:text-text
+              hover:text-white
               hover:border-[#800000]
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-[#800000]/30
@@ -314,7 +312,7 @@ const Schedule = ({ toggle, theme }) => {
               text-sm font-medium
               shadow-sm
               hover:bg-[#800000]
-              hover:text-text
+              hover:text-prim
               hover:border-[#800000]
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-[#800000]/30
@@ -335,7 +333,7 @@ const Schedule = ({ toggle, theme }) => {
               text-sm font-medium
               shadow-sm
               hover:bg-[#800000]
-              hover:text-text
+              hover:text-prim
               hover:border-[#800000]
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-[#800000]/30
@@ -356,7 +354,7 @@ const Schedule = ({ toggle, theme }) => {
               text-sm font-medium
               shadow-sm
               hover:bg-[#800000]
-              hover:text-text
+              hover:text-prim
               hover:border-[#800000]
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-[#800000]/30
@@ -370,7 +368,7 @@ const Schedule = ({ toggle, theme }) => {
             className="qa-logout-btn"
             onClick={() => {
               sessionStorage.removeItem("userSession");
-              navigate("/login");
+              navigate("/");
             }}
             title="Log out"
             type="button"
