@@ -18,7 +18,7 @@ router.use("/examiner", auth, examinerRoutes);
 router.use("/student", auth, studentRoutes);
 
 // Exam
-router.use("/exam", auth, examRoutes);
+router.use("/exam", examRoutes);
 
 
 

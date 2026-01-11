@@ -1,7 +1,7 @@
 const ExcelJS = require('exceljs');
 const XLSX = require('xlsx');
 const Busboy = require('busboy');
-const { getDb } = require('../config/db');
+const { getDb } = require('../../config/db');
 
 
 // Helper function to extract department from programme

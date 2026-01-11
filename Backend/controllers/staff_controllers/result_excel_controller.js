@@ -1,7 +1,7 @@
-const { getDb } = require('../config/db');
+const { getDb } = require('../../config/db');
 const { ObjectId } = require('mongodb');
 const xlsx = require('xlsx');
-const { s3, bucketName } = require('../config/s3');
+const { s3, bucketName } = require('../../config/s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 async function exportMarks(req, res) {
