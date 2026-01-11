@@ -1,5 +1,4 @@
-const { getDb } = require('../config/db');
-const jwt = require('jsonwebtoken');
+const { getDb } = require('../../config/db');
 
 async function submitAnswer(req, res) {
   try {

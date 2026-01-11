@@ -1,5 +1,4 @@
 const { hashPassword, comparePassword } = require("../middlewares/bcrypt");
-const { generateToken } = require("../middlewares/jwt");
 const { getDb } = require("../config/db");
 
 
@@ -51,10 +50,6 @@ async function stafflogin(req, res) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken({
-      id: user._id,
-      role: user.role
-    });
 
     req.session.user = {
       id: user._id,
@@ -194,11 +189,6 @@ async function studentlogin(req, res) {
     }
 
 
-    // 5️⃣ Generate JWT token
-    const token = generateToken({
-      id: student._id,
-      registerno: student.registerno
-    });
 
     // 6️⃣ Store user in server session
     req.session.user = {
