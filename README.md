@@ -58,17 +58,10 @@ The system supports exam scheduling, session monitoring, violation tracking, off
 
 ---
 
-## 📂 Project Structure
+Developed & Maintained By
 
-👨‍💻 Author
-
-Hariprasath V
-B.Tech – Artificial Intelligence & Data Science
+WebOps VEC Team
 Velammal Engineering College
-
-GitHub: https://github.com/4274-hari
-
-LinkedIn: https://www.linkedin.com/in/hariprasath4274
 
 📄 License
 
