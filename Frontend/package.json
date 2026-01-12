@@ -48,6 +48,7 @@
   "build": {
     "appId": "com.qa.examination",
     "productName": "QA Examination Platform",
+    "icon": "public/VEC_Logo.ico",
     "files": [
       "dist/**/*",
       "electron/**/*",
@@ -65,7 +66,7 @@
     },
     "win": {
       "target": ["nsis"],
-      "icon": "public/icon-512.png"
+      "icon": "public/VEC_Logo.ico"
     },
     "directories": {
       "output": "release"
