@@ -1,0 +1,2633 @@
+[{
+  "subject_name": "QA",
+  "exam": [
+    {
+      "topic": "Volume and Surface Area",
+      "topic_question": [
+        {
+          "question": "What is the area of a rectangle with length 10 cm and breadth 6 cm?",
+          "A": "30 cm2",
+          "B": "90 cm2",
+          "C": "120 cm2",
+          "D": "60 cm2",
+          "correct_option": "60 cm2",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The volume of a sphere of radius 7 cm is:",
+          "A": "1437.33 cm³",
+          "B": "523.33 cm³",
+          "C": "1143.33 cm³",
+          "D": "418.66 cm³",
+          "correct_option": "1143.33 cm³",
+          "difficulty_level": 2
+        },
+        {
+          "question": "A rectangular water tank is 8 m high, 6 m long and 2.5 m wide. How many litres of water can it hold?",
+          "A": "120 litres",
+          "B": "1200 litres",
+          "C": "12000 litres",
+          "D": "120000 litres",
+          "correct_option": "120000 litres",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Find the volume  of a cuboid 16 m long, 14 m broad and 7 m high.",
+          "A": "5168 m^3",
+          "B": "1578m^3",
+          "C": "1668 m^3",
+          "D": "1568 m^3",
+          "correct_option": "1568 m^3",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Find the surface area of a cuboid 16 m long, 14 m broad and 7 m high.",
+          "A": "868 cm^2",
+          "B": "686 cm^2",
+          "C": "886 cm^2",
+          "D": "668cm^2",
+          "correct_option": "868 cm^2",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The volume of a wall, 5 times as high as it is broad and 8 times as long as it is high, is 12.8 cu. metres.Find the breadth of the wall.",
+          "A": "50 cm",
+          "B": "40 cm",
+          "C": "45 cm",
+          "D": "55 cm",
+          "correct_option": "40 cm",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Find the number of bricks, each measuring 24 cm × 12 cm × 8 cm, required to construct a wall 24 m long, 8m high and 60 cm thick, if 10% of the wall is filled with mortar?",
+          "A": "54000",
+          "B": "50000",
+          "C": "45000",
+          "D": "40000",
+          "correct_option": "45000",
+          "difficulty_level": 3
+        },
+        {
+          "question": "Water flows into a tank 200 m × 150 m through a rectangular pipe 1.5 m × 1.25 m @ 20 kmph. In what time\n(in minutes) will the water rise by 2 metres?",
+          "A": "96 mim",
+          "B": "92 min",
+          "C": "99 min",
+          "D": "94 min",
+          "correct_option": "96 mim",
+          "difficulty_level": 2
+        },
+        {
+          "question": "The dimensions of an open box are 50 cm, 40 cm and 23 cm. Its thickness is 3 cm. If 1 cubic cm of metal used in the box weighs 0.5 gms, find the weight of the box.",
+          "A": "18.04 kg",
+          "B": "15.04 kg",
+          "C": "8.04 kg",
+          "D": "10.04 kg",
+          "correct_option": "8.04 kg",
+          "difficulty_level": 3
+        },
+        {
+          "question": "The surface area of a cube is 1734 sq. cm. Find its volume.",
+          "A": "4913 cm^3",
+          "B": "3194 cm^3",
+          "C": "1934 cm^3",
+          "D": "4139 cm^3",
+          "correct_option": "4913 cm^3",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A rectangular block 6 cm by 12 cm by 15 cm is cut up into an exact number of equal cubes. Find the least\npossible number of cubes.",
+          "A": "20",
+          "B": "40",
+          "C": "30",
+          "D": "50",
+          "correct_option": "40",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A cube of edge 15 cm is immersed completely in a rectangular vessel containing water. If the dimensions of the base of vessel are 20 cm × 15 cm, find the rise in water level.",
+          "A": "12.25 cm",
+          "B": "14.25 cm",
+          "C": "15.25 cm",
+          "D": "11.25 cm",
+          "correct_option": "11.25 cm",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Three solid cubes of sides 1 cm, 6 cm and 8 cm are melted to form a new cube. Find the edge of the cube so formed.",
+          "A": "12 cm",
+          "B": "6 cm",
+          "C": "8 cm",
+          "D": "9 cm",
+          "correct_option": "9 cm",
+          "difficulty_level": 1
+        },
+        {
+          "question": "How many iron rods, each of length 7 m and diameter 2 cm can be made out of 0.88 cubic metre of iron?",
+          "A": "400",
+          "B": "450",
+          "C": "700",
+          "D": "200",
+          "correct_option": "400",
+          "difficulty_level": 3
+        },
+        {
+          "question": "If each edge of a cube is increased by 50%, find the percentage increase in its surface area.",
+          "A": "105%",
+          "B": "95%",
+          "C": "125%",
+          "D": "75%",
+          "correct_option": "125%",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Two cubes have their volumes in the ratio 1 : 27. Find the ratio of their surface areas.",
+          "A": "1:9",
+          "B": "9:1",
+          "C": "2:9",
+          "D": "4:9",
+          "correct_option": "1:9",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If the capacity of a cylindrical tank is 1848 m^3 and the diameter of its base is 14 m, then find the depth of the tank.",
+          "A": "24 m",
+          "B": "12 m",
+          "C": "10 m",
+          "D": "15 m",
+          "correct_option": "12 m",
+          "difficulty_level": 2
+        },
+        {
+          "question": "2.2 cubic dm of lead is to be drawn into a cylindrical wire 0.50 cm in diameter. Find the length of the wire in metres.",
+          "A": "100 m",
+          "B": "155 m",
+          "C": "175 m",
+          "D": "112 m",
+          "correct_option": "112 m",
+          "difficulty_level": 2
+        },
+        {
+          "question": "If the heights of two cones are in the ratio 7 : 3 and their diameters are in the ratio 6 : 7, what is the ratio of their volumes?",
+          "A": "12:7",
+          "B": "7:12",
+          "C": "12:13",
+          "D": "13:12",
+          "correct_option": "12:7",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The radii of the bases of a cylinder and a cone are in the ratio of      3 : 4 and their heights are in the ratio 2 : 3. Find the ratio of their volumes.",
+          "A": "9 : 8",
+          "B": "8: 9",
+          "C": "11 : 8",
+          "D": "11 : 9",
+          "correct_option": "9 : 8",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Three spheres of radii 3 cm, 4 cm and 5 cm are melted to form a new sphere. Find the radius of the new\nsphere.",
+          "A": "2 cm",
+          "B": "6 cm",
+          "C": "16 cm",
+          "D": "12 cm",
+          "correct_option": "6 cm",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A copper sphere of diameter 18 cm is drawn into a wire of diameter 4 mm. Find the length of the wire.",
+          "A": "432 m",
+          "B": "234 m",
+          "C": "245 m",
+          "D": "243 m",
+          "correct_option": "243 m",
+          "difficulty_level": 2
+        },
+        {
+          "question": "A cone and a sphere have equal radii and equal volumes. Find the ratio of the diameter of the sphere to the\nheight of the cone.",
+          "A": "1:3",
+          "B": "3:1",
+          "C": "1 : 2",
+          "D": "2:1",
+          "correct_option": "1 : 2",
+          "difficulty_level": 1
+        },
+        {
+          "question": "How many metres of cloth 5 m wide will be required to make a conical tent, the radius of whose base is\n7m and height is 24 m?",
+          "A": "101 m",
+          "B": "110 m",
+          "C": "120 m",
+          "D": "100 m",
+          "correct_option": "110 m",
+          "difficulty_level": 2
+        },
+        {
+          "question": "The heights of two right circular cones are in the ratio 1 : 2 and the perimeters of their bases are in the ratio 3 : 4. Find the ratio of their volumes.",
+          "A": "9 : 32",
+          "B": "32:9",
+          "C": "11 : 32",
+          "D": "32:11",
+          "correct_option": "9 : 32",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A hemispherical bowl of internal radius 9 cm contains a liquid. This liquid is to be filled into cylindrical shaped small bottles of diameter 3 cm and height 4 cm. How many bottles will be needed to empty the bowl?",
+          "A": "45",
+          "B": "50",
+          "C": "54",
+          "D": "60",
+          "correct_option": "54",
+          "difficulty_level": 3
+        },
+        {
+          "question": "How many spherical bullets can be made out of a lead cylinder 28 cm high and with base radius 6 cm, each\nbullet being 1.5 cm in diameter?",
+          "A": "1792",
+          "B": "9172",
+          "C": "1279",
+          "D": "7129",
+          "correct_option": "1792",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Find the volume  of a sphere of radius 10.5 cm.",
+          "A": "4158 cm^3",
+          "B": "4815 cm^3",
+          "C": "4185 cm^3",
+          "D": "4851 cm^3",
+          "correct_option": "4851 cm^3",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Find the surface area of a sphere of radius 10.5 cm.",
+          "A": "1836 cm^2",
+          "B": "1386 cm^2",
+          "C": "1683 cm^2",
+          "D": "1368 cm^2",
+          "correct_option": "1386 cm^2",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A conical vessel, whose internal radius is 12 cm and height 50 cm, is full of liquid. The contents are emptied into a cylindrical vessel with internal radius 10 cm. Find the height to which the liquid rises in the cylindrical vessel.",
+          "A": "24 cm",
+          "B": "22 cm",
+          "C": "25 cm",
+          "D": "20 cm",
+          "correct_option": "24 cm",
+          "difficulty_level": 3
+        },
+        {
+          "question": "If the diagonal of a cube is 6√3 cm then find its surface area.",
+          "A": "261cm^2",
+          "B": "561 cm^2",
+          "C": "216 cm^2",
+          "D": "516cm^2",
+          "correct_option": "216 cm^2",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If 1 cubic cm of cast iron weighs 21 gms, then find the weight of a cast iron pipe of length 1 metre with a bore of 3 cm and in which thickness of the metal is 1 cm.",
+          "A": "25.4 kg",
+          "B": "26.4 kg",
+          "C": "62.4kg",
+          "D": "60.4 kg",
+          "correct_option": "26.4 kg",
+          "difficulty_level": 2
+        },
+        {
+          "question": "A rectangular sheet of paper, 10 cm long and 8 cm wide has squares of side 2 cm cut from each of its corners. The sheet is then folded to form a tray of depth 2 cm. Find the volume of this tray.",
+          "A": "48cm^3",
+          "B": "40cm^3",
+          "C": "50cm^3",
+          "D": "58cm^3",
+          "correct_option": "48cm^3",
+          "difficulty_level": 2
+        },
+        {
+          "question": "A cylinder of height 21 cm has base \nof radius 4 cm. Find out the total surface area of the \ncylinder.",
+          "A": "500 CM^2",
+          "B": "757(3/8)CM^2",
+          "C": "628(4/7)CM^2",
+          "D": "800 CM^2",
+          "correct_option": "628(4/7)CM^2",
+          "difficulty_level": 2
+        },
+        {
+          "question": "The height of a cone is 21 cm and \nradius of its base is 28 cm. Find out its total surface area.",
+          "A": "2244 CM^2",
+          "B": "6677 CM^2",
+          "C": "1122 CM^2",
+          "D": "5544 CM^2",
+          "correct_option": "5544 CM^2",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Find out the slant heights of a cone \nwhose volume is 1232 cm^3 and radius of the base is 7 cm.",
+          "A": "25 CM",
+          "B": "15 CM",
+          "C": "35 CM",
+          "D": "45 CM",
+          "correct_option": "25 CM",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Diameter of a sphere is 28 cm. Find out its  volume",
+          "A": "500 CM^3",
+          "B": "1100.3 CM^3",
+          "C": "11498.6 CM^3",
+          "D": "4422 CM^3",
+          "correct_option": "11498.6 CM^3",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A solid cone of copper of height 3 cm is melted and a solid sphere of radius 3 cm is made. Then what is the diameter of the base of the cone?",
+          "A": "12 CM",
+          "B": "24 CM",
+          "C": "15 CM",
+          "D": "35 CM",
+          "correct_option": "24 CM",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The radius and height of a cylinder are increased by 10% and 20%, respectively. Find out the percentage increase in its surface area.",
+          "A": "44 CM",
+          "B": "88 CM",
+          "C": "64 CM",
+          "D": "32 CM",
+          "correct_option": "32 CM",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If a cube with its edge 6 cm is melted and smaller \ncubes with edge 2 cm each are formed, then how \nmany cubesare formed?",
+          "A": "27",
+          "B": "39",
+          "C": "24",
+          "D": "21",
+          "correct_option": "27",
+          "difficulty_level": 1
+        },
+        {
+          "question": "How many small cubical blocks of side 5 cm can be \ncut from a cubical block whose each edge measures \n20 cm?",
+          "A": "56",
+          "B": "64",
+          "C": "48",
+          "D": "51",
+          "correct_option": "64",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If the volume of a sphere is numerically equal to its surface area then its diameter is:",
+          "A": "5 CM",
+          "B": "2 CM",
+          "C": "6 CM",
+          "D": "7 CM",
+          "correct_option": "6 CM",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If the surface area of a sphere is 346.5 cm2, then its \nradius is take (pi=(22/7)",
+          "A": "7 cm",
+          "B": "5.25 cm",
+          "C": "3.25 cm",
+          "D": "9 cm",
+          "correct_option": "5.25 cm",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The height of the right pyramid whose area of the base is 30 m^2 and volume is 500 m^3, is:",
+          "A": "65 M",
+          "B": "15 M",
+          "C": "60 M",
+          "D": "50 M",
+          "correct_option": "50 M",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A sphere is cut into two hemispheres. One of them \nis used as bowl. It takes 8 bowlfuls of this to fill \na conical vessel of height 12 cm and radius 6 cm. \nThe radius of the sphere (in centimeter) will be",
+          "A": "3 CM",
+          "B": "6 CM",
+          "C": "7 CM",
+          "D": "8 CM",
+          "correct_option": "3 CM",
+          "difficulty_level": 2
+        },
+        {
+          "question": "The base of a right prism is a quadrilateral ABCD. \nGiven that AB = 9 cm, BC = 14 cm, CD = 13 cm, \nDA = 12 cm and  ∠DAB =90 DEG. If the volume of \nthe prism be 2070 cm^3, then the area of the lateral \nsurface is",
+          "A": "620 CM^2",
+          "B": "720 CM^2",
+          "C": "550 CM^2",
+          "D": "650 CM^2",
+          "correct_option": "720 CM^2",
+          "difficulty_level": 3
+        },
+        {
+          "question": "A rectangular tin sheet is 12 cm long and 5 cm broad. \nIt is rolled along its length to form a cylinder by \nmaking the opposite edges just to touch each other. \nThen the volume of the cylinder is",
+          "A": "(80/ pi) cm^3",
+          "B": "(120/ pi) cm^3",
+          "C": "(60/ pi) cm^3",
+          "D": "(180/ pi) cm^3",
+          "correct_option": "(180/ pi) cm^3",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The area of the iron sheet required to prepare a cone \n24 cm high with base radius 7 cm is (Take pi=22/7)",
+          "A": "704 cm^2",
+          "B": "550 CM^2",
+          "C": "650 CM^2",
+          "D": "100 cm^2",
+          "correct_option": "704 cm^2",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Assume that a drop of water is spherical and its \ndiameter is (1/ 10) of a centimetre. A conical glass has \na height equal to the diameter of its rim. If 32,000 \ndrops of water fill the glass completely, then the \nheight of the glass (in cm) is:",
+          "A": "3",
+          "B": "4",
+          "C": "2",
+          "D": "1",
+          "correct_option": "4",
+          "difficulty_level": 3
+        },
+        {
+          "question": "A rectangular block of metal has dimensions 21 cm, \n77 cm and 24 cm. The block has been melted into a \nsphere. The radius of the sphere is Take(pi=22/7)",
+          "A": "11 cm",
+          "B": "28 cm",
+          "C": "21 cm",
+          "D": "45 cm",
+          "correct_option": "21 cm",
+          "difficulty_level": 3
+        },
+        {
+          "question": "If the side of a cube is increased by 100%, its volume is increased by:",
+          "A": "200%",
+          "B": "100%",
+          "C": "300%",
+          "D": "500%",
+          "correct_option": "100%",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If surface area and volume of a sphere are S and V, \nrespectively, then value of (S^3)/(V^3)",
+          "A": "36 pi",
+          "B": "8 pi",
+          "C": "20 pi",
+          "D": "6pi",
+          "correct_option": "36 pi",
+          "difficulty_level": 2
+        },
+        {
+          "question": "If the diameter of a sphere is decreased by 25%, its \ncurved surface area will be decreased by:",
+          "A": "43.15%",
+          "B": "43.25%",
+          "C": "43.75%",
+          "D": "43.85%",
+          "correct_option": "43.75%",
+          "difficulty_level": 3
+        },
+        {
+          "question": "The height of a right circular cylinder is 6 m. 3 \ntimes the sum of the areas of its two circular faces \nis twice the area of its curved surface. The radius \nof the base is:",
+          "A": "4 m",
+          "B": "2 m",
+          "C": "5 m",
+          "D": "6 m",
+          "correct_option": "4 m",
+          "difficulty_level": 3
+        },
+        {
+          "question": "The radius of the cylinder is made twice as large. \nHow should the height be changed so that the volume \nremains the same?",
+          "A": "pi(r^3)h",
+          "B": "pi(r^2)h",
+          "C": "pi(r^3)(h^3)",
+          "D": "pi*r*h",
+          "correct_option": "pi(r^2)h",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Marbles of diameter 1.4 cm are dropped into a \ncylindrical beaker containing some water and are \nfully submerged. The diameter of the beaker is 7 \ncm. Find how many marbles have been dropped in \nit if the water rises by 5.6 cm.",
+          "A": "50",
+          "B": "150",
+          "C": "250",
+          "D": "350",
+          "correct_option": "150",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Base of a right pyramid is a square, length of diagonal of the base is 24 √2 m. If the volume of the pyramid is 1728 cu. m, its height is:",
+          "A": "7M",
+          "B": "9 M",
+          "C": "8 M",
+          "D": "3 M",
+          "correct_option": "9 M",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Base of a right prism is an equilateral triangle of \nside 6 cm. If the volume of the prism is 108 √3 cc,\n its height is:",
+          "A": "9 cm",
+          "B": "10 cm",
+          "C": "11 cm",
+          "D": "12 cm",
+          "correct_option": "12 cm",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The total number of spherical bullets, each of diameter 5 decimetre, that can be made by utilizing the maximum of a rectangular block of lead with 11 m length, 10 m breadth and 5 m width is (assume that π>3):",
+          "A": "Less than 8800",
+          "B": "Equal to 8800",
+          "C": "Equal to 8800",
+          "D": "More than 9000",
+          "correct_option": "Equal to 8800",
+          "difficulty_level": 3
+        },
+        {
+          "question": "The base of a right prism is an equilateral triangle. \nIf the lateral surface area and volume is 120 cm^2 \nand 40√ 3 cm^3, respectively, then the side of base \nof the prism is",
+          "A": "4 cm",
+          "B": "7 cm",
+          "C": "40 cm",
+          "D": "8 cm",
+          "correct_option": "4 cm",
+          "difficulty_level": 2
+        }
+      ]
+    },
+    {
+      "topic": "Partnership",
+      "topic_question": [
+        {
+          "question": "A and B enters into a partnership for a year. A contributes `1500 and B `2000. After 4 months, they admits C who contributes `2250. If B withdraws his contribution after 9 months, at the end of the year they share profit in the ratio:",
+          "A": "2:01:03",
+          "B": "1:3:2",
+          "C": "1:1:2",
+          "D": "1:1:1",
+          "correct_option": "1:1:1",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C starts a business. If the ratio of their periods of investments are 2:3:6 and their profits are in the ratio of 4:5:6, then the ratio of capitals of A, B and C is:",
+          "A": "6:08:10",
+          "B": "12:10:6",
+          "C": "10:12:06",
+          "D": "None of the options",
+          "correct_option": "12:10:6",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B invest in a business in the ratio 3 : 2. If 5% of the total profit goes to charity and A's share is Rs. 855, the total profit is:",
+          "A": "Rs. 1,425",
+          "B": "Rs. 1,500",
+          "C": "Rs. 1,537.50",
+          "D": "Rs. 1,576",
+          "correct_option": "Rs. 1,500",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C jointly thought of engaging themselves in a business venture. It was agreed that A would invest Rs. 6500 for 6 months, B, Rs. 8400 for 5 months and C, Rs. 10,000 for 3 months. A wants to be the working member for which, he was to receive 5% of the profits. The profit earned was Rs. 7400. Calculate the share of B in the profit.",
+          "A": "Rs. 1,900",
+          "B": "Rs. 2,660",
+          "C": "Rs. 2,800",
+          "D": "Rs. 2,840",
+          "correct_option": "Rs. 2,800",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C enter into a partnership in the ratio  (7/2)  : (4/3)    : (6/5)  . After 4 months, A increases his share 50%. If the total profit at the end of one year be Rs. 21,600, then B's share in the profit is:",
+          "A": "Rs. 2,100",
+          "B": "Rs. 2,400",
+          "C": "Rs. 3,600",
+          "D": "Rs. 4,000",
+          "correct_option": "Rs. 4,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, C subscribe Rs. 50,000 for a business. A subscribes Rs. 4000 more than B and B Rs. 5000 more than C. Out of a total profit of Rs. 35,000, A receives:",
+          "A": "Rs. 8,400",
+          "B": "Rs. 11,900",
+          "C": "Rs. 13,600",
+          "D": "Rs. 14,700",
+          "correct_option": "Rs. 14,700",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Three partners shared the profit in a business in the ratio 5 : 7 : 8. They had partnered for 14 months, 8 months and 7 months respectively. What was the ratio of their investments?",
+          "A": "5 : 7 : 8",
+          "B": "20 : 49 : 64",
+          "C": "38 : 28 : 21",
+          "D": "None of the options",
+          "correct_option": "5 : 7 : 8",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A starts business with Rs. 3500 and after 5 months, B joins with A as his partner. After a year, the profit is divided in the ratio 2 : 3. What is B's contribution in the capital?",
+          "A": "Rs. 7,500",
+          "B": "Rs. 8,000",
+          "C": "Rs. 8,500",
+          "D": "Rs. 9,000",
+          "correct_option": "Rs. 9,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B entered into partnership with capitals in the ratio 4 : 5. After 3 months, A withdrew    of his capital and B  withdrew    of his capital. The gain at the end of 10 months was Rs. 760. A's share in this profit is:",
+          "A": "Rs. 330",
+          "B": "Rs. 360",
+          "C": "Rs. 380",
+          "D": "Rs. 430",
+          "correct_option": "Rs. 330",
+          "difficulty_level": 1
+        },
+        {
+          "question": "and B started a partnership business investing some amount in the ratio of 3 : 5. C joined then after six months with an amount equal to that of B. In what proportion Should the profit at the end of one year be distributed among A, B and C?",
+          "A": "3 : 5 : 2",
+          "B": "3 : 5 : 5",
+          "C": "6 : 10 : 5",
+          "D": "Data inadequate",
+          "correct_option": "6 : 10 : 5",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, C rent a pasture. A puts 10 oxen for 7 months, B puts 12 oxen for 5 months and C puts 15 oxen for 3 months for grazing. If the rent of the pasture is Rs. 175, how much must C pay as his share of rent?",
+          "A": "Rs. 45",
+          "B": "Rs. 50",
+          "C": "Rs. 55",
+          "D": "Rs. 60",
+          "correct_option": "Rs. 45",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business in partnership investing Rs. 20,000 and Rs. 15,000 respectively. After six months, C joined them with Rs. 20,000. What will be B's share in total profit of Rs. 25,000 earned at the end of 2 years from the starting of the business?",
+          "A": "Rs. 7,500",
+          "B": "Rs. 9,000",
+          "C": "Rs. 9,500",
+          "D": "Rs. 10,000",
+          "correct_option": "Rs. 7,500",
+          "difficulty_level": 1
+        },
+        {
+          "question": "In the income statement of Asha and Ravenna, the ratio of their income in the year 2017 was 5 : 4. The ratio of Asha’s income in the year 2018 to that in 2017 is 3 : 5 and the ratio of Ravenna’s income in the year 2018 to that in 2017 is 3 : 2. If Rs. 10242 is the sum of the income of Asha and Ravenna in the year 2018, then find the income of Ravenna in the year 2017?",
+          "A": ". Rs. 1024",
+          "B": "Rs. 1,138",
+          "C": "Rs. 2,776",
+          "D": "Rs. 2,420",
+          "correct_option": "Rs. 1,138",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Shyam and Ram entered into a partnership with investment in the ratio 3 : 2 respectively. Among them, Ram is the working partner for which he gets 10% of the profit and Shyam is the sleeping partner. If at the end of one year they earned a profit of Rs. 75000 out of which 5% goes to the charity. Find the share of Ram in the profit.",
+          "A": "Rs. 32,000",
+          "B": "Rs. 33,000",
+          "C": "Rs. 31,000",
+          "D": "Rs. 35,000",
+          "correct_option": "Rs. 33,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Sonu and Titu entered into a partnership for a year in which Sonu invested Rs 120000 and Titu invested Rs 70000. After 4 months, Sonu invested Rs 80000 more whereas after 5 months, Titu invested Rs 30000 more. When two months were left Sweety also joined investing Rs 400000 as her contribution. If the profit for the year was 12.5% of 1572000, find the share of Sonu, Titu and Sweety.",
+          "A": "Rs 40000, Rs 104000, Rs 52500",
+          "B": "Rs 104000, Rs 52500, Rs 40000",
+          "C": "Rs 52500, Rs 40000, Rs 104000",
+          "D": "Rs 78420, Rs. 48645, Rs. 48770",
+          "correct_option": "Rs 104000, Rs 52500, Rs 40000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Sachin and Virat started a company in which Sachin invested Rs. 700000 and Virat invested Rs. 800000. Sachin is the working partner and draws a fixed monthly salary of Rs. 20000 (which he draws from the revenues of the company). Virat only offers consultancy services to the business and charges 15 % of the profit earned by the company. The revenue made by the company at the end of its first year is Rs. 3500000. The profit made by the company is 30 percent of its revenues. What is the difference between the amount earned by Sachin and Virat at the end of the first year?",
+          "A": "Rs. 28,500",
+          "B": "Rs. 25,000",
+          "C": "Rs. 23,000",
+          "D": "Rs. 20,500",
+          "correct_option": "Rs. 23,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Ram starts a business with Rs. 3900. After 3 months, Shayam joins as a partner with a capital of Rs. 4200 again after some months Mohan joins as a partner with a capital of Rs. 6500. The total profit of one year is Rs.2900 but Mohan already has withdrawn Rs. 100 per month from his profit so the remaining profit was divided in the ratio of 6 : 6 : 1 respectively. Find for how many months does Mohan join?",
+          "A": "3 months",
+          "B": "4 months.",
+          "C": "5 months",
+          "D": "2 months.",
+          "correct_option": "4 months.",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Dholak  and  Tabla  entered  in  a  partnership  business  in  which  Tabla  invested  Rs. 50,000. At the end of 4 months Tabla withdrew Rs. 7500 and at the end of another 5 months he again withdrew Rs. 9000. Dholak had left his investment intact, then what was his investment if at the end of one – year he received 40% of the total profit?",
+          "A": "Rs. 27,500",
+          "B": "Rs. 32,000",
+          "C": "Rs. 28,500",
+          "D": "Rs. 31,500",
+          "correct_option": "Rs. 28,500",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Mahesh  and  Madhav  started  a  business.  Mahesh  invested  Rs.  40000  and  Madhav invested  Rs.  50000.  After  1st  year,  Mahesh  withdrew  capital  equal  to  3/5th  of  the initial capital of Madhav. After 2nd year,  Madhav added capital equal to half of the initial capital of Mahesh. The profit earned at the end of the third year is Rs. 230000. Find the difference between the profit share of Mahesh and Madhav.",
+          "A": "Rs. 110000            .",
+          "B": "Rs. 132,000",
+          "C": "Rs. 122,000",
+          "D": "Rs. 144,000",
+          "correct_option": "Rs. 110000            .",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Sudhir  and  Tushar  invested  Rs.  x  and  Rs.  3x  respectively  in  a  business.  The  time periods  of  Sudhir  and  Tushar  is  in  the  ratio  2  :  3.  If  the  profit  share  of  Tushar  is  Rs. 270000, then find the total profit if they continue the business for 3 more years?",
+          "A": "Rs. 330,000",
+          "B": "Rs. 660,000",
+          "C": ". Rs. 1320000            .",
+          "D": "Rs. 1,640,000",
+          "correct_option": ". Rs. 1320000            .",
+          "difficulty_level": 1
+        },
+        {
+          "question": "P, Q and R started a business by investing Rs.900, Rs.1300 and Rs.2000 respectively. After two years they invested another amounts in the ratio 3 : 1 : 5. After another 1 year, P, Q and R withdrew Rs.200, Rs.400 and Rs.1000 from the business respectively. Now the profit earned from the business after 4 years from the start of the business is in the ratio of 4 : 5 : a and share of P in the profit is Rs.1200. Find the total profit earned from the business.",
+          "A": "Rs. 4,100",
+          "B": "Rs. 5,100",
+          "C": "Rs. 4,800",
+          "D": "Rs. 5,400",
+          "correct_option": "Rs. 5,100",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Ram, Shyam and Vinod started a business. Ram invested Rs. 15000 and Shyam invested Rs. 20,000. Vinod started with Rs. 5000. After the first month, both Ram and Shyam withdraw Rs. 1000 every month and Vinod adds Rs. 2000 every month from their respective investments. The business continues for 1 year. If the total profit earned after 1 year is Rs. 80,000, then find the difference between the profit shares of Vinod and Ram?",
+          "A": "Rs. 23,000",
+          "B": "Rs. 12,000",
+          "C": "Rs. 11,000",
+          "D": "Rs. 13,000",
+          "correct_option": "Rs. 13,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C started a business with investments of Rs. 2000, Rs. 5000, and Rs. 8000 respectively. If the total profit is Rs. 12000, what is B's share?",
+          "A": "Rs. 4,000",
+          "B": "Rs. 4,100",
+          "C": "Rs. 4,200",
+          "D": "Rs. 4,300",
+          "correct_option": "Rs. 4,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B are partners in a business. A invests Rs. 10000 for 6 months, while B invests Rs. 15000 for 4 months. If the total profit is Rs. 3000, what is A's share?",
+          "A": "Rs. 1,200",
+          "B": "Rs. 1,100",
+          "C": "Rs. 1,000",
+          "D": "Rs. 900",
+          "correct_option": "Rs. 1,200",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 5000 for 3 months, B invests Rs. 8000 for 2 months, and C invests Rs. 12000 for 4 months. If the total profit is Rs. 6000, what is C's share?",
+          "A": "Rs. 2,400",
+          "B": "Rs. 2,300",
+          "C": "Rs. 2,200",
+          "D": "Rs. 2,100",
+          "correct_option": "Rs. 2,400",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 20000 and Rs. 30000 respectively. If the total profit is Rs. 9000, what is B's share?",
+          "A": "Rs. 5,400",
+          "B": "Rs. 5,300",
+          "C": "Rs. 5,200",
+          "D": "Rs. 5,100",
+          "correct_option": "Rs. 5,400",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 10000, B invests Rs. 15000, and C invests Rs. 20000. If the total profit is Rs. 30000, what is A's share?",
+          "A": "Rs. 10,000",
+          "B": "Rs. 11,000",
+          "C": "Rs. 12,000",
+          "D": "Rs. 13,000",
+          "correct_option": "Rs. 10,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 30000 and Rs. 50000 respectively. If the total profit is Rs. 20000, what is A's share?",
+          "A": "Rs. 8,000",
+          "B": "Rs. 7,000",
+          "C": "Rs. 6,000",
+          "D": "Rs. 5,000",
+          "correct_option": "Rs. 8,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 20000 for 4 months, B invests Rs. 30000 for 3 months, and C invests Rs. 40000 for 2 months. If the total profit is Rs. 10000, what is B's share?",
+          "A": "Rs. 3,000",
+          "B": "Rs. 3,100",
+          "C": "Rs. 3,200",
+          "D": "Rs. 3,300",
+          "correct_option": "Rs. 3,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 40000 and Rs. 60000 respectively. If the total profit is Rs. 30000, what is B's share?",
+          "A": "Rs. 18,000",
+          "B": "Rs. 17,000",
+          "C": "Rs. 16,000",
+          "D": "Rs. 15,000",
+          "correct_option": "Rs. 18,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 50000, B invests Rs. 75000, and C invests Rs. 100000. If the total profit is Rs. 150000, what is C's share?",
+          "A": "Rs. 60,000",
+          "B": "Rs. 50,000",
+          "C": "Rs. 40,000",
+          "D": "Rs. 30,000",
+          "correct_option": "Rs. 60,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 60000 and Rs. 90000 respectively. If the total profit is Rs. 45000, what is A's share?",
+          "A": "Rs. 22,500",
+          "B": "Rs. 22,400",
+          "C": "Rs. 22,300",
+          "D": "Rs. 22,200",
+          "correct_option": "Rs. 22,500",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 80000 for 5 months, B invests Rs. 120000 for 4 months, and C invests Rs. 160000 for 3 months. If the total profit is Rs. 20000, what is C's share?",
+          "A": "Rs. 6,400",
+          "B": "Rs. 6,300",
+          "C": "Rs. 6,200",
+          "D": "Rs. 6,100",
+          "correct_option": "Rs. 6,400",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 100000 and Rs. 150000 respectively. If the total profit is Rs. 60000, what is B's share?",
+          "A": "Rs. 36,000",
+          "B": "Rs. 35,000",
+          "C": "Rs. 34,000",
+          "D": "Rs. 33,000",
+          "correct_option": "Rs. 36,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 120000, B invests Rs. 180000, and C invests Rs. 240000. If the total profit is Rs. 300000, what is A's share?",
+          "A": "Rs. 100,000",
+          "B": "Rs. 200,000",
+          "C": "Rs. 300,000",
+          "D": "Rs. 400,000",
+          "correct_option": "Rs. 100,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with investments of Rs. 150000 and Rs. 225000 respectively. If the total profit is Rs. 90000, what is A's share?",
+          "A": "Rs. 45,000",
+          "B": "Rs. 44,000",
+          "C": "Rs. 43,000",
+          "D": "Rs. 42,000",
+          "correct_option": "Rs. 45,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, and C are partners in a business. A invests Rs. 180000 for 6 months, B invests Rs. 270000 for 5 months, and C invests Rs. 360000 for 4 months. If the total profit is Rs. 30000, what is B's share?",
+          "A": "Rs. 11,250",
+          "B": "Rs. 11,200",
+          "C": "Rs. 11,150",
+          "D": "Rs. 11,100",
+          "correct_option": "Rs. 11,250",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C invested Rs. 20,000, Rs. 50,000 and Rs. 40,000, in a business. The net profit for the year was Rs. 12,100. This net profit which was divided in proportion to investments. Find out the amount of profit each partner has earned.",
+          "A": "Rs. 2,200, Rs. 5,200, and Rs. 4,200,",
+          "B": "Rs. 2,200, Rs. 5,500, and Rs. 4,200,",
+          "C": "Rs. 2,200, Rs. 5,500, and Rs. 4,400,",
+          "D": "None of the options",
+          "correct_option": "Rs. 2,200, Rs. 5,200, and Rs. 4,200,",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B are two partners in a business. A contributes Rs. 1,200 for 5 months and B contributes Rs. 750 for 4 months. If total profit is Rs. 450, find out their respective shares.",
+          "A": "Rs. 200, Rs. 350",
+          "B": "Rs. 300, Rs. 150",
+          "C": "Rs. 200, Rs. 150",
+          "D": "None of the options",
+          "correct_option": "Rs. 300, Rs. 150",
+          "difficulty_level": 1
+        },
+        {
+          "question": "There are three partners A, B and C in a business. A invests Rs. 2000 for 5 months, B invests Rs. 1200 for 6 months and C invests Rs. 2500 for 3 months. Find out the ratio of their shares in the profit.",
+          "A": "100 : 72 : 75.",
+          "B": "72 : 100 : 75.",
+          "C": "100 : 75 : 72.",
+          "D": "None of the options",
+          "correct_option": "100 : 72 : 75.",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Anu, Manu and Tanu invested capitals in a business the ratio 4 : 6 : 9. At the end of the business, they received their shares of profits in the ratio 2:3:5. Find the ratio of time for which they invested their capitals.",
+          "A": "10:09:10",
+          "B": "10:09:09",
+          "C": "9 : 10 : 10",
+          "D": "9 : 9 : 10",
+          "correct_option": "9 : 9 : 10",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Gupta, Singhal and Kansal starts a business. If the ratio of their periods of investments are 1 : 2 : 5 and their profits are in the ratio of 3 : 4 : 5, find the ratio of capitals of Gupta, Singhal and Kansal.",
+          "A": "3 : 2 : 1",
+          "B": "1 : 2 : 3",
+          "C": "3 : 1 : 2",
+          "D": "2 : 3 : 1",
+          "correct_option": "3 : 2 : 1",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Nikita and Nishita enters into a partnership by investing `50,000 and `40,000, respectively. They agreed to share profits in the ratio of their capitals. Find out the share of Nikita when profit of the business is `22500 after a year.",
+          "A": "Rs. 1,500",
+          "B": "Rs. 9,500",
+          "C": "Rs. 10,500",
+          "D": "Rs. 12,500",
+          "correct_option": "Rs. 12,500",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Niki, Nisha and Anu formed a `40,000, respectively. After 3 years of operation, the partnership earned a net profit of partnership with investments of `75,000, `60,000 and `26,250. What was the share of Anu in the  profit?",
+          "A": "Rs. 6,000",
+          "B": "Rs. 5,000",
+          "C": "`8,000",
+          "D": "None of the options",
+          "correct_option": "Rs. 6,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Mahesh, Suresh and Ganesh entered into a partnership business. Mahesh invested `16,000 for 9 months. Suresh  invested `12,000 for 6 months and Ganesh invested `8,000 for 12 months. At the end of a year, there was a profit of `26,000. Find out the share of Suresh in the profit.",
+          "A": "`8,000",
+          "B": "`7,500",
+          "C": "`6,000",
+          "D": "None of the options",
+          "correct_option": "`6,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A starts business with an investment of `3500. Five months later B joins A as a partner. After a year, the profits are divided in the ratio of 2:3. How much did B contribute?",
+          "A": "`7,000",
+          "B": "`11,000",
+          "C": "`9,000",
+          "D": "None of the options",
+          "correct_option": "`9,000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Gupta and Bansal enters into a partnership with their capitals in the ratio 5:6. At the end of 8 months, Gupta withdraws his capital. If they receive their shares profits in the ratio of 5:9, find out how long Bansal’s capital was invested in the business?",
+          "A": "10 months",
+          "B": "12 months",
+          "C": "14 months",
+          "D": "None of the options",
+          "correct_option": "12 months",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C rented a pasture. A puts in 12 oxen for 6 months, B 8 oxen for 7 months and C 6 oxen for 8 months. If the rent of the field is `396, what amount of rent was paid by A?",
+          "A": "`126",
+          "B": "`108",
+          "C": "`162",
+          "D": "`168",
+          "correct_option": "`162",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A starts business with a capital of `1200. B and C join with some investments after 3 and 6 months, respectively. If, at the end of a year, the profit is divided in the ratio of 2 : 3 : 5, what is B’s investment in the business?",
+          "A": "`2400",
+          "B": "`1800",
+          "C": "`3600",
+          "D": "`6000",
+          "correct_option": "`2400",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C entered into a partnership by investing `12000, `15000 and `18000, respectively. A is also a working partner and receiving 15% of the annual profit for his work. If B and C received `8500 and `10200 from the annual profit as their shares, what amount did A receive from the annual profit?",
+          "A": "`10,500",
+          "B": "`11,500",
+          "C": "`11,300",
+          "D": "`14,000",
+          "correct_option": "`11,300",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B started a business with initial investments in the ratio of 5:7. If, after one year, their profits were in the ratio of 1:2 and the period for A’s investment was for 7 months, B invested the money for:",
+          "A": "12 months",
+          "B": "10 months",
+          "C": "14 months",
+          "D": "None of the options",
+          "correct_option": "10 months",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C invested capitals in the ratio 3:5:9; the timing of their investments being in the ratio 2:3:1. In what ratio would their profits be distributed?",
+          "A": "2:05:03",
+          "B": "3:2:5",
+          "C": "7:5:3",
+          "D": "None of the options",
+          "correct_option": "2:05:03",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B enters into a partnership. A supplies whole of the capital amounting to `45000 with the condition that the profits are to be equally distributed and that B pays A interest on half of the capital at 10% per annum, but receives, `120 per month for carrying on the concern. When B’s income is 1/2 of A’s income, their yearly profit is:",
+          "A": "`9180",
+          "B": "`7150",
+          "C": "`3060",
+          "D": "`1440",
+          "correct_option": "`9180",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Sumit, Punit and Ramit started a business by investing their capitals in the ratio of 1:2:3. At the end of the business term, they received their shares of profit in the ratio of 1:2:3. Find out the ratio of time for which they invested their capitals.",
+          "A": "1:01:01",
+          "B": "2:3:4",
+          "C": "2:4:3",
+          "D": "None of the options",
+          "correct_option": "1:01:01",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B jointly invests Rs 2100 and Rs 3100 in a firm. A is an active partner, hence he receives 25% of the profit separately. If their business yields Rs 1040 as profit, what will be the profit share for each of them?",
+          "A": "Rs 415, Rs 625",
+          "B": "Rs 575, Rs 465",
+          "C": "Rs. 515, Rs. 525",
+          "D": "Rs. 560, Rs. 480",
+          "correct_option": "Rs 575, Rs 465",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Sonia started a business investing Rs. 60000. After 6\nmonths Vivek joined him with an amount of Rs.140000.\nAfter 1 year Kirti also joined them with Rs. 120000.\nAfter 2 years the business yielded a total profit of\nRs. 450000. What is the share of Vivek in the profit?",
+          "A": "Rs. 140000",
+          "B": "Rs.198500",
+          "C": "Rs.  210000",
+          "D": "Rs. 215000",
+          "correct_option": "Rs.  210000",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A and B entered into a partnership investing\nRs. 16000 and Rs. 12000 respectively. After 3 months,\nA withdrew 5000 while B invested ` 5000 more.\nAfter 3 more months, C joins the business with a\ncapital of ` 21000. The share of B exceeds that of\nC, out of a total profit of ` 26,400 after one year by",
+          "A": "Rs. 2400",
+          "B": "Rs.  3000",
+          "C": "Rs.  3600",
+          "D": "Rs.  4800",
+          "correct_option": "Rs.  3600",
+          "difficulty_level": 2
+        },
+        {
+          "question": "If 4 (A’s capital) = 6 (B’s capital) = 10 (C’s capital),\nthen out of a profit of Rs. 4650, C will receive",
+          "A": "Rs. 465",
+          "B": "Rs.  900",
+          "C": "Rs.  1550",
+          "D": "Rs.  2250",
+          "correct_option": "Rs.  900",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B, C subscribe Rs. 50000 for a business. A subscribes\nRs.  4000 more than B and B Rs. 5000 more than C. Out\nof a total profit of Rs. 35000, A receives",
+          "A": "Rs. 8400",
+          "B": "Rs.  11900",
+          "C": "Rs. 13600",
+          "D": "Rs. 14700",
+          "correct_option": "Rs. 14700",
+          "difficulty_level": 1
+        },
+        {
+          "question": "A, B and C entered into a partnership. A invested\nRs.  2560 and B invested Rs.  2000. At the end of the\nyear, they gained Rs. 1105, out of which A got Rs. 320.\nC’s capital was",
+          "A": "Rs.  2840",
+          "B": "Rs. 4028",
+          "C": "Rs.  4280",
+          "D": "Rs.  4820",
+          "correct_option": "Rs.  4280",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Anil, Kamal and Vini Invested Rs.  8000, Rs.  4000 and\nRs.  8000 respectively in a business. Anil left after six\nmonths. If after eight months, there was a gain of\nRs.  4005, then what will be the share of Kamal?",
+          "A": "Rs.  800",
+          "B": "Rs.  890",
+          "C": "Rs.  500",
+          "D": "Rs.  900",
+          "correct_option": "Rs.  890",
+          "difficulty_level": 1
+        }
+      ]
+    }
+  ]
+},
+{
+  "subject_name": "BS",
+  "exam": [
+    {
+      "topic": "Verbal Communication",
+      "topic_question": [
+        {
+          "question": "What is the primary goal of verbal communication?",
+          "A": "To clearly express thoughts and ideas",
+          "B": "Confuse the listener",
+          "C": "Make conversations longer",
+          "D": "Hide information",
+          "correct_option": "To clearly express thoughts and ideas",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What helps make speech easier to understand?",
+          "A": "Using simple words",
+          "B": "Speaking very fast",
+          "C": "Using slang",
+          "D": "Whispering",
+          "correct_option": "Using simple words",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What should be avoided in formal communication?",
+          "A": "Interrupting others",
+          "B": "Being respectful",
+          "C": "Speaking clearly",
+          "D": "Giving examples",
+          "correct_option": "Interrupting others",
+          "difficulty_level": 1,
+          "image": "Q.No.jpg"
+        },
+        {
+          "question": "What improves listener attention?",
+          "A": "Using voice modulation",
+          "B": "Flat, dull tone",
+          "C": "Yelling",
+          "D": "Speaking extremely slow",
+          "correct_option": "Using voice modulation",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What ensures better understanding of instructions?",
+          "A": "Giving step-by-step explanation",
+          "B": "Mixing points",
+          "C": "Using long complex words",
+          "D": "Skipping details",
+          "correct_option": "Giving step-by-step explanation",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What builds trust during communication?",
+          "A": "Giving honest information",
+          "B": "Changing the topic",
+          "C": "Guessing facts",
+          "D": "Speaking emotionally",
+          "correct_option": "Giving honest information",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What should you do if the listener seems confused?",
+          "A": "Re-explain the idea in simple words",
+          "B": "Ignore confusion",
+          "C": "Change the topic",
+          "D": "Speak louder",
+          "correct_option": "Re-explain the idea in simple words",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What helps maintain professionalism?",
+          "A": "A polite and respectful tone",
+          "B": "Sarcasm",
+          "C": "Shouting",
+          "D": "Using insults",
+          "correct_option": "A polite and respectful tone",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What improves message memorability?",
+          "A": "Using relatable examples",
+          "B": "Long emotional talks",
+          "C": "Very fast speech",
+          "D": "Complex vocabulary",
+          "correct_option": "Using relatable examples",
+          "difficulty_level": 3
+        },
+        {
+          "question": "What is essential for clear pronunciation?",
+          "A": "Proper articulation",
+          "B": "Mumbling",
+          "C": "Slurring",
+          "D": "Speaking too fast",
+          "correct_option": "Proper articulation",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What improves phone communication?",
+          "A": "Clear tone and steady pace",
+          "B": "Background noise",
+          "C": "Use of slang",
+          "D": "Whispering",
+          "correct_option": "Clear tone and steady pace",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What reduces communication conflicts?",
+          "A": "Speaking in a calm tone",
+          "B": "Raising your voice",
+          "C": "Interrupting others",
+          "D": "Blaming the listener",
+          "correct_option": "Speaking in a calm tone",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is the first step in a formal conversation?",
+          "A": "Greeting politely",
+          "B": "Talking loudly",
+          "C": "Ignoring listener",
+          "D": "Making jokes",
+          "correct_option": "Greeting politely",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What improves the flow of long conversations?",
+          "A": "Giving short summaries",
+          "B": "Speaking nonstop",
+          "C": "Changing topics",
+          "D": "Using difficult vocabulary",
+          "correct_option": "Giving short summaries",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is essential for effective group communication?",
+          "A": "Taking turns to speak",
+          "B": "Talking at same time",
+          "C": "Dominating others",
+          "D": "Speaking continuously",
+          "correct_option": "Taking turns to speak",
+          "difficulty_level": 3
+        }
+      ]
+    },
+    {
+      "topic": "Non-Verbal Communication",
+      "topic_question": [
+        {
+          "question": "What is non-verbal communication?",
+          "A": "Communication using words",
+          "B": "Communication without spoken or written words",
+          "C": "Communication via phone only",
+          "D": "Communication through emails",
+          "correct_option": "Communication without spoken or written words",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which is an example of non-verbal communication?",
+          "A": "Writing a letter",
+          "B": "Sending a voice note",
+          "C": "Facial expressions",
+          "D": "Making a phone call",
+          "correct_option": "Facial expressions",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What does good eye contact show?",
+          "A": "Fear",
+          "B": "Confidence",
+          "C": "Disinterest",
+          "D": "Confusion",
+          "correct_option": "Confidence",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which gesture indicates openness?",
+          "A": "Crossed arms",
+          "B": "Open palms",
+          "C": "Looking away",
+          "D": "Frowning",
+          "correct_option": "Open palms",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What does crossing arms usually indicate?",
+          "A": "Confidence",
+          "B": "Openness",
+          "C": "Defensiveness",
+          "D": "Excitement",
+          "correct_option": "Defensiveness",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which is a form of paralanguage?",
+          "A": "Grammar",
+          "B": "Tone of voice",
+          "C": "Handwriting",
+          "D": "Typing speed",
+          "correct_option": "Tone of voice",
+          "difficulty_level": 3
+        },
+        {
+          "question": "What does a firm handshake represent?",
+          "A": "Weakness",
+          "B": "Confidence",
+          "C": "Anger",
+          "D": "Disinterest",
+          "correct_option": "Confidence",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which facial expression shows positivity?",
+          "A": "Frown",
+          "B": "Smile",
+          "C": "Gritted teeth",
+          "D": "Blank face",
+          "correct_option": "Smile",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What does poor posture communicate?",
+          "A": "Confidence",
+          "B": "Authority",
+          "C": "Low interest",
+          "D": "Respect",
+          "correct_option": "Low interest",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which non-verbal cue shows nervousness?",
+          "A": "Steady hands",
+          "B": "Smiling",
+          "C": "Sweating",
+          "D": "Firm voice",
+          "correct_option": "Sweating",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What does nodding usually signal?",
+          "A": "Agreement",
+          "B": "Fear",
+          "C": "Anger",
+          "D": "Dislike",
+          "correct_option": "Agreement",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which posture shows confidence?",
+          "A": "Slouching",
+          "B": "Standing tall",
+          "C": "Looking down",
+          "D": "Closed shoulders",
+          "correct_option": "Standing tall",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which is the most powerful non-verbal signal?",
+          "A": "Email",
+          "B": "Handwriting",
+          "C": "Facial expressions",
+          "D": "Phone calls",
+          "correct_option": "Facial expressions",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which gesture indicates dishonesty?",
+          "A": "Making eye contact",
+          "B": "Touching face",
+          "C": "Standing straight",
+          "D": "Smiling",
+          "correct_option": "Touching face",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What does maintaining distance while talking show?",
+          "A": "Respect",
+          "B": "Joy",
+          "C": "Confusion",
+          "D": "Sadness",
+          "correct_option": "Respect",
+          "difficulty_level": 1
+        }
+      ]
+    },
+    {
+      "topic": "Email Etiquettes",
+      "topic_question": [
+        {
+          "question": "What is the primary purpose of email etiquette?",
+          "A": "To make emails longer",
+          "B": "To ensure clear, professional, and effective communication",
+          "C": "To impress the reader",
+          "D": "To increase email volume",
+          "correct_option": "To ensure clear, professional, and effective communication",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of the following is the best way to start a professional email?",
+          "A": "\"Hey there!\"",
+          "B": "\"Yo, what's up?\"",
+          "C": "\"Dear [Recipient’s Name],\"",
+          "D": "\"Sup dude?\"",
+          "correct_option": "\"Dear [Recipient’s Name],\"",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What should you check before clicking on an email link?",
+          "A": "The link’s source and legitimacy",
+          "B": "If it looks colorful",
+          "C": "If it contains emojis",
+          "D": "If it is a short link",
+          "correct_option": "The link’s source and legitimacy",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What should be included in the subject line of an email?",
+          "A": "A vague phrase like \"Hello\"",
+          "B": "A clear and concise summary of the email’s purpose",
+          "C": "A long explanation of the email content",
+          "D": "A single emoji",
+          "correct_option": "A clear and concise summary of the email’s purpose",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why should you avoid using all capital letters in an email?",
+          "A": "It makes the email too formal",
+          "B": "It looks like you are shouting",
+          "C": "It makes the email more readable",
+          "D": "It is required for professionalism",
+          "correct_option": "It looks like you are shouting",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is the ideal response time for professional emails?",
+          "A": "Within a week",
+          "B": "Within 24–48 hours",
+          "C": "After a month",
+          "D": "Whenever you feel like it",
+          "correct_option": "Within 24–48 hours",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What is the best file format for sending documents via email?",
+          "A": "PDF",
+          "B": "JPEG",
+          "C": "EXE",
+          "D": "GIF",
+          "correct_option": "PDF",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which of the following is the best closing phrase for a professional email?",
+          "A": "\"Later dude!\"",
+          "B": "\"Sincerely, [Your Name]\"",
+          "C": "\"K, bye\"",
+          "D": "\"Catch you soon\"",
+          "correct_option": "\"Sincerely, [Your Name]\"",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why should you proofread an email before sending it?",
+          "A": "To make it longer",
+          "B": "To ensure it is clear, professional, and free of errors",
+          "C": "To impress the recipient",
+          "D": "To add unnecessary details",
+          "correct_option": "To ensure it is clear, professional, and free of errors",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What should you do before sending large attachments?",
+          "A": "Ignore file size limits",
+          "B": "Send multiple emails with small parts",
+          "C": "Compress them or use cloud storage links",
+          "D": "Send them without warning",
+          "correct_option": "Compress them or use cloud storage links",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of the following is NOT a good practice in professional emails?",
+          "A": "Using bullet points for clarity",
+          "B": "Writing long paragraphs with no breaks",
+          "C": "Keeping it concise and to the point",
+          "D": "Using correct grammar and punctuation",
+          "correct_option": "Writing long paragraphs with no breaks",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What should you do if your email contains attachments?",
+          "A": "Attach them without mentioning anything",
+          "B": "List the attachments in the email body",
+          "C": "Send multiple emails for each attachment",
+          "D": "Ignore them after attaching",
+          "correct_option": "List the attachments in the email body",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of the following is NOT a good email habit?",
+          "A": "Using clear subject lines",
+          "B": "Responding promptly",
+          "C": "Sending vague or unclear messages",
+          "D": "Using a professional tone",
+          "correct_option": "Sending vague or unclear messages",
+          "difficulty_level": 2
+        },
+        {
+          "question": "How should you format your email for easy readability?",
+          "A": "Use large paragraphs",
+          "B": "Use clear headings, bullet points, and short sentences",
+          "C": "Use bright colors and fancy fonts",
+          "D": "Write everything in one big block",
+          "correct_option": "Use clear headings, bullet points, and short sentences",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is the best tone to use in a professional email?",
+          "A": "Casual and friendly",
+          "B": "Formal yet polite",
+          "C": "Very strict and commanding",
+          "D": "Slang-heavy and informal",
+          "correct_option": "Formal yet polite",
+          "difficulty_level": 1
+        }
+      ]
+    },
+    {
+      "topic": "Online Professionalism",
+      "topic_question": [
+        {
+          "question": "What is online professionalism?",
+          "A": "Maintaining a professional image online",
+          "B": "Posting personal opinions freely",
+          "C": "Ignoring workplace ethics",
+          "D": "Avoiding social media",
+          "correct_option": "Maintaining a professional image online",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of the following is an example of professional online behavior?",
+          "A": "Using respectful language in emails",
+          "B": "Posting controversial opinions",
+          "C": "Ignoring colleague messages",
+          "D": "Sharing confidential company data",
+          "correct_option": "Using respectful language in emails",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why is it important to maintain professionalism online?",
+          "A": "It impacts your career opportunities",
+          "B": "It has no real impact",
+          "C": "It only matters for celebrities",
+          "D": "It reduces personal freedom",
+          "correct_option": "It impacts your career opportunities",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which of these should you avoid posting on professional networks?",
+          "A": "Work achievements",
+          "B": "Political rants",
+          "C": "Industry news",
+          "D": "Skill endorsements",
+          "correct_option": "Political rants",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is the best way to handle negative feedback online?",
+          "A": "Ignore it",
+          "B": "Respond professionally",
+          "C": "Argue with the person",
+          "D": "Delete the comment",
+          "correct_option": "Respond professionally",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What should your email signature include for professionalism?",
+          "A": "Your name and contact info",
+          "B": "Funny quotes",
+          "C": "Emoji symbols",
+          "D": "Personal opinions",
+          "correct_option": "Your name and contact info",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which platform is best for professional networking?",
+          "A": "LinkedIn",
+          "B": "TikTok",
+          "C": "Snapchat",
+          "D": "Reddit",
+          "correct_option": "LinkedIn",
+          "difficulty_level": 2
+        },
+        {
+          "question": "How often should you update your LinkedIn profile?",
+          "A": "Regularly with new skills",
+          "B": "Never",
+          "C": "Once every 5 years",
+          "D": "Only when job hunting",
+          "correct_option": "Regularly with new skills",
+          "difficulty_level": 2
+        },
+        {
+          "question": "What is the recommended response to an inappropriate workplace email?",
+          "A": "Reply professionally",
+          "B": "Ignore it",
+          "C": "Forward it to HR",
+          "D": "Share it publicly",
+          "correct_option": "Forward it to HR",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why should you be careful about your online presence?",
+          "A": "Employers check social media",
+          "B": "It has no real impact",
+          "C": "It’s just for personal use",
+          "D": "Only celebrities need to care",
+          "correct_option": "Employers check social media",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What is considered a professional email address?",
+          "A": "YourName@company.com",
+          "B": "cooldude123@gmail.com",
+          "C": "partygirl99@yahoo.com",
+          "D": "xXDragonMasterXx@hotmail.com",
+          "correct_option": "YourName@company.com",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which of these is NOT a professional way to communicate online?",
+          "A": "Using clear and respectful language",
+          "B": "Using all caps",
+          "C": "Proofreading emails before sending",
+          "D": "Using proper email etiquette",
+          "correct_option": "Using all caps",
+          "difficulty_level": 1
+        },
+        {
+          "question": "What should you do before posting something on a professional network?",
+          "A": "Check if it aligns with your professional image",
+          "B": "Post without thinking",
+          "C": "Ask for permission from friends",
+          "D": "Only post negative feedback",
+          "correct_option": "Check if it aligns with your professional image",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of these is a best practice for online professionalism?",
+          "A": "Separating personal and professional accounts",
+          "B": "Posting everything on one account",
+          "C": "Never using social media",
+          "D": "Ignoring professional networking",
+          "correct_option": "Separating personal and professional accounts",
+          "difficulty_level": 1
+        },
+        {
+          "question": "How should you respond to a colleague's LinkedIn post?",
+          "A": "Provide constructive comments",
+          "B": "Criticize openly",
+          "C": "Ignore it",
+          "D": "Post sarcastic remarks",
+          "correct_option": "Provide constructive comments",
+          "difficulty_level": 1
+        }
+      ]
+    },
+    {
+      "topic": "Social Media Etiquettes",
+      "topic_question": [
+        {
+          "question": "Social media etiquette mainly requires users to",
+          "A": "Post all day",
+          "B": "Treat others with respect",
+          "C": "Use only short forms",
+          "D": "Tag random people",
+          "correct_option": "Treat others with respect",
+          "difficulty_level": 1
+        },
+        {
+          "question": "The idea behind “Think before you post” is about",
+          "A": "Staying aware of privacy",
+          "B": "Checking spelling",
+          "C": "Knowing how to tag",
+          "D": "Posting jokes",
+          "correct_option": "Staying aware of privacy",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which behaviour shows a misunderstanding of proper online manners?",
+          "A": "Avoiding false news",
+          "B": "Being polite in replies",
+          "C": "Revealing too much personal info",
+          "D": "Using kind words",
+          "correct_option": "Revealing too much personal info",
+          "difficulty_level": 3
+        },
+        {
+          "question": "Which action reflects appropriate online professionalism?",
+          "A": "Adding emojis in official mails",
+          "B": "Using harsh language",
+          "C": "Keeping a positive attitude",
+          "D": "Spreading office gossip",
+          "correct_option": "Keeping a positive attitude",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Before uploading someone’s picture, you must",
+          "A": "Post it quickly",
+          "B": "Edit without asking",
+          "C": "Seek their consent",
+          "D": "Tag all friends",
+          "correct_option": "Seek their consent",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which practice helps you build a better online image?",
+          "A": "Mocking others",
+          "B": "Online bullying",
+          "C": "Sharing useful, positive comments",
+          "D": "Writing gossip",
+          "correct_option": "Sharing useful, positive comments",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Which of these actions should NOT appear in a LinkedIn update?",
+          "A": "Using formal writing",
+          "B": "Well-organised content",
+          "C": "Revealing confidential info",
+          "D": "Using courteous tone",
+          "correct_option": "Revealing confidential info",
+          "difficulty_level": 2
+        },
+        {
+          "question": "A good practice while commenting online is",
+          "A": "Writing everything in capitals",
+          "B": "Respectfully disagreeing",
+          "C": "Typing spam messages",
+          "D": "Cracking offensive jokes",
+          "correct_option": "Respectfully disagreeing",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which of the following clearly shows cyberbullying?",
+          "A": "Liking someone’s photo",
+          "B": "Sending threatening texts",
+          "C": "Sharing achievements",
+          "D": "Encouraging a friend",
+          "correct_option": "Sending threatening texts",
+          "difficulty_level": 2
+        },
+        {
+          "question": "When you face a hate comment, the sensible reaction is",
+          "A": "Reply rudely",
+          "B": "Ignore or report it",
+          "C": "Start an argument",
+          "D": "Blame others",
+          "correct_option": "Ignore or report it",
+          "difficulty_level": 1
+        }
+      ]
+    },
+    {
+      "topic": "Telephone Etiquettes",
+      "topic_question": [
+        {
+          "question": "Why is answering a phone within 3 rings considered good etiquette?",
+          "A": "It shows promptness",
+          "B": "It shows carelessness",
+          "C": "It confuses the caller",
+          "D": "It wastes time",
+          "correct_option": "It shows promptness",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which opening line best shows understanding of a professional introduction?",
+          "A": "Yes, tell fast.",
+          "B": "Hello, this is ___ speaking.",
+          "C": "What do you want?",
+          "D": "Hold on.",
+          "correct_option": "Hello, this is ___ speaking.",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Which behaviour shows clear understanding of professional phone communication?",
+          "A": "Interrupting",
+          "B": "Speaking clearly",
+          "C": "Eating during the call",
+          "D": "Speaking too fast",
+          "correct_option": "Speaking clearly",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why should you say 'May I place you on hold?'",
+          "A": "It is polite and respectful",
+          "B": "It wastes time",
+          "C": "It creates confusion",
+          "D": "It sounds casual",
+          "correct_option": "It is polite and respectful",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Using 'please' and 'thank you' on calls demonstrates understanding of",
+          "A": "Anger",
+          "B": "Slang usage",
+          "C": "Telephone courtesy",
+          "D": "Interruptions",
+          "correct_option": "Telephone courtesy",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Active listening on calls means you should",
+          "A": "Ignore the speaker",
+          "B": "Listen without interrupting",
+          "C": "Talk continuously",
+          "D": "Use your phone",
+          "correct_option": "Listen without interrupting",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Why is shouting on a call considered poor etiquette?",
+          "A": "It improves clarity",
+          "B": "It creates discomfort",
+          "C": "It shows professionalism",
+          "D": "It shows politeness",
+          "correct_option": "It creates discomfort",
+          "difficulty_level": 1
+        },
+        {
+          "question": "If a call is unclear, what action shows good manners?",
+          "A": "Getting angry",
+          "B": "Hanging up",
+          "C": "Asking politely to repeat",
+          "D": "Pretending to understand",
+          "correct_option": "Asking politely to repeat",
+          "difficulty_level": 2
+        },
+        {
+          "question": "Why should a call end with a polite closing?",
+          "A": "It shows professionalism",
+          "B": "It wastes time",
+          "C": "It confuses others",
+          "D": "It sounds rude",
+          "correct_option": "It shows professionalism",
+          "difficulty_level": 1
+        },
+        {
+          "question": "Why must you inform the caller before transferring them?",
+          "A": "It ensures transparency",
+          "B": "It is unnecessary",
+          "C": "It wastes time",
+          "D": "It upsets the caller",
+          "correct_option": "It ensures transparency",
+          "difficulty_level": 1
+        }
+      ]
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "695b88b2dfe7f909a8ba9e81"
+  },
+  "subject_name": "VR",
+  "exam": [
+    {
+      "topic": "Word Relationship",
+      "topic_question": [
+        {
+          "difficulty_level": 1,
+          "question": "Book : Author :: Painting : ?",
+          "A": "Canvas",
+          "B": "Artist",
+          "C": "Museum",
+          "D": "Color",
+          "correct_option": "Artist"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Book : Author :: Painting : ?",
+          "A": "Canvas",
+          "B": "Artist",
+          "C": "Museum",
+          "D": "Color",
+          "correct_option": "Artist"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Book : Author :: Painting : ?",
+          "A": "Canvas",
+          "B": "Artist",
+          "C": "Museum",
+          "D": "Color",
+          "correct_option": "Artist"
+        }
+      ]
+    },
+    {
+      "topic": "Logical Reasoning",
+      "topic_question": [
+        {
+          "difficulty_level": 2,
+          "question": "A man walks 10 meters north, then turns right and walks 5 meters, then turns right again and walks 10 meters. How far is he from the starting point?",
+          "A": "5 meters",
+          "B": "10 meters",
+          "C": "15 meters",
+          "D": "0 meters",
+          "correct_option": "5 meters"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "A man walks 10 meters north, then turns right and walks 5 meters, then turns right again and walks 10 meters. How far is he from the starting point?",
+          "A": "5 meters",
+          "B": "10 meters",
+          "C": "15 meters",
+          "D": "0 meters",
+          "correct_option": "5 meters"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "A man walks 10 meters north, then turns right and walks 5 meters, then turns right again and walks 10 meters. How far is he from the starting point?",
+          "A": "5 meters",
+          "B": "10 meters",
+          "C": "15 meters",
+          "D": "0 meters",
+          "correct_option": "5 meters"
+        }
+      ]
+    },
+    {
+      "topic": "Mirror Image / Pattern Recognition",
+      "topic_question": [
+        {
+          "difficulty_level": 1,
+          "question": "Which of the following options correctly represents the mirror image of the given figure?",
+          "A": "Option A",
+          "B": "Option B",
+          "C": "Option C",
+          "D": "Option D",
+          "correct_option": "Option A"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Which of the following options correctly represents the mirror image of the given figure?",
+          "A": "Option A",
+          "B": "Option B",
+          "C": "Option C",
+          "D": "Option D",
+          "correct_option": "Option A"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Which of the following options correctly represents the mirror image of the given figure?",
+          "A": "Option A",
+          "B": "Option B",
+          "C": "Option C",
+          "D": "Option D",
+          "correct_option": "Option A"
+        }
+      ]
+    },
+    {
+      "topic": "Analogy",
+      "topic_question": [
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Leaf is to Tree as ____ is to Mountain",
+          "A": "Slope",
+          "B": "Peak",
+          "C": "Valley",
+          "D": "Ridge",
+          "correct_option": "Peak"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Engine is to Car as ____ is to Airplane",
+          "A": "Wing",
+          "B": "Cockpit",
+          "C": "Propeller",
+          "D": "Fuel",
+          "correct_option": "Cockpit"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Window is to House as ____ is to Ship",
+          "A": "Hull",
+          "B": "Deck",
+          "C": "Cabin",
+          "D": "Hatch",
+          "correct_option": "Deck"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Page is to Book as ____ is to Report",
+          "A": "Section",
+          "B": "Chapter",
+          "C": "Appendix",
+          "D": "Page",
+          "correct_option": "Chapter"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Pedal is to Bicycle as ____ is to Car",
+          "A": "Tire",
+          "B": "Engine",
+          "C": "Accelerator",
+          "D": "Wheel",
+          "correct_option": "Engine"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Finger is to Hand as ____ is to Arm",
+          "A": "Elbow",
+          "B": "Wrist",
+          "C": "Shoulder",
+          "D": "Knuckle",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Paper is to drawing  as ____ is to Painting",
+          "A": "Easel",
+          "B": "Brush",
+          "C": "Canvas",
+          "D": "Frame",
+          "correct_option": "Brush"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Chapter is to Book as ____ is to Song",
+          "A": "Verse",
+          "B": "Album",
+          "C": "Artist",
+          "D": "Track",
+          "correct_option": "Album"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Eye is to Face as ____ is to Hand",
+          "A": "Finger",
+          "B": "Wrist",
+          "C": "Knuckle",
+          "D": "Palm",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": " Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.         Window is to House as ____ is to Car",
+          "A": "Tire",
+          "B": "Dashboard",
+          "C": "Wheel",
+          "D": "Windshield",
+          "correct_option": "Dashboard"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Leaf is to Tree as ____ is to Mountain",
+          "A": "Slope",
+          "B": "Peak",
+          "C": "Valley",
+          "D": "Ridge",
+          "correct_option": "Peak"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Engine is to Car as ____ is to Airplane",
+          "A": "Wing",
+          "B": "Cockpit",
+          "C": "Propeller",
+          "D": "Fuel",
+          "correct_option": "Cockpit"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Window is to House as ____ is to Ship",
+          "A": "Hull",
+          "B": "Deck",
+          "C": "Cabin",
+          "D": "Hatch",
+          "correct_option": "Deck"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Page is to Book as ____ is to Report",
+          "A": "Section",
+          "B": "Chapter",
+          "C": "Appendix",
+          "D": "Page",
+          "correct_option": "Chapter"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Pedal is to Bicycle as ____ is to Car",
+          "A": "Tire",
+          "B": "Engine",
+          "C": "Accelerator",
+          "D": "Wheel",
+          "correct_option": "Engine"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Finger is to Hand as ____ is to Arm",
+          "A": "Elbow",
+          "B": "Wrist",
+          "C": "Shoulder",
+          "D": "Knuckle",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Paper is to drawing  as ____ is to Painting",
+          "A": "Easel",
+          "B": "Brush",
+          "C": "Canvas",
+          "D": "Frame",
+          "correct_option": "Brush"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Chapter is to Book as ____ is to Song",
+          "A": "Verse",
+          "B": "Album",
+          "C": "Artist",
+          "D": "Track",
+          "correct_option": "Album"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Eye is to Face as ____ is to Hand",
+          "A": "Finger",
+          "B": "Wrist",
+          "C": "Knuckle",
+          "D": "Palm",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": " Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.         Window is to House as ____ is to Car",
+          "A": "Tire",
+          "B": "Dashboard",
+          "C": "Wheel",
+          "D": "Windshield",
+          "correct_option": "Dashboard"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Leaf is to Tree as ____ is to Mountain",
+          "A": "Slope",
+          "B": "Peak",
+          "C": "Valley",
+          "D": "Ridge",
+          "correct_option": "Peak"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Engine is to Car as ____ is to Airplane",
+          "A": "Wing",
+          "B": "Cockpit",
+          "C": "Propeller",
+          "D": "Fuel",
+          "correct_option": "Cockpit"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Window is to House as ____ is to Ship",
+          "A": "Hull",
+          "B": "Deck",
+          "C": "Cabin",
+          "D": "Hatch",
+          "correct_option": "Deck"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Page is to Book as ____ is to Report",
+          "A": "Section",
+          "B": "Chapter",
+          "C": "Appendix",
+          "D": "Page",
+          "correct_option": "Chapter"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Pedal is to Bicycle as ____ is to Car",
+          "A": "Tire",
+          "B": "Engine",
+          "C": "Accelerator",
+          "D": "Wheel",
+          "correct_option": "Engine"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Finger is to Hand as ____ is to Arm",
+          "A": "Elbow",
+          "B": "Wrist",
+          "C": "Shoulder",
+          "D": "Knuckle",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.           Paper is to drawing  as ____ is to Painting",
+          "A": "Easel",
+          "B": "Brush",
+          "C": "Canvas",
+          "D": "Frame",
+          "correct_option": "Brush"
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Chapter is to Book as ____ is to Song",
+          "A": "Verse",
+          "B": "Album",
+          "C": "Artist",
+          "D": "Track",
+          "correct_option": "Album"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.          Eye is to Face as ____ is to Hand",
+          "A": "Finger",
+          "B": "Wrist",
+          "C": "Knuckle",
+          "D": "Palm",
+          "correct_option": "Wrist"
+        },
+        {
+          "difficulty_level": 3,
+          "question": " Identify the relationship between the first pair of words and choose the option that best completes the second pair, based on the same relationship.         Window is to House as ____ is to Car",
+          "A": "Tire",
+          "B": "Dashboard",
+          "C": "Wheel",
+          "D": "Windshield",
+          "correct_option": "Dashboard"
+        }
+      ]
+    },
+    {
+      "topic": "Categorical Syllogism",
+      "topic_question": [
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers.  All mammals are warm-blooded. Whales are mammals. What can be concluded?",
+          "A": "Whales are fish.",
+          "B": "Whales are cold-blooded.",
+          "C": "Whales are warm-blooded.",
+          "D": "Whales do not live in water.",
+          "correct_option": "Whales are warm-blooded."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. No insects are mammals. A butterfly is an insect. What can be concluded?",
+          "A": "Butterflies are mammals.",
+          "B": "Butterflies are not mammals.",
+          "C": "Butterflies are both insects and mammals.",
+          "D": "Butterflies are not insects.",
+          "correct_option": "Butterflies are not mammals."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All squares are  rectangles. A shape is a square. What can be concluded?",
+          "A": "The shape is a circle.",
+          "B": "The shape is not a rectangle.",
+          "C": "The shape is a rectangle.",
+          "D": "The shape is a triangle.",
+          "correct_option": "The shape is a rectangle."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All birds can fly. A  penguin is not a bird. What can be concluded?",
+          "A": "Penguins can fly.",
+          "B": "Penguins cannot fly.",
+          "C": "Penguins are not birds.",
+          "D": "Penguins are mammals.",
+          "correct_option": "Penguins cannot fly."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All dogs are animals. Max is a dog. What can be concluded?",
+          "A": "Max is a cat.",
+          "B": "Max is an animal.",
+          "C": "Max is a mammal.",
+          "D": "Max is not an animal.",
+          "correct_option": "Max is an animal."
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you save money, you will be rich. If you are rich, you can buy a house. What is the conclusion?",
+          "A": "If you save money, you can buy a house.",
+          "B": "If you buy a house, you didn’t save money.",
+          "C": "If you are rich, you won’t buy a house.",
+          "D": "If you save money, you won’t buy a house.",
+          "correct_option": "If you save money, you can buy a house."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the dog barks, someone is at the door. If someone is at the door, I will open it. What is the conclusion?",
+          "A": "If the dog doesn’t bark, I will open the door.",
+          "B": "If I open the door, the dog didn’t bark.",
+          "C": "If the dog barks, I will open the door.",
+          "D": "If the dog barks, I won’t open the door.",
+          "correct_option": "If the dog barks, I will open the door."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the sky is clear, we will see stars. If we see stars, we will take pictures. What is the conclusion?",
+          "A": "If the sky is clear, we won’t see stars.",
+          "B": "If we take pictures, the sky isn’t clear.",
+          "C": "If the stars aren’t visible, the sky is clear.",
+          "D": "If the sky is clear, we will take pictures.",
+          "correct_option": "If the sky is clear, we will take pictures."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers.  All mammals are warm-blooded. Whales are mammals. What can be concluded?",
+          "A": "Whales are fish.",
+          "B": "Whales are cold-blooded.",
+          "C": "Whales are warm-blooded.",
+          "D": "Whales do not live in water.",
+          "correct_option": "Whales are warm-blooded."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. No insects are mammals. A butterfly is an insect. What can be concluded?",
+          "A": "Butterflies are mammals.",
+          "B": "Butterflies are not mammals.",
+          "C": "Butterflies are both insects and mammals.",
+          "D": "Butterflies are not insects.",
+          "correct_option": "Butterflies are not mammals."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All squares are  rectangles. A shape is a square. What can be concluded?",
+          "A": "The shape is a circle.",
+          "B": "The shape is not a rectangle.",
+          "C": "The shape is a rectangle.",
+          "D": "The shape is a triangle.",
+          "correct_option": "The shape is a rectangle."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All birds can fly. A  penguin is not a bird. What can be concluded?",
+          "A": "Penguins can fly.",
+          "B": "Penguins cannot fly.",
+          "C": "Penguins are not birds.",
+          "D": "Penguins are mammals.",
+          "correct_option": "Penguins cannot fly."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All dogs are animals. Max is a dog. What can be concluded?",
+          "A": "Max is a cat.",
+          "B": "Max is an animal.",
+          "C": "Max is a mammal.",
+          "D": "Max is not an animal.",
+          "correct_option": "Max is an animal."
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you save money, you will be rich. If you are rich, you can buy a house. What is the conclusion?",
+          "A": "If you save money, you can buy a house.",
+          "B": "If you buy a house, you didn’t save money.",
+          "C": "If you are rich, you won’t buy a house.",
+          "D": "If you save money, you won’t buy a house.",
+          "correct_option": "If you save money, you can buy a house."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the dog barks, someone is at the door. If someone is at the door, I will open it. What is the conclusion?",
+          "A": "If the dog doesn’t bark, I will open the door.",
+          "B": "If I open the door, the dog didn’t bark.",
+          "C": "If the dog barks, I will open the door.",
+          "D": "If the dog barks, I won’t open the door.",
+          "correct_option": "If the dog barks, I will open the door."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the sky is clear, we will see stars. If we see stars, we will take pictures. What is the conclusion?",
+          "A": "If the sky is clear, we won’t see stars.",
+          "B": "If we take pictures, the sky isn’t clear.",
+          "C": "If the stars aren’t visible, the sky is clear.",
+          "D": "If the sky is clear, we will take pictures.",
+          "correct_option": "If the sky is clear, we will take pictures."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers.  All mammals are warm-blooded. Whales are mammals. What can be concluded?",
+          "A": "Whales are fish.",
+          "B": "Whales are cold-blooded.",
+          "C": "Whales are warm-blooded.",
+          "D": "Whales do not live in water.",
+          "correct_option": "Whales are warm-blooded."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. No insects are mammals. A butterfly is an insect. What can be concluded?",
+          "A": "Butterflies are mammals.",
+          "B": "Butterflies are not mammals.",
+          "C": "Butterflies are both insects and mammals.",
+          "D": "Butterflies are not insects.",
+          "correct_option": "Butterflies are not mammals."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All squares are  rectangles. A shape is a square. What can be concluded?",
+          "A": "The shape is a circle.",
+          "B": "The shape is not a rectangle.",
+          "C": "The shape is a rectangle.",
+          "D": "The shape is a triangle.",
+          "correct_option": "The shape is a rectangle."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All birds can fly. A  penguin is not a bird. What can be concluded?",
+          "A": "Penguins can fly.",
+          "B": "Penguins cannot fly.",
+          "C": "Penguins are not birds.",
+          "D": "Penguins are mammals.",
+          "correct_option": "Penguins cannot fly."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Solve categorical syllogism problems and choose the correct option from the multiple-choice answers. All dogs are animals. Max is a dog. What can be concluded?",
+          "A": "Max is a cat.",
+          "B": "Max is an animal.",
+          "C": "Max is a mammal.",
+          "D": "Max is not an animal.",
+          "correct_option": "Max is an animal."
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you save money, you will be rich. If you are rich, you can buy a house. What is the conclusion?",
+          "A": "If you save money, you can buy a house.",
+          "B": "If you buy a house, you didn’t save money.",
+          "C": "If you are rich, you won’t buy a house.",
+          "D": "If you save money, you won’t buy a house.",
+          "correct_option": "If you save money, you can buy a house."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the dog barks, someone is at the door. If someone is at the door, I will open it. What is the conclusion?",
+          "A": "If the dog doesn’t bark, I will open the door.",
+          "B": "If I open the door, the dog didn’t bark.",
+          "C": "If the dog barks, I will open the door.",
+          "D": "If the dog barks, I won’t open the door.",
+          "correct_option": "If the dog barks, I will open the door."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If the sky is clear, we will see stars. If we see stars, we will take pictures. What is the conclusion?",
+          "A": "If the sky is clear, we won’t see stars.",
+          "B": "If we take pictures, the sky isn’t clear.",
+          "C": "If the stars aren’t visible, the sky is clear.",
+          "D": "If the sky is clear, we will take pictures.",
+          "correct_option": "If the sky is clear, we will take pictures."
+        }
+      ]
+    },
+    {
+      "topic": "Conditional Syllogism",
+      "topic_question": [
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you practice, you will improve. If you improve, you will win the game. What is the conclusion?",
+          "A": "If you win the game, you didn’t practice.",
+          "B": "If you practice, you will win the game.",
+          "C": "If you don’t practice, you will win the game.",
+          "D": "If you improve, you won’t win the game.",
+          "correct_option": "If you practice, you will win the game."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:         If the water boils, it will evaporate. If it evaporates, there will be steam. What is the conclusion?",
+          "A": "If there is steam, the water won’t evaporate.",
+          "B": "If the water doesn’t boil, there will be steam.",
+          "C": "If the water boils, there will be steam.",
+          "D": "If the water evaporates, it won’t boil.",
+          "correct_option": "If the water boils, there will be steam."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If X is equal to Y and Y is greater than Z, what can we infer about X and Z?                             ",
+          "A": "X ≠ Z",
+          "B": "X < Z",
+          "C": "X = Z",
+          "D": "X > Z",
+          "correct_option": "X > Z"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If A is greater than B and B is less than C, what can we conclude about A and C?",
+          "A": "A ≠ C",
+          "B": "A < C",
+          "C": "A = C",
+          "D": "A > C",
+          "correct_option": "A > C"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If M is equal to N and N is less than O, what is the relationship between M and O?",
+          "A": "M ≠ O",
+          "B": "M > O",
+          "C": "M = O",
+          "D": "M < O",
+          "correct_option": "M < O"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If P is less than Q and Q is equal to R, what can we say about P and R?",
+          "A": "P = R",
+          "B": "P > R",
+          "C": "P < R",
+          "D": "P ≠ R",
+          "correct_option": "P > R"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you practice, you will improve. If you improve, you will win the game. What is the conclusion?",
+          "A": "If you win the game, you didn’t practice.",
+          "B": "If you practice, you will win the game.",
+          "C": "If you don’t practice, you will win the game.",
+          "D": "If you improve, you won’t win the game.",
+          "correct_option": "If you practice, you will win the game."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:         If the water boils, it will evaporate. If it evaporates, there will be steam. What is the conclusion?",
+          "A": "If there is steam, the water won’t evaporate.",
+          "B": "If the water doesn’t boil, there will be steam.",
+          "C": "If the water boils, there will be steam.",
+          "D": "If the water evaporates, it won’t boil.",
+          "correct_option": "If the water boils, there will be steam."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If X is equal to Y and Y is greater than Z, what can we infer about X and Z?                             ",
+          "A": "X ≠ Z",
+          "B": "X < Z",
+          "C": "X = Z",
+          "D": "X > Z",
+          "correct_option": "X > Z"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If A is greater than B and B is less than C, what can we conclude about A and C?",
+          "A": "A ≠ C",
+          "B": "A < C",
+          "C": "A = C",
+          "D": "A > C",
+          "correct_option": "A > C"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If M is equal to N and N is less than O, what is the relationship between M and O?",
+          "A": "M ≠ O",
+          "B": "M > O",
+          "C": "M = O",
+          "D": "M < O",
+          "correct_option": "M < O"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If P is less than Q and Q is equal to R, what can we say about P and R?",
+          "A": "P = R",
+          "B": "P > R",
+          "C": "P < R",
+          "D": "P ≠ R",
+          "correct_option": "P > R"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If you practice, you will improve. If you improve, you will win the game. What is the conclusion?",
+          "A": "If you win the game, you didn’t practice.",
+          "B": "If you practice, you will win the game.",
+          "C": "If you don’t practice, you will win the game.",
+          "D": "If you improve, you won’t win the game.",
+          "correct_option": "If you practice, you will win the game."
+        },
+        {
+          "difficulty_level": 1,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:         If the water boils, it will evaporate. If it evaporates, there will be steam. What is the conclusion?",
+          "A": "If there is steam, the water won’t evaporate.",
+          "B": "If the water doesn’t boil, there will be steam.",
+          "C": "If the water boils, there will be steam.",
+          "D": "If the water evaporates, it won’t boil.",
+          "correct_option": "If the water boils, there will be steam."
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If X is equal to Y and Y is greater than Z, what can we infer about X and Z?                             ",
+          "A": "X ≠ Z",
+          "B": "X < Z",
+          "C": "X = Z",
+          "D": "X > Z",
+          "correct_option": "X > Z"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If A is greater than B and B is less than C, what can we conclude about A and C?",
+          "A": "A ≠ C",
+          "B": "A < C",
+          "C": "A = C",
+          "D": "A > C",
+          "correct_option": "A > C"
+        },
+        {
+          "difficulty_level": 3,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If M is equal to N and N is less than O, what is the relationship between M and O?",
+          "A": "M ≠ O",
+          "B": "M > O",
+          "C": "M = O",
+          "D": "M < O",
+          "correct_option": "M < O"
+        },
+        {
+          "difficulty_level": 2,
+          "question": "Choose the best option from the given options to suit the final conclusion for the logical premises given below:          If P is less than Q and Q is equal to R, what can we say about P and R?",
+          "A": "P = R",
+          "B": "P > R",
+          "C": "P < R",
+          "D": "P ≠ R",
+          "correct_option": "P > R"
+        }
+      ]
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-01-05T09:47:29.861Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-05T09:47:29.861Z"
+  }
+}]

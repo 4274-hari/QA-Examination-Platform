@@ -1,0 +1,13 @@
+{
+  "batch": "2024-2028",
+  "cie": "I",
+  "subject": "QA/BS",
+  "subjectCode": "QA301",
+  "topics": {
+    "QA": ["Volume and Surface Area","Partnership"],
+    "BS":["Verbal Communication","Non-Verbal Communication","Email Etiquettes"]},
+  "date":  "2026-01-06",
+  "start": "08:15 PM",
+  "end": "10:00 AM",
+  "department": "ARTIFICIAL INTELLIGENCE AND DATA SCIENCE"
+}
