@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     VitePWA({
@@ -61,6 +61,11 @@ export default defineConfig({
       }
     })
   ],
+  // Use relative base for Electron (file://) so assets resolve
+  base: mode === "electron" ? "./" : "/",
+  build: {
+    outDir: "dist"
+  },
   server: {
     port: 5173,
     proxy: {
@@ -71,4 +76,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
