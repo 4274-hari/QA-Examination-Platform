@@ -280,7 +280,7 @@ const QuestionPage = () => {
     };
   }, []);
 
-  // VIOLATION TRACKING
+  // VIOLATION TRACKING - Electron IPC based detection
   const registerViolation = async (type, message) => {
     try {
       const res = await axios.post("/api/main-backend/exam/qa/session/violation", {
@@ -313,6 +313,71 @@ const QuestionPage = () => {
       console.error("Violation registration error:", err);
     }
   };
+
+  // ✅ ELECTRON IPC VIOLATION DETECTION
+  useEffect(() => {
+    // Check if running in Electron
+    const isElectron = window?.electronAPI || window?.appEnv?.isElectron;
+    
+    if (isElectron) {
+      // Listen for violations from Electron main process
+      if (window.electronAPI?.onViolation) {
+        window.electronAPI.onViolation((type, message) => {
+          registerViolation(type, message);
+        });
+      } else if (window.examSecurity?.onViolation) {
+        // Fallback to legacy API
+        window.examSecurity.onViolation((type) => {
+          registerViolation(type, 'System-level violation detected');
+        });
+      }
+    } else {
+      // Fallback: DOM-based detection for web version
+      // Fullscreen change detection
+      const onFullscreenChange = () => {
+        if (!document.fullscreenElement) {
+          registerViolation("fullscreenExit", "Exited fullscreen mode");
+          // Try to re-enter fullscreen
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      };
+
+      // Visibility change detection (tab switch)
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          registerViolation("tabSwitch", "Tab or window switch detected.");
+        }
+      };
+
+      // Window blur detection
+      let blurTimeout;
+      const onWindowBlur = () => {
+        blurTimeout = setTimeout(() => {
+          if (!document.hidden) {
+            registerViolation("tabSwitch", "Focus lost - Did you switch windows?");
+          }
+        }, 100);
+      };
+
+      const onWindowFocus = () => {
+        if (blurTimeout) clearTimeout(blurTimeout);
+      };
+
+      document.addEventListener("fullscreenchange", onFullscreenChange);
+      document.addEventListener("visibilitychange", onVisibilityChange);
+      window.addEventListener('blur', onWindowBlur);
+      window.addEventListener('focus', onWindowFocus);
+
+      return () => {
+        document.removeEventListener("fullscreenchange", onFullscreenChange);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        window.removeEventListener('blur', onWindowBlur);
+        window.removeEventListener('focus', onWindowFocus);
+        if (blurTimeout) clearTimeout(blurTimeout);
+      };
+    }
+  }, []);
+
 
   // BACK NAVIGATION BLOCKING
   useEffect(() => {
@@ -367,9 +432,10 @@ const QuestionPage = () => {
     };
   }, []);
 
-  // SELECTIVE KEYBOARD BLOCKING
+  // KEYBOARD BLOCKING - Selective dangerous keys only
   useEffect(() => {
     const blockDangerousKeys = (e) => {
+      // Block developer tools access
       if (
         e.key === "F12" ||
         (e.ctrlKey && e.shiftKey && e.key === "I") ||
@@ -380,11 +446,13 @@ const QuestionPage = () => {
         return false;
       }
 
+      // Block copy/paste/cut
       if (e.ctrlKey && ["c", "v", "x"].includes(e.key.toLowerCase())) {
         e.preventDefault();
         return false;
       }
 
+      // Register screenshot attempts
       if (e.key === "PrintScreen") {
         e.preventDefault();
         registerViolation("printScreen", "Screenshot attempt detected");
@@ -396,8 +464,12 @@ const QuestionPage = () => {
     return () => document.removeEventListener("keydown", blockDangerousKeys, true);
   }, []);
 
-  // FULLSCREEN ENFORCEMENT - Fixed to always show warning
+
+  // FULLSCREEN ENFORCEMENT - Web version only (Electron handles in main.js)
   useEffect(() => {
+    const isElectron = window?.electronAPI || window?.appEnv?.isElectron;
+    if (isElectron) return; // Skip for Electron - main.js handles it
+
     let isHandlingExit = false;
 
     const forceFullscreen = () => {
@@ -409,79 +481,23 @@ const QuestionPage = () => {
     // Enter fullscreen on first interaction
     document.addEventListener("click", forceFullscreen, { once: true });
 
-    const onFullscreenChange = () => {
-      if (!document.fullscreenElement && !isHandlingExit) {
-        isHandlingExit = true;
-
-        // 🚨 Register violation immediately
-        registerViolation(
-          "fullscreenExit",
-          "Exited fullscreen mode"
-        );
-
-        // 🔒 Force fullscreen back instantly
-        setTimeout(() => {
-          forceFullscreen();
-          isHandlingExit = false;
-        }, 200); // small delay to avoid browser race condition
-      }
-    };
-
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-
     return () => {
-      document.removeEventListener("fullscreenchange", onFullscreenChange);
-    };
-  }, [document.fullscreenElement]);
-
-  // TAB SWITCH vs WINDOW BLUR - Properly differentiated
-  useEffect(() => {
-    let blurTimeout;
-
-    const onWindowBlur = () => {
-      // Set a short timeout to distinguish between blur and visibility change
-      blurTimeout = setTimeout(() => {
-        // Only trigger if page is still visible (meaning it's window blur, not tab switch)
-        if (!document.hidden) {
-          registerViolation("tabSwitch", "Focus lost - Did you switch windows?");
-        }
-      }, 100); // Small delay to let visibility change event fire first
-    };
-
-    const onWindowFocus = () => {
-      // Clear timeout if focus returns quickly
-      if (blurTimeout) {
-        clearTimeout(blurTimeout);
-      }
-    };
-
-    window.addEventListener('blur', onWindowBlur);
-    window.addEventListener('focus', onWindowFocus);
-    
-    return () => {
-      window.removeEventListener('blur', onWindowBlur);
-      window.removeEventListener('focus', onWindowFocus);
-      if (blurTimeout) clearTimeout(blurTimeout);
+      document.removeEventListener("click", forceFullscreen);
     };
   }, []);
 
-  // ✅ TAB SWITCH DETECTION - Separate from window blur
-  useEffect(() => {
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        registerViolation("tabSwitch", "Tab or window switch detected.");
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
-
-  // PREVENT TEXT SELECTION
+  // PREVENT TEXT SELECTION & RIGHT CLICK
   useEffect(() => {
     const preventSelection = (e) => e.preventDefault();
+    const disableContextMenu = (e) => e.preventDefault();
+    
     document.addEventListener('selectstart', preventSelection);
-    return () => document.removeEventListener('selectstart', preventSelection);
+    document.addEventListener("contextmenu", disableContextMenu);
+    
+    return () => {
+      document.removeEventListener('selectstart', preventSelection);
+      document.removeEventListener("contextmenu", disableContextMenu);
+    };
   }, []);
 
   // SCREENSHOT DETECTION
