@@ -8,6 +8,8 @@ const {qa_form, getQaForm, qa_form_all_student} = require('../controllers/form_c
 const {pauseExamSession} = require("../controllers/staff_controllers/status_pause_controller");
 const {uploadStudentExcel} = require('../controllers/staff_controllers/uploadStudentExcel');
 const { uploadFile } = require("../controllers/question_controllers/question_store_controller");
+const { addSubject, deleteSubject, updateSubject } = require("../controllers/staff_controllers/form_handle_controller");
+const { Handlebatchstudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
 
 
 
@@ -19,6 +21,12 @@ router.get('/form', allowRoles("admin"), getQaForm )
 router.post('/get_register_no',allowRoles("admin"),qa_form);
 router.post("/get_all_register_no",allowRoles("admin"), qa_form_all_student);
 router.post('/result',allowRoles('admin'),exportMarks);
+router.post("/addsubject",allowRoles("admin"),addSubject);
+router.post("/updatesubject",allowRoles("admin"),updateSubject);
+router.post("/deletesubject",allowRoles("admin"),deleteSubject);
+router.post("/handlebatchstudent",allowRoles("admin"),Handlebatchstudent);
+router.post("/addstudent",allowRoles("admin"),addStudent);
+
 
 //exam session pause for student 
 router.post("/pause_exam", pauseExamSession);

@@ -129,6 +129,7 @@ async function activateExam(examId, validFrom, validTill) {
   await generateExam(
     exam.batch,
     exam.department,
+    exam.registerNo,
     exam.cie,
     exam.subject,
     exam.subjectCode,
