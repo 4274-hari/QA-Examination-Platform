@@ -19,7 +19,8 @@ async function storeExamSchedule(req, res) {
       topics,
       date,
       start,
-      end
+      end,
+      isRetest
     } = req.body;
   
 
@@ -76,6 +77,8 @@ async function storeExamSchedule(req, res) {
       cie,
       subject,
       subjectCode,
+
+      isRetest,
 
       topics,
 
