@@ -33,26 +33,58 @@ async function qa_form(req, res) {
   }
 }
 
-async function getQaForm(req, res) {
+async function getQaForm(req,res) {
   try {
     const db = getDb();
 
     const form_collection = db.collection("qa_form");
     const question_collection = db.collection("qa_question");
+    const student_collection = db.collection("student");
 
-    // Fetch batch, departments, subjects config
-    const [formData] = await form_collection.aggregate([
+const [formData] = await form_collection.aggregate([
+      {
+        $match: { type: "qa_details" }
+      },
       {
         $project: {
           _id: 0,
-          batch: "$data.batch",
           departments: "$data.departments",
           subjects: "$data.subjects"
         }
       }
     ]).toArray();
 
-    // Fetch subject → topics mapping
+    const batchResult = await student_collection.aggregate([
+      {
+        $addFields: {
+          startYear: {
+            $toInt: {
+              $arrayElemAt: [{ $split: ["$batch", "-"] }, 0]
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          maxYear: { $max: "$startYear" }
+        }
+      }
+    ]).toArray();
+
+    const maxYear = batchResult[0]?.maxYear;
+    const duration = 4;
+    const batch = [];
+
+    if (maxYear) {
+      for (let i = 3; i >= 0; i--) {
+        const start = maxYear - i;
+        const end = start + duration;
+        batch.push(`${start}-${end}`);
+      }
+    }
+
+
     const subjects = await question_collection.aggregate([
       {
         $project: {
@@ -64,20 +96,16 @@ async function getQaForm(req, res) {
     ]).toArray();
 
     res.status(200).json({
-      batch: formData?.batch || [],
+      batch,
       departments: formData?.departments || [],
       subjectList: formData?.subjects || [],
       subjects
     });
 
   } catch (error) {
-    console.error("GET /form error:", error);
-    res.status(500).json({
-      message: "Server Error",
-      error: error.message
-    });
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
 async function qa_form_all_student(req, res) {
   try {

@@ -201,7 +201,7 @@ if (now < validFrom || now > validTill) {
         examId: exam._id.toString(),
         subject: exam.subject,
         subjectCode: exam.subjectCode,
-        questions: result[0].questions,
+        questions: result[0]?.questions?.slice(0,1) || [],
         date: schedule.date,
         startTime: schedule.start,
         endTime: schedule.end,
