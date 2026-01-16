@@ -28,30 +28,18 @@ function shuffleQuestionOptions(question) {
 }
 
 function getRequiredDistribution(total) {
-  let l1 = Math.round(total * 0.4);
-  let l2 = Math.round(total * 0.4);
-  let l3 = Math.round(total * 0.2);
+  let l1 = Math.floor(total * 0.4);
+  let l2 = Math.floor(total * 0.4);
+  let l3 = Math.round(total * 0.2); 
 
   let remaining = total - (l1 + l2 + l3);
 
-  if (remaining > 0) {
-    l1 += 1;
-    remaining -= 1;
-  }
-
-  if (remaining > 0) {
-    l2 += 1;
-    remaining -= 1;
-  }
-  
-  if (remaining > 0) {
-    l3 += 1;
-    remaining -= 1;
-  }
+  if (remaining > 0) { l1++; remaining--; }
+  if (remaining > 0) { l2++; remaining--; }
+  if (remaining > 0) { l3++; remaining--; }
 
   return { 1: l1, 2: l2, 3: l3 };
 }
-
 
 function getQuestionKey(q) {
   const keyParts = [];
@@ -174,51 +162,52 @@ async function generateExam(
   date
 ) {
   try {
+
     if (!batch || !cie || !subject || !subjectCode || !topics) {
       throw new Error("Missing required fields");
     }
-
+    
     const db = getDb();
     const examCol = db.collection("qa_exam");
     const schedulecol = db.collection("qa_schedule");
     const questionCol = db.collection("qa_question");
-
+    
     await getSubjectQuestions(subject);
-
-
-const query = {
-  subject,
-  subjectCode,
-  cie,
-  department: department || null,
-  date
-};
-
-if (Array.isArray(registerno) && registerno.length > 0) {
-  query.registerNo = { $in: registerno };
-}
-
-const scheduleDoc = await schedulecol.findOne(query);
-
-if (!scheduleDoc) {
-  throw new Error("Exam schedule not found");
-}
-
-const studentMatch = department
-  ? { department, batch }   
-  : { registerno: { $in: registerno } };            
-
-const examDoc = await examCol.findOne({
-  scheduleId: scheduleDoc._id,
-  students: { $elemMatch: studentMatch }
-});
-
-if (!examDoc) {
-  throw new Error("Exam not found");
-}
-
+    
+    
+    const query = {
+      subject,
+      subjectCode,
+      cie,
+      department: department || null,
+      date
+    };
+    
+    if (Array.isArray(registerno) && registerno.length > 0) {
+      query.registerNo = { $in: registerno };
+    }
+    
+    const scheduleDoc = await schedulecol.findOne(query);
+    
+    if (!scheduleDoc) {
+      throw new Error("Exam schedule not found");
+    }
+    
+    const studentMatch = department
+    ? { department, batch }   
+    : { registerno: { $in: registerno } };            
+    
+    const examDoc = await examCol.findOne({
+      scheduleId: scheduleDoc._id,
+      students: { $elemMatch: studentMatch }
+    });
+    
+    if (!examDoc) {
+      throw new Error("Exam not found");
+    }
+    
     const subjects = subject.split("/").map((s) => s.trim());
-
+    
     if (subjects.length < 1 || subjects.length > 2) {
       throw new Error("Only 1 or 2 subjects supported");
     }
@@ -302,7 +291,7 @@ if (!examDoc) {
           subjectQuestions.push(...picked);
         });
 
-        questionsBySubject[sub] =shuffle(subjectQuestions).slice(0, totalForSubject);
+        questionsBySubject[sub] =shuffle(subjectQuestions);
 
       }
 

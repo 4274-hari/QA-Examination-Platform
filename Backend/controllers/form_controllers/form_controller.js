@@ -76,7 +76,7 @@ async function getQaForm(req, res) {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 async function  qaFormAllStudents(req, res) {
   try {
