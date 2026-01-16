@@ -45,6 +45,7 @@ async function createExamFromSchedule(scheduleId) {
   }
 
   if (students.length === 0) {
+    await scheduleCollection.deleteOne({ _id: scheduleId });
     throw new Error("No students found for this schedule");
   }
 

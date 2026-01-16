@@ -456,7 +456,7 @@ async function appendQuestionsToMongo(filetype, newExam) {
 }
 
 // ================= UPLOAD CONTROLLER =================
-const uploadFile = async (req, res) => {
+const uploadQuestion = async (req, res) => {
   let responded = false;
   const safeRespond = (status, body) => {
     if (!responded) {
@@ -576,4 +576,72 @@ const uploadFile = async (req, res) => {
   req.pipe(busboy);
 };
 
-module.exports = { uploadFile };
+
+async function deleteQuestion(req, res) {
+  try {
+    const db = getDb();
+    const question_collection = db.collection("qa_question");
+
+    const { subject_name, topic } = req.body;
+
+    if (!subject_name || !topic) {
+      return res.status(400).json({
+        success: false,
+        message: "subject_name and topic are required"
+      });
+    }
+
+    const result = await question_collection.updateOne(
+      { subject_name },
+      {
+        $pull: {
+          exam: { topic }
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Topic not found or already deleted"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Topic deleted successfully"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+const { fetchSubjectsWithTopics } = require('../../services/get_topics.service');
+
+async function getSubject(req, res) {
+  try {
+    const db = getDb();
+
+    const data = await fetchSubjectsWithTopics(db);
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+
+
+
+module.exports = { uploadQuestion , deleteQuestion , getSubject};
