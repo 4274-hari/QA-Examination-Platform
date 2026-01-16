@@ -1,6 +1,24 @@
+import { useState, useEffect } from 'react';
 import logo from '../../assets/NEWLOGO.png';
+import { User } from 'lucide-react';
+import { useLocation } from "react-router-dom"
 
-const AptitudeHeader = () => {
+const AptitudeHeader = ({ detailsFlag }) => {
+  const [student, setStudent] = useState({});
+  const location = useLocation();
+
+  useEffect(() => {
+    // Read student details from sessionStorage
+    const studentData = sessionStorage.getItem('studentDetails');
+    if (studentData) {
+      try {
+        setStudent(JSON.parse(studentData));
+      } catch (error) {
+        console.error('Error parsing student details:', error);
+      }
+    }
+  }, [location]);
+
   return (
     <>
       <nav className="fixed z-[100] w-full">
@@ -34,11 +52,25 @@ const AptitudeHeader = () => {
           </a>
 
           {/* Title */}
-          <div className="flex-grow text-center mr-[180px]">
+          <div className="flex-grow text-center">
             <h1 className="text-[1.7vmax] font-semibold text-amber-800 w-[80%] mx-auto">
               Aptitude Examination Portal
             </h1>
           </div>
+
+          {/* Student Details */}
+          {detailsFlag && (
+            <div className="flex items-center gap-3 mr-6 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 rounded-lg border border-amber-200 shadow-sm">
+              <div className="bg-amber-600 p-2 rounded-full">
+                <User size={20} className="text-white" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-gray-800">{student?.name}</p>
+                <p className="text-xs text-gray-600">{student?.registerno}</p>
+                <p className="text-xs text-gray-500">{student?.department} - {student?.batch}</p>
+              </div>
+            </div>
+          )}
         </div>
         <div className='hidden lg:flex px-4 pb-1.5 font-popp bg-secd text-text z-10 w-full h-[0.75rem] rounded-b-lg transition-all'></div>
       </nav>

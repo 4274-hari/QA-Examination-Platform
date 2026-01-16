@@ -26,7 +26,7 @@ async function pauseExamSession(req, res) {
     }
 
     // 3️⃣ If already paused (optional safeguard)
-    if (session.status === "PAUSED") {
+    if (session.status === "PAUSED" && session.isOnline === false) {
       return res.status(409).json({
         success: false,
         message: "Exam session is already paused"
@@ -39,6 +39,7 @@ async function pauseExamSession(req, res) {
       {
         $set: {
           status: "PAUSED",
+          isOnline: false,
           updatedAt: new Date()
         }
       }

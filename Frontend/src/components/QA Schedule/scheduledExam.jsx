@@ -20,7 +20,7 @@ const ScheduledExam = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responce = await axios.get("/api/main-backend/examiner/exam_code_view");
+        const responce = await axios.get("/api/main-backend/examiner/exam-code");
 
         setExamData(responce.data.exams);
         
@@ -70,7 +70,7 @@ const ScheduledExam = () => {
 
     try {
       const response = await axios.post(
-        "/api/main-backend/examiner/exam_schedule/cancel",
+        "/api/main-backend/examiner/exam-schedule/cancel",
         { scheduleId }
       );
 
@@ -132,19 +132,42 @@ const ScheduledExam = () => {
           <h1 className="text-2xl font-bold text-brwn mb-6">
             Today's Exam Schedule
           </h1>
-
-          <button
-              className="qa-logout-btn"
-              onClick={() => {
-                sessionStorage.removeItem("userSession");
-                navigate("/");
-              }}
-              title="Log out"
-              type="button"
+          
+          <div>
+            <button
+              onClick={() => navigate("/qasession")}
+              className="
+                inline-flex items-center gap-2
+                px-4 py-2
+                rounded-lg
+                border border-[#800000]/30
+                bg-white
+                text-[#800000]
+                text-sm font-medium
+                shadow-sm
+                hover:bg-[#800000]
+                hover:text-white
+                hover:border-[#800000]
+                transition-all duration-200
+                focus:outline-none focus:ring-2 focus:ring-[#800000]/30
+            "
             >
-              <Power size={18} />
-              <span>Logout</span>
-          </button>
+              Update Student Session
+              <span className="text-base">→</span>
+            </button>
+            <button
+                className="qa-logout-btn"
+                onClick={() => {
+                  sessionStorage.removeItem("userSession");
+                  navigate("/");
+                }}
+                title="Log out"
+                type="button"
+              >
+                <Power size={18} />
+                <span>Logout</span>
+            </button>
+          </div>
         </div>
 
         {/* Filters */}

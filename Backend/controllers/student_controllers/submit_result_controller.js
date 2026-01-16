@@ -67,14 +67,15 @@ async function qaResult(req, res) {
     );
 
     // 🧹 Update ONLY this exam session
-   await sessionCollection.updateOne(
-  { scheduleId: scheduleObjectId, registerno },
-  {
-    $set: {
-      status: "RESULT",
-    }
-  }
-);
+    await sessionCollection.updateOne(
+      { scheduleId: scheduleObjectId, registerno },
+      {
+        $set: {
+          status: "COMPLETED",
+          isOnline: false
+        }
+      }
+    );
 
 
     if (result.matchedCount === 0) {

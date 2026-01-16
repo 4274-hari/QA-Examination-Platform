@@ -51,8 +51,8 @@ const Schedule = () => {
           : { department: departments, batch: year }
 
         const url = isRetest
-          ? "/api/main-backend/examiner/get_all_register_no"
-          : "/api/main-backend/examiner/get_register_no"
+          ? "/api/main-backend/examiner/forms/register-number/all"
+          : "/api/main-backend/examiner/forms/register-number"
 
         const res = await axios.post(url, payload)
 
@@ -75,7 +75,7 @@ const Schedule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/api/main-backend/examiner/form")
+        const res = await axios.get("/api/main-backend/examiner/forms")
         const data = res.data
         setYears(data.batch || [])
         setDepartmentOptions(data.departments || "")
@@ -215,7 +215,7 @@ const Schedule = () => {
     })
 
     try {
-      const res = await fetch("/api/main-backend/examiner/exam_schedule", {
+      const res = await fetch("/api/main-backend/examiner/exam-schedule", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
