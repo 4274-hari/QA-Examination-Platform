@@ -8,7 +8,7 @@ const {qaForm, getQaForm, qaFormAllStudents} = require('../controllers/form_cont
 const {pauseExamSession} = require("../controllers/staff_controllers/status_pause_controller");
 const {uploadStudentExcel} = require('../controllers/staff_controllers/uploadStudentExcel');
 const { uploadQuestion, deleteQuestion,  getSubject } = require("../controllers/question_controllers/question_store_controller");
-const { addSubject, deleteSubject, updateSubject } = require("../controllers/staff_controllers/form_handle_controller");
+const { addSubject, deleteSubject} = require("../controllers/staff_controllers/subject_handle_controller");
 const { handleBatchStudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
 
 // ===========================
@@ -38,7 +38,6 @@ router.post("/results/export", allowRoles("admin"), exportMarks);
 // SUBJECT MANAGEMENT (ADMIN)
 // ===========================
 router.post("/subjects", allowRoles("admin"), addSubject);
-router.put("/subjects", allowRoles("admin"), updateSubject);
 router.delete("/subjects", allowRoles("admin"), deleteSubject);
 
 // ===========================
