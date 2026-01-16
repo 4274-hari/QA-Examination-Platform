@@ -26,6 +26,13 @@ async function heartbeat(req, res) {
     });
   }
 
+  if (session.status === "COMPLETED") {
+    return res.status(200).json({
+      status: "COMPLETED",
+      message: "Exam already completed"
+    });
+  }
+
   // 🔒 MULTIPLE TAB DETECTION (HERE)
 //   if (
 //     session.lastSeenAt &&

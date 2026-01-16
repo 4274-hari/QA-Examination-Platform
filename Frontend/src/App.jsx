@@ -33,6 +33,9 @@ const QAExamResults = React.lazy(() =>
 const ScheduledExam = React.lazy(() =>
   import("./components/QA Schedule/scheduledExam.jsx")
 );
+const StaffPage = React.lazy(() =>
+  import("./components/Staff/StaffPage")
+);
 
 const GlobalStyle = createGlobalStyle`
     /* Global Cursor Style */
@@ -69,10 +72,10 @@ const MainContentWrapper = styled.div`
   `;
 
 const App = () => {
-  
   const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
+  const [currentPath, setCurrentPath] = useState(location.pathname);
 
   // useGoogleAnalytics();
 
@@ -117,6 +120,12 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setCurrentPath(location.pathname); // Update state when route changes
+  }, [location]); 
+
+  const showStudentDetails = currentPath === "/QA/questions" || currentPath === "/QA/confirm";
+
   if (!isOnline) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -134,7 +143,7 @@ const App = () => {
         <Boot isAuth={isAuth} isLoaded={loaded} />
       )}
 
-        <AptitudeHeader />
+        <AptitudeHeader detailsFlag={showStudentDetails} />
         <MainContentWrapper id="main-content" className="overflow-y-auto h-full">
           <Suspense
             fallback={
@@ -168,6 +177,11 @@ const App = () => {
               <Route path="/qaresult" element={
                 <ProtectedRoute roles={['admin', 'staff']}>
                   <QAExamResults />
+                </ProtectedRoute>
+              } />
+              <Route path="/qasession" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <StaffPage />
                 </ProtectedRoute>
               } />
             </Routes>

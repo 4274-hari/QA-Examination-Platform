@@ -36,7 +36,7 @@ const QAExamResults = () => {
 
     try {
       const response = await axios.post(
-        "/api/main-backend/examiner/result",
+        "/api/main-backend/examiner/results/export",
         {
           cie: cieMap[filters.cie],
           batch: filters.batch,

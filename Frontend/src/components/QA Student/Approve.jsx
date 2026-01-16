@@ -39,6 +39,41 @@ export default function InstructionPage() {
     }
   }, [student]);
 
+  // ---------------- FULLSCREEN ENFORCEMENT WITH WARNING ----------------
+  useEffect(() => {
+    const enterFullscreenOnce = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => { });
+      }
+      document.removeEventListener("click", enterFullscreenOnce);
+    };
+
+    document.addEventListener("click", enterFullscreenOnce);
+
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        Swal.fire({
+          title: "Fullscreen Required",
+          text: "Please stay in fullscreen mode to continue the examination process.",
+          icon: "warning",
+          confirmButtonText: "Return to Fullscreen",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(() => {
+          document.documentElement.requestFullscreen().catch(() => { });
+        });
+      }
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+
+    return () => {
+      document.removeEventListener("click", enterFullscreenOnce);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+
+  }, []);
+
   const verifyCode = async () => {
     if (!/^[A-Z0-9]{6}$/.test(secretCode)) {
       setCodeError("Code must be 6 alphanumeric characters");
@@ -47,7 +82,7 @@ export default function InstructionPage() {
 
     try {
       setCodeLoading(true);
-      const response = await axios.post("/api/main-backend/student/validate-exam-code", { 
+      const response = await axios.post("/api/main-backend/student/exam-code/validate", { 
         code: secretCode,
       });
 

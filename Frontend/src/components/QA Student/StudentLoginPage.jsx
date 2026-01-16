@@ -27,10 +27,8 @@ export default function StudentLoginPage() {
     const fetchFormData = async () => {
       try {
         setIsLoadingData(true);
-        const response = await axios.get("/api/main-backend/auth/qastudentform");
+        const response = await axios.get("/api/main-backend/auth/students");
         const data = response.data;
-        
-        console.log(data);
         
         // Map full department names to short codes
         const deptMap = {
@@ -84,7 +82,7 @@ export default function StudentLoginPage() {
       "CSE(CS)": "CSE(CYBER SECURITY)",
     };
 
-    return axios.post("/api/main-backend/auth/studentlogin", {
+    return axios.post("/api/main-backend/auth/student/login", {
       registerno: formData.registerno,
       password: formData.password,
       department: deptMap[formData.department],
@@ -114,6 +112,11 @@ export default function StudentLoginPage() {
       setLoading(true);
       const res = await loginStudent();
       const data = res.data;
+
+      // ✅ Save student details to sessionStorage
+      if (data.student) {
+        sessionStorage.setItem('studentDetails', JSON.stringify(data.student));
+      }
 
       // ✅ PAUSED SESSION
       if (data.code === "SESSION_PAUSED" && data.canResume) {
@@ -176,6 +179,41 @@ export default function StudentLoginPage() {
       setLoading(false)
     }
   }
+
+  // ---------------- FULLSCREEN ENFORCEMENT WITH WARNING ----------------
+  useEffect(() => {
+    const enterFullscreenOnce = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => { });
+      }
+      document.removeEventListener("click", enterFullscreenOnce);
+    };
+
+    document.addEventListener("click", enterFullscreenOnce);
+
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        Swal.fire({
+          title: "Fullscreen Required",
+          text: "Please stay in fullscreen mode to continue the examination process.",
+          icon: "warning",
+          confirmButtonText: "Return to Fullscreen",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(() => {
+          document.documentElement.requestFullscreen().catch(() => { });
+        });
+      }
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+
+    return () => {
+      document.removeEventListener("click", enterFullscreenOnce);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+
+  }, []);
 
   useEffect(() => {
     const checkDevice = () => {

@@ -128,6 +128,10 @@ if (now < validFrom || now > validTill) {
           }
         ]).toArray();
 
+        // Calculate total questions based on exam type
+        const examType = schedule.cie || schedule.examType;
+        const totalQuestions = examType === "cie3" ? 100 : 50;
+
         return res.status(200).json({
           success: true,
           message: "Resuming your exam session.",
@@ -136,6 +140,8 @@ if (now < validFrom || now > validTill) {
             subject: exam.subject,
             subjectCode: exam.subjectCode,
             questions: result[0]?.questions || [],
+            totalQuestions: totalQuestions,
+            examType: examType,
             date: schedule.date,
             startTime: schedule.start,
             endTime: schedule.end,
@@ -191,6 +197,10 @@ if (now < validFrom || now > validTill) {
     }
 
     // 10. Return exam details (don't create session yet)
+    // Calculate total questions based on exam type
+    const examType = schedule.cie || schedule.examType;
+    const totalQuestions = examType === "cie3" ? 100 : 50;
+
     return res.status(200).json({
       success: true,
       message: "Exam code validated successfully. You are eligible to take this exam.",
@@ -202,6 +212,8 @@ if (now < validFrom || now > validTill) {
         subject: exam.subject,
         subjectCode: exam.subjectCode,
         questions: result[0]?.questions?.slice(0,1) || [],
+        totalQuestions: totalQuestions,
+        examType: examType,
         date: schedule.date,
         startTime: schedule.start,
         endTime: schedule.end,

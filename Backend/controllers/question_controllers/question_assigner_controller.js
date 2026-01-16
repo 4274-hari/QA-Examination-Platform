@@ -173,8 +173,8 @@ async function generateExam(
     const questionCol = db.collection("qa_question");
     
     await getSubjectQuestions(subject);
-    
-    
+
+
     const query = {
       subject,
       subjectCode,
@@ -182,30 +182,30 @@ async function generateExam(
       department: department || null,
       date
     };
-    
+
     if (Array.isArray(registerno) && registerno.length > 0) {
       query.registerNo = { $in: registerno };
     }
-    
+
     const scheduleDoc = await schedulecol.findOne(query);
-    
+
     if (!scheduleDoc) {
       throw new Error("Exam schedule not found");
     }
-    
+
     const studentMatch = department
-    ? { department, batch }   
-    : { registerno: { $in: registerno } };            
-    
+      ? { department, batch }   
+      : { registerno: { $in: registerno } };            
+
+    // Find exam by scheduleId only
     const examDoc = await examCol.findOne({
-      scheduleId: scheduleDoc._id,
-      students: { $elemMatch: studentMatch }
+      scheduleId: scheduleDoc._id
     });
-    
+
     if (!examDoc) {
       throw new Error("Exam not found");
     }
-    
+
     const subjects = subject.split("/").map((s) => s.trim());
     
     if (subjects.length < 1 || subjects.length > 2) {

@@ -6,6 +6,7 @@ const { allowRoles  } = require('../middlewares/role_access_middleware')
 const {exportMarks} = require('../controllers/staff_controllers/result_excel_controller');
 const {qaForm, getQaForm, qaFormAllStudents} = require('../controllers/form_controllers/form_controller');
 const {pauseExamSession} = require("../controllers/staff_controllers/status_pause_controller");
+const {getActiveSessions} = require("../controllers/staff_controllers/active_sessions_controller");
 const {uploadStudentExcel} = require('../controllers/staff_controllers/uploadStudentExcel');
 const { uploadQuestion, deleteQuestion,  getSubject } = require("../controllers/question_controllers/question_store_controller");
 const { addSubject, deleteSubject} = require("../controllers/staff_controllers/subject_handle_controller");
@@ -51,12 +52,13 @@ router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
 // EXAM SESSION CONTROL
 // ===========================
 router.post("/exam/pause", pauseExamSession);
+router.get("/exam/active-sessions", allowRoles("admin", "staff"), getActiveSessions);
 
 
 // ===========================
 // QUESTIONS
 // ===========================
-router.post("/questions", uploadQuestion);
+router.post("/questions/upload", uploadQuestion);
 router.delete("/questions", deleteQuestion);
 router.get("/questions/subjects", getSubject);
 

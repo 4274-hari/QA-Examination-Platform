@@ -7,7 +7,7 @@ const StudentBatchUploadPage = () => {
       title="Student New Batch Upload"
       description="Upload Excel file for creating new student batch in database"
       options={[]}
-      apiUrl="/api/main-backend/examiner/studentsupload"
+      apiUrl="/api/main-backend/examiner/students/upload"
       uploadFor="student"
     />
   );

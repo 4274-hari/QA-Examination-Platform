@@ -45,6 +45,7 @@ const QuestionPage = () => {
     fullscreenExit: violation.fullscreenExit || 0,
     tabSwitch: violation.tabSwitch || 0,
   });
+  const [examSubmitted, setExamSubmitted] = useState(false);
 
   const scrollRef = useRef(null);
   const circleRefs = useRef([]);
@@ -60,6 +61,9 @@ const QuestionPage = () => {
       navigate("/QA/qaexam", { replace: true });
     }
   }, [exam, student, navigate]);
+
+  // Get total questions from exam data or calculate based on exam type
+  const totalQuestions = exam?.totalQuestions || (exam?.examType === "cie3" ? 100 : 50);
 
   const questions = exam?.questions?.map((q, index) => ({
     id: index + 1,
@@ -152,6 +156,12 @@ const QuestionPage = () => {
   // HEARTBEAT CHECK
   useEffect(() => {
     const interval = setInterval(async () => {
+      // Stop heartbeat after exam submission
+      if (examSubmitted) {
+        clearInterval(interval);
+        return;
+      }
+
       try {
         await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
@@ -160,7 +170,7 @@ const QuestionPage = () => {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [examSubmitted]);
 
   // BEACON ON UNLOAD
   useEffect(() => {
@@ -555,6 +565,7 @@ const QuestionPage = () => {
       }).then(() => {
         // Clear local storage
         localStorage.removeItem("exam_data");
+        sessionStorage.removeItem("studentDetails");
         navigate("/QA/qaexam", { replace: true });
       });
     }
@@ -586,7 +597,7 @@ const QuestionPage = () => {
       setLoading(true);
       const currentQuestion = questions[current];
 
-      await axios.post("/api/main-backend/student/next", {
+      await axios.post("/api/main-backend/student/answers/next", {
         question: currentQuestion.question,
         choosedOption: selected[current],
         questionIndex: current,
@@ -619,8 +630,9 @@ const QuestionPage = () => {
 
     try {
       setLoading(true);
+      setExamSubmitted(true); // Stop heartbeat and other checks
 
-      const res = await axios.post("/api/main-backend/student/studentresult", {
+      const res = await axios.post("/api/main-backend/student/results", {
         scheduleId: exam.scheduleId
       });
 
@@ -657,6 +669,7 @@ const QuestionPage = () => {
         allowOutsideClick: false,
       }).then(() => {
         localStorage.removeItem("examSession");
+        sessionStorage.removeItem("studentDetails");
         navigate("/QA/qaexam", { replace: true });
       });
     } catch (error) {
@@ -730,7 +743,7 @@ const QuestionPage = () => {
             ))}
           </div>
           <div className="quest_button_area">
-            {current < questions.length - 1 ? (
+            {current < totalQuestions - 1 ? (
               <button className="quest_btn_next" onClick={nextQuestion} disabled={loading || !isOnline}>
                 {loading ? "Saving..." : "Next"}
               </button>
@@ -745,7 +758,7 @@ const QuestionPage = () => {
         <div className="quest_right">
           <h2 className="quest_progress_title">Progress</h2>
           <div className="quest_circles_scroll" ref={scrollRef}>
-            {questions.map((_, index) => (
+            {Array.from({ length: totalQuestions }, (_, index) => (
               <div
                 key={index}
                 ref={(el) => (circleRefs.current[index] = el)}
