@@ -39,7 +39,7 @@ async function signup(req, res) {
 }
 
 // 🔹 Login
-async function stafflogin(req, res) {
+async function staffLogin(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("staff");
@@ -72,7 +72,7 @@ async function stafflogin(req, res) {
 }
 
 
-async function studentlogin(req, res) {
+async function studentLogin(req, res) {
   try {
     const db = getDb();
     const studentCol = db.collection("student");
@@ -221,4 +221,4 @@ async function studentlogin(req, res) {
   }
 }
 
-module.exports = {signup , stafflogin , studentlogin}
+module.exports = {signup , staffLogin , studentLogin}

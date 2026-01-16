@@ -2,7 +2,7 @@ const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
 
 
-async function qaresult(req, res) {
+async function qaResult(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_exam");
@@ -93,4 +93,4 @@ async function qaresult(req, res) {
   }
 }
 
-module.exports = { qaresult };
+module.exports = { qaResult };
