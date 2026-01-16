@@ -8,11 +8,14 @@ import Swal from "sweetalert2";
 const ScheduledExam = () => {
   const [filters, setFilters] = useState({
     department: "",
-    year: "",
+    batch: "",
     time: "",
   });
   const [examData, setExamData] = useState([]);
   const navigate = useNavigate();
+
+  const departments = [...new Set(examData.map(e => e.department))];
+  const batches = [...new Set(examData.map(e => e.batch))];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,13 +32,24 @@ const ScheduledExam = () => {
     fetchData();
   }, [])
 
+  const getTimeSlot = (timeStr) => {
+    const [time, period] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (period === "PM" && hours !== 12) hours += 12;
+    if (period === "AM" && hours === 12) hours = 0;
+
+    const totalMinutes = hours * 60 + minutes;
+
+    return totalMinutes < 12 * 60 ? "Morning" : "Afternoon";
+  };
+
   const filteredExams = examData?.filter((exam) => {
-    const timeSlot =
-      exam.start < "12:00" ? "Morning" : "Afternoon";
+    const timeSlot = getTimeSlot(exam.start);
 
     return (
       (!filters.department || exam.department === filters.department) &&
-      (!filters.year || exam.year === filters.year) &&
+      (!filters.batch || exam.batch === filters.batch) &&
       (!filters.time || filters.time === timeSlot)
     );
   });
@@ -137,15 +151,15 @@ const ScheduledExam = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Select
             label="Department"
-            options={["CSE", "ECE", "MECH"]}
+            options={departments}
             value={filters.department}
             onChange={(v) => setFilters({ ...filters, department: v })}
           />
 
           <Select
             label="Year"
-            options={["1st Year", "2nd Year", "3rd Year", "4th Year"]}
-            value={filters.year}
+            options={batches}
+            value={filters.batch  }
             onChange={(v) => setFilters({ ...filters, year: v })}
           />
 
@@ -163,7 +177,7 @@ const ScheduledExam = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
-                <TableHead>Year</TableHead>
+                <TableHead>Batch</TableHead>
                 <TableHead>CIE</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Code</TableHead>
@@ -179,7 +193,7 @@ const ScheduledExam = () => {
             <tbody>
               {filteredExams.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="text-center py-6 text-gray-500">
+                  <td colSpan={session.role === "admin" ? 9 : 8} className="text-center py-6 text-gray-500">
                     No exams found
                   </td>
                 </tr>
@@ -191,7 +205,7 @@ const ScheduledExam = () => {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell>{exam.department}</TableCell>
-                  <TableCell>{exam.year}</TableCell>
+                  <TableCell>{exam.batch}</TableCell>
                   <TableCell>{exam.cie}</TableCell>
                   <TableCell>{exam.subject}</TableCell>
                   <TableCell>{exam.subjectCode}</TableCell>

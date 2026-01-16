@@ -1,0 +1,20 @@
+[{
+  "type": "qa_details",
+  "data": {
+    "subjects": [
+      {
+        "code": "QA204",
+        "name": "QA/VR"
+      },
+      {
+        "code": "QA301",
+        "name": "QA/BS"
+      },
+      {
+        "code": "QA210",
+        "name": "QA"
+      }
+    ]
+  }
+}
+]

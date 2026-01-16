@@ -8,6 +8,8 @@ async function storeExamSchedule(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_schedule");
+    
+    
 
    const {
       batch,
@@ -19,7 +21,8 @@ async function storeExamSchedule(req, res) {
       topics,
       date,
       start,
-      end
+      end,
+      isRetest
     } = req.body;
   
 
@@ -76,6 +79,8 @@ async function storeExamSchedule(req, res) {
       cie,
       subject,
       subjectCode,
+
+      isRetest,
 
       topics,
 

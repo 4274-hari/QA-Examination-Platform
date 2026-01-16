@@ -196,7 +196,8 @@ const Schedule = () => {
       topics,
       date,
       start,
-      end
+      end,
+      isRetest
     }
 
     if (!isRetest) {
@@ -382,16 +383,6 @@ const Schedule = () => {
             <h2 className="text-2xl font-bold text-brwn text-center flex-1">
               CIE Details Entry
             </h2>
-
-            {/* <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-700">Retest</label>
-              <input
-                type="checkbox"
-                checked={isRetest}
-                onChange={(e) => setIsRetest(e.target.checked)}
-                className="h-4 w-4 accent-[#800000] cursor-pointer"
-              />
-            </div> */}
           </div>
 
           <SearchableInput
