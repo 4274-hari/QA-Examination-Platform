@@ -166,6 +166,7 @@ function pickQuestionsWithBorrowing(topicPools, requiredCounts, ctx = {}) {
 async function generateExam(
   batch,
   department,
+  registerno,
   cie,
   subject,
   subjectCode,
@@ -173,25 +174,48 @@ async function generateExam(
   date
 ) {
   try {
-    if (!batch || !department || !cie || !subject || !subjectCode || !topics) {
+    if (!batch || !cie || !subject || !subjectCode || !topics) {
       throw new Error("Missing required fields");
     }
 
     const db = getDb();
     const examCol = db.collection("qa_exam");
+    const schedulecol = db.collection("qa_schedule");
     const questionCol = db.collection("qa_question");
 
     await getSubjectQuestions(subject);
 
-    const examDoc = await examCol.findOne({
-      subject,
-      subjectCode,
-      cie,
-      date,
-      students: { $elemMatch: { department, batch } },
-    });
 
-    if (!examDoc) throw new Error("Exam not found");
+const query = {
+  subject,
+  subjectCode,
+  cie,
+  department: department || null,
+  date
+};
+
+if (Array.isArray(registerno) && registerno.length > 0) {
+  query.registerNo = { $in: registerno };
+}
+
+const scheduleDoc = await schedulecol.findOne(query);
+
+if (!scheduleDoc) {
+  throw new Error("Exam schedule not found");
+}
+
+const studentMatch = department
+  ? { department, batch }   
+  : { registerno: { $in: registerno } };            
+
+const examDoc = await examCol.findOne({
+  scheduleId: scheduleDoc._id,
+  students: { $elemMatch: studentMatch }
+});
+
+if (!examDoc) {
+  throw new Error("Exam not found");
+}
 
     const subjects = subject.split("/").map((s) => s.trim());
 
