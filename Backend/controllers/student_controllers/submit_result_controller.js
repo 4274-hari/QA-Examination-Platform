@@ -67,13 +67,18 @@ async function qaResult(req, res) {
     );
 
     // 🧹 Update ONLY this exam session
-    const result = await sessionCollection.updateOne(
-      { scheduleId: scheduleObjectId, registerno },
-      { $set: { status: "COMPLETED", isOnline: false } }
-    );
+   await sessionCollection.updateOne(
+  { scheduleId: scheduleObjectId, registerno },
+  {
+    $set: {
+      status: "RESULT",
+    }
+  }
+);
+
 
     if (result.matchedCount === 0) {
-      console.log("No matching document found");
+      console.log("No matching session found");
     }
 
     res.json({
