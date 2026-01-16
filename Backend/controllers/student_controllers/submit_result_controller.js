@@ -2,7 +2,7 @@ const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
 
 
-async function qaresult(req, res) {
+async function qaResult(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_exam");
@@ -67,13 +67,18 @@ async function qaresult(req, res) {
     );
 
     // 🧹 Update ONLY this exam session
-    const result = await sessionCollection.updateOne(
-      { scheduleId: scheduleObjectId, registerno },
-      { $set: { status: "COMPLETED", isOnline: false } }
-    );
+   await sessionCollection.updateOne(
+  { scheduleId: scheduleObjectId, registerno },
+  {
+    $set: {
+      status: "RESULT",
+    }
+  }
+);
+
 
     if (result.matchedCount === 0) {
-      console.log("No matching document found");
+      console.log("No matching session found");
     }
 
     res.json({
@@ -93,4 +98,4 @@ async function qaresult(req, res) {
   }
 }
 
-module.exports = { qaresult };
+module.exports = { qaResult };

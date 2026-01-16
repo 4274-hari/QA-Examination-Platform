@@ -12,41 +12,12 @@ async function getStudent(req, res) {
 
     const departmentArray = departments.map(d => d.department);
 
-    const batchResult = await collection.aggregate([
-      {
-        $addFields: {
-          startYear: {
-            $toInt: {
-              $arrayElemAt: [{ $split: ["$batch", "-"] }, 0]
-            }
-          }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          maxYear: { $max: "$startYear" }
-        }
-      }
-    ]).toArray();
+   const batches = await collection.distinct("batch");
 
-    const maxYear = batchResult[0]?.maxYear;
-    if (!maxYear) {
-      return res.json({ departments: departmentArray, batches: [] });
-    }
-
-    const duration = 4;
-    const batchArray = [];
-
-    for (let i = 3; i >= 0; i--) {
-      const start = maxYear - i;
-      const end = start + duration;
-      batchArray.push(`${start}-${end}`);
-    }
 
     res.json({
       departments: departmentArray,
-      batches: batchArray
+      batches: batches
     }); 
 
   } catch (err) {

@@ -8,6 +8,8 @@ async function storeExamSchedule(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_schedule");
+    
+    
 
    const {
       batch,
@@ -32,19 +34,16 @@ async function storeExamSchedule(req, res) {
 
     const cie = cieMap[cieRoman]
 
-    const examDate = new Date(date);
-    const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
-    const currentDateIST = new Date(now.getTime() + istOffset);
-    examDate.setHours(0, 0, 0, 0);
-    currentDateIST.setHours(0, 0, 0, 0);
-    
-    if (examDate < currentDateIST) {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot schedule exam for past dates.  Please select current or future date."
-      });
-    }
+const examDateStr = date; // "2026-01-16"
+const todayStr = new Date().toISOString().split('T')[0];
+
+if (examDateStr < todayStr) {
+  return res.status(400).json({
+    success: false,
+    message: "Cannot schedule exam for past dates. Please select current or future date."
+  });
+}
+
 
     /* -----------------------------
        Validation

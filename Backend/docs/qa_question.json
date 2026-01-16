@@ -2,7 +2,7 @@
   "subject_name": "QA",
   "exam": [
     {
-      "topic": "Volume and Surface Area",
+      "topic": "VOLUME AND SURFACE AREA",
       "topic_question": [
         {
           "question": "What is the area of a rectangle with length 10 cm and breadth 6 cm?",
@@ -547,7 +547,7 @@
       ]
     },
     {
-      "topic": "Partnership",
+      "topic": "PARTNERSHIP",
       "topic_question": [
         {
           "question": "A and B enters into a partnership for a year. A contributes `1500 and B `2000. After 4 months, they admits C who contributes `2250. If B withdraws his contribution after 9 months, at the end of the year they share profit in the ratio:",
@@ -1106,7 +1106,7 @@
   "subject_name": "BS",
   "exam": [
     {
-      "topic": "Verbal Communication",
+      "topic": "VERBAL COMMUNICATION",
       "topic_question": [
         {
           "question": "What is the primary goal of verbal communication?",
@@ -1247,7 +1247,7 @@
       ]
     },
     {
-      "topic": "Non-Verbal Communication",
+      "topic": "NON-VERBAL COMMUNICATION",
       "topic_question": [
         {
           "question": "What is non-verbal communication?",
@@ -1387,7 +1387,7 @@
       ]
     },
     {
-      "topic": "Email Etiquettes",
+      "topic": "EMAIL ETIQUETTES",
       "topic_question": [
         {
           "question": "What is the primary purpose of email etiquette?",
@@ -1527,7 +1527,7 @@
       ]
     },
     {
-      "topic": "Online Professionalism",
+      "topic": "ONLINE PROFESSIONALISM",
       "topic_question": [
         {
           "question": "What is online professionalism?",
@@ -1667,7 +1667,7 @@
       ]
     },
     {
-      "topic": "Social Media Etiquettes",
+      "topic": "SOCIAL MEDIA ETIQUETTES",
       "topic_question": [
         {
           "question": "Social media etiquette mainly requires users to",
@@ -1762,7 +1762,7 @@
       ]
     },
     {
-      "topic": "Telephone Etiquettes",
+      "topic": "TELEPHONE ETIQUETTES",
       "topic_question": [
         {
           "question": "Why is answering a phone within 3 rings considered good etiquette?",
@@ -1859,13 +1859,10 @@
   ]
 },
 {
-  "_id": {
-    "$oid": "695b88b2dfe7f909a8ba9e81"
-  },
   "subject_name": "VR",
   "exam": [
     {
-      "topic": "Word Relationship",
+      "topic": "WORD RELATIONSHIP",
       "topic_question": [
         {
           "difficulty_level": 1,
@@ -1897,7 +1894,7 @@
       ]
     },
     {
-      "topic": "Logical Reasoning",
+      "topic": "LOGICAL REASONING",
       "topic_question": [
         {
           "difficulty_level": 2,
@@ -1929,7 +1926,7 @@
       ]
     },
     {
-      "topic": "Mirror Image / Pattern Recognition",
+      "topic": "MIRROR IMAGE / PATTERN RECOGNITION",
       "topic_question": [
         {
           "difficulty_level": 1,
@@ -1961,7 +1958,7 @@
       ]
     },
     {
-      "topic": "Analogy",
+      "topic": "ANALOGY",
       "topic_question": [
         {
           "difficulty_level": 3,
@@ -2236,7 +2233,7 @@
       ]
     },
     {
-      "topic": "Categorical Syllogism",
+      "topic": "CATEGORICAL SYLLOGISM",
       "topic_question": [
         {
           "difficulty_level": 1,
@@ -2457,7 +2454,7 @@
       ]
     },
     {
-      "topic": "Conditional Syllogism",
+      "topic": "CONDITIONAL SYLLOGISM",
       "topic_question": [
         {
           "difficulty_level": 3,
@@ -2623,11 +2620,5 @@
         }
       ]
     }
-  ],
-  "createdAt": {
-    "$date": "2026-01-05T09:47:29.861Z"
-  },
-  "updatedAt": {
-    "$date": "2026-01-05T09:47:29.861Z"
-  }
+  ]
 }]

@@ -1,6 +1,6 @@
 const { getDb } = require("../../config/db");
 
-async function Handlebatchstudent(req, res) {
+async function handleBatchStudent(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("student");
@@ -15,7 +15,7 @@ async function Handlebatchstudent(req, res) {
 
     if (!hasBatchDelete && !hasStudentDelete) {
       return res.status(400).json({
-        message: "No delete_batch or delete_student data provided",
+        message: "No Batch or Student data provided for Deletion",
       });
     }
 
@@ -126,4 +126,4 @@ async function addStudent(req, res) {
   }
 }
 
-module.exports = { Handlebatchstudent, addStudent };
+module.exports = { handleBatchStudent, addStudent };
