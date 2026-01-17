@@ -34,7 +34,7 @@ async function storeExamSchedule(req, res) {
 
     const cie = cieMap[cieRoman]
 
-const examDateStr = date; // "2026-01-16"
+const examDateStr = date; 
 const todayStr = new Date().toISOString().split('T')[0];
 
 if (examDateStr < todayStr) {
