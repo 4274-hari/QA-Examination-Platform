@@ -77,11 +77,6 @@ async function qaResult(req, res) {
       }
     );
 
-
-    if (result.matchedCount === 0) {
-      console.log("No matching session found");
-    }
-
     res.json({
       scheduleId,
       registerno,
