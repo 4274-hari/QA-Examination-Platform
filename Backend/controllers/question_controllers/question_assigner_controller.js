@@ -194,12 +194,13 @@ async function generateExam(
     }
 
     const studentMatch = department
-      ? { department, batch }   
-      : { registerno: { $in: registerno } };            
+      ? { "students.department":department,"students.batch": batch }   
+      : { "students.registerno": { $in: registerno } };            
 
     // Find exam by scheduleId only
     const examDoc = await examCol.findOne({
-      scheduleId: scheduleDoc._id
+      scheduleId: scheduleDoc._id,
+      ...studentMatch
     });
 
     if (!examDoc) {
