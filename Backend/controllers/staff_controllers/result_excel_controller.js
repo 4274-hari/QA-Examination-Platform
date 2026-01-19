@@ -101,7 +101,6 @@ async function exportMarks(req, res) {
         hint: "Exam documents may not have been created yet, or students haven't taken the exam"
       });
     }
-
     const allFileUrls = [];
 
     for (const examDoc of examDocs) {
@@ -377,7 +376,8 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
       index + 1,
       student.registerno || 'N/A',
       (student.name || 'N/A').toUpperCase(),
-      department
+      department,
+      student.section || 'N/A'
     ];
     
     if (! student.questions || ! Array.isArray(student.questions)) {
@@ -441,7 +441,8 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
     
     const grandTotal = firstSectionTotalMarks + qaTotalMarks;
     row.push(grandTotal);
-
+    const violations = student.violations || 0;
+    row.push(violations);
     return row;
   });
 
@@ -449,7 +450,8 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
     "S No",
     "Reg No",
     "NAME (BLOCK LETTERS)",
-    "Branch"
+    "Branch",
+    "Section"
   ];
   
   if (firstSectionCount > 0 && firstSectionLabel) {
@@ -466,7 +468,7 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
   });
   headers.push(`QA Total (${qaQuestionsCount})`);
   headers.push(`Total (${totalQuestions})`);
-
+  headers.push("Violations");
   const sheetData = [
     ["Subject Name", subjectName],
     ["Subject Code", subjectCode],
@@ -500,7 +502,8 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
   });
   columnWidths.push({ wch: 15 });
   columnWidths.push({ wch: 18 });
-  
+  columnWidths.push({ wch: 15 });
+
   worksheet['!cols'] = columnWidths;
 
   const workbook = xlsx.utils.book_new();
@@ -674,7 +677,8 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
       index + 1,
       student.registerno || 'N/A',
       (student.name || 'N/A').toUpperCase(),
-      student.department || 'UNKNOWN'
+      student.department || 'UNKNOWN',
+      student.section || 'N/A'
     ];
     
     if (!student.questions || ! Array.isArray(student.questions)) {
@@ -738,7 +742,8 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
     
     const grandTotal = firstSectionTotalMarks + qaTotalMarks;
     row.push(grandTotal);
-
+    const violations = student.violations || 0;
+    row.push(violations);
     return row;
   });
 
@@ -746,7 +751,8 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
     "S No",
     "REG NO.",
     "NAME (BLOCK LETTERS)",
-    "BRANCH"
+    "BRANCH",
+    "Section"
   ];
   
   if (firstSectionCount > 0 && firstSectionLabel) {
@@ -763,6 +769,7 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
   });
   headers.push(`QA Total (${qaQuestionsCount})`);
   headers.push(`Total (${totalQuestions})`);
+  headers.push("Violations");
 
   const sheetData = [
     ["Subject Name", subjectName],
@@ -782,7 +789,8 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
     { wch: 10 },
     { wch: 15 },
     { wch: 25 },
-    { wch: 40 }
+    { wch: 40 },
+    { wch: 12 }
   ];
   
   if (firstSectionCount > 0) {
@@ -797,15 +805,15 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
   });
   columnWidths.push({ wch: 15 });
   columnWidths.push({ wch: 18 });
-  
+  columnWidths.push({ wch: 15 });
   worksheet['!cols'] = columnWidths;
 
   const workbook = xlsx.utils.book_new();
   xlsx.utils.book_append_sheet(workbook, worksheet, "Marks");
 
   const excelBuffer = xlsx.write(workbook, {
-    bookType:  'xlsx',
-    type:  'buffer'
+    bookType: 'xlsx',
+    type: 'buffer'
   });
 
   const safeSubject = subjectName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "").replace(/\//g, "_");
