@@ -43,6 +43,7 @@ async function submitAnswer(req, res) {
     }
 
     const doc = await collection.findOne({
+      scheduleId:session.scheduleId,
       "students.registerno": registerno,
     });
 
@@ -102,7 +103,6 @@ async function submitAnswer(req, res) {
 
     if (nextQuestionRaw) {
       nextQuestion = {
-        questionIndex: nextQuestionIndex,
         question: nextQuestionRaw.question,
         A: nextQuestionRaw.A,
         B: nextQuestionRaw.B,
