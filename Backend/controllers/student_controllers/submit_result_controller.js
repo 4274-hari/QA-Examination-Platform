@@ -9,8 +9,8 @@ async function qaResult(req, res) {
     const sessionCollection = db.collection("qa_exam_sessions");
 
     if (!req.session.user) {
-  return res.status(401).json({ message: "Session expired / not logged in" });
-}
+      return res.status(401).json({ message: "Session expired / not logged in" });
+    }
 
     const { registerno } = req.session.user;
     
@@ -18,6 +18,9 @@ async function qaResult(req, res) {
 
     const scheduleObjectId = new ObjectId(scheduleId);
 
+    if (!ObjectId.isValid(scheduleId)) {
+      return res.status(400).json({ message: "Invalid scheduleId" });
+    }
 
     if (!scheduleId) {
       return res.status(400).json({
@@ -71,8 +74,16 @@ async function qaResult(req, res) {
       { scheduleId: scheduleObjectId, registerno },
       {
         $set: {
-          status: "COMPLETED",
-          isOnline: false
+          status: "RESULT"
+        }
+      }
+    );
+
+    const sessionDoc = await sessionCollection.findOne(
+      { scheduleId: scheduleObjectId, registerno },
+      {
+        projection: {
+          violations: 1,  // add extra details if needed
         }
       }
     );
@@ -85,7 +96,11 @@ async function qaResult(req, res) {
       batch: student.batch,
       subject: examDoc.subject,
       cie: examDoc.cie,
-      totalMarks
+      totalMarks,
+      violations: sessionDoc?.violations || {
+        fullscreenExit: 0,
+        tabSwitch: 0
+      },
     });
 
   } catch (err) {

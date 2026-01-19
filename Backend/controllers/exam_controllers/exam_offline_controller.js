@@ -86,16 +86,21 @@ async function getResumeData(req, res) {
     s => s.registerno === registerno
   );
 
-  const answers = {};
-  student.questions.forEach((q, index) => {
-    if (q.choosedOption) {
-      answers[index] = q.choosedOption;
-    }
-  });
+  // 🔥 ONLY questions already ATTEMPTED / SERVED
+  const answeredQuestions = student.questions
+    .slice(0, session.currentQuestionIndex + 1)
+    .map(q => ({
+      question: q.question,
+      A: q.A,
+      B: q.B,
+      C: q.C,
+      D: q.D,
+      selected: q.choosedOption || null
+    }));
 
   res.json({
     currentQuestionIndex: session.currentQuestionIndex,
-    selectedAnswers: answers
+    answeredQuestions
   });
 }
 
