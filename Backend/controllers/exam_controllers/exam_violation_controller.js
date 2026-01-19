@@ -54,7 +54,7 @@ async function registerViolation(req, res) {
 
   res.json({ 
     success: true, 
-    totalViolations: newtotal, 
+    totalViolations: total, 
     fullscreenExit: updatedSession.violations.fullscreenExit,
     tabSwitch: updatedSession.violations.tabSwitch
   });
