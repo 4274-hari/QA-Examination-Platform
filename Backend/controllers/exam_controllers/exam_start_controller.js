@@ -9,8 +9,6 @@ async function startExam(req, res) {
     const scheduleCollection = db.collection("qa_schedule");
 
     const { scheduleId, examId } = req.body;
-
-    console.log( scheduleId, examId);
     
     const user = req.session.user;
 
