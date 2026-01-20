@@ -121,55 +121,38 @@ const ScheduledExam = () => {
       headerText="office of controller of examinations"
       subHeaderText="COE"
     />
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between">
-          {session.role === "admin" && (
-            <button className="flex gap-2 justify-center items-center" onClick={() => navigate(-1)}>
-              <ArrowLeft size={16} /> Back
-            </button>
-          )}
-          <h1 className="text-2xl font-bold text-brwn mb-6">
-            Today's Exam Schedule
-          </h1>
-          
-          <div>
-            <button
-              onClick={() => navigate("/qasession")}
-              className="
-                inline-flex items-center gap-2
-                px-4 py-2
-                rounded-lg
-                border border-[#800000]/30
-                bg-white
-                text-[#800000]
-                text-sm font-medium
-                shadow-sm
-                hover:bg-[#800000]
-                hover:text-white
-                hover:border-[#800000]
-                transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-[#800000]/30
-            "
-            >
-              Update Student Session
-              <span className="text-base">→</span>
-            </button>
-            <button
-                className="qa-logout-btn"
-                onClick={() => {
-                  sessionStorage.removeItem("userSession");
-                  navigate("/");
-                }}
-                title="Log out"
-                type="button"
+         <div className="flex items-center justify-between w-full px-4 mt-4 mb-5">
+            {/* Back button */}
+            {session.role === "admin" ? (
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 text-sm font-medium"
               >
-                <Power size={18} />
-                <span>Logout</span>
+                <ArrowLeft size={16} />
+                Back
+              </button>
+            ) : <div />}
+
+            {/* Logout button */}
+            <button
+              onClick={() => {
+                sessionStorage.removeItem("userSession");
+                navigate("/");
+              }}
+              className="flex items-center ml-4 qa-logout-btn"
+              title="Logout"
+            >
+              <Power size={16} />
+              Logout
             </button>
           </div>
-        </div>
-
+          <div className="text-center mb-4">
+            <h1 className="text-lg sm:text-2xl font-bold text-brwn whitespace-nowrap">
+              Today's Exam Schedule
+            </h1>
+          </div>
         {/* Filters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Select
@@ -200,19 +183,23 @@ const ScheduledExam = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
-                <TableHead>Batch</TableHead>
+                {/* Mobile Exam Code */}
+                <TableHead className="md:hidden">
+                  Exam Code
+                </TableHead>
+                {/* <TableHead>Year</TableHead> */}
                 <TableHead>CIE</TableHead>
                 <TableHead>Subject</TableHead>
                 <TableHead>Code</TableHead>
                 <TableHead>Time</TableHead>
-                <TableHead>Exam Code</TableHead>
+                {/* Laptop Exam Code */}
+                <TableHead className="hidden md:table-cell">
+                  Exam Code
+                </TableHead>
                 <TableHead>Status</TableHead>
-                {session.role === "admin" && (
-                    <TableHead>Action</TableHead>
-                )}
+                {session.role === "admin" && <TableHead>Action</TableHead>}
               </tr>
             </thead>
-
             <tbody>
               {filteredExams.length === 0 && (
                 <tr>
@@ -228,19 +215,18 @@ const ScheduledExam = () => {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell>{exam.department}</TableCell>
-                  <TableCell>{exam.batch}</TableCell>
+                  {/* Mobile Exam Code */}
+                  <TableCell className="md:hidden font-semibold">
+                    {exam.examCode || "Will be scheduled"}
+                  </TableCell>
+                  {/* <TableCell>{exam.year}</TableCell> */}
                   <TableCell>{exam.cie}</TableCell>
                   <TableCell>{exam.subject}</TableCell>
                   <TableCell>{exam.subjectCode}</TableCell>
-                  <TableCell>
-                    {exam.start} - {exam.end}
-                  </TableCell>
-                  <TableCell className="font-semibold">
-                    {!exam.examCode ? (
-                      "Will be scheduled"
-                    ) : (
-                      <p className="m-0 p-0">{exam.examCode}</p>
-                    )}
+                  <TableCell>{exam.start} - {exam.end}</TableCell>
+                  {/* Laptop Exam Code */}
+                  <TableCell className="hidden md:table-cell font-semibold">
+                    {exam.examCode || "Will be scheduled"}
                   </TableCell>
                   <TableCell>
                     <span
@@ -269,7 +255,6 @@ const ScheduledExam = () => {
             </tbody>
           </table>
         </div>
-
         <p className="text-sm text-gray-500 mt-4 text-right">
           Showing {filteredExams.length} exams
         </p>
@@ -298,9 +283,9 @@ function Select({ label, options, value, onChange }) {
   );
 }
 
-function TableHead({ children }) {
+function TableHead({ children, className = "" }) {
   return (
-    <th className="px-4 py-3 font-semibold text-text">
+    <th className={`px-4 py-3 font-semibold text-text ${className}`}>
       {children}
     </th>
   );

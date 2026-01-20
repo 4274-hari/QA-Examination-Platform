@@ -33,7 +33,6 @@ async function viewExamCode(req, res) {
       department: exam.isRetest ? "Re-test" : exam.department,
       cie: exam.cie,
       subject: exam.subject,
-      subjectCode: exam.subjectCode,
       start: exam.start,
       end: exam.end,
       examCode: exam.examCode,
