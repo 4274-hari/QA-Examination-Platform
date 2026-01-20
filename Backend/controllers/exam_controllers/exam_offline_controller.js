@@ -128,7 +128,6 @@ async function getResumeQuestions(req, res) {
 
   res.json({
     subject: exam.subject,
-    subjectCode: exam.subjectCode,
     questions: student.questions.map(q => ({
       question: q.question,
       A: q.A,
