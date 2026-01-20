@@ -165,8 +165,24 @@ export default function StudentLoginPage() {
           confirmButtonColor: "#800000",
         });
         return;
+      } else if (error.response?.data?.code === "SESSION_COMPLETED") {
+        Swal.fire({
+          icon: "success",
+          title: "Already Exam Completed",
+          text: error.response?.data?.message,
+          confirmButtonColor: "#800000",
+        });
+        return;
+      } else if (error.response?.data?.code === "SESSION_TERMINATED") {
+        Swal.fire({
+          icon: "error",
+          title: "Exam Session Terminated",
+          text: error.response?.data?.message,
+          confirmButtonColor: "#800000",
+        });
+        return;
       }
-
+        
       Swal.fire({
         icon: "error",
         title: "Login Failed",

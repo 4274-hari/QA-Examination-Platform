@@ -23,15 +23,13 @@ const Schedule = () => {
   })
   const [regDropdownOpen, setRegDropdownOpen] = useState(false);
   const regRef = useRef(null)
-  const [subject, setSubject] = useState("")
-  const [subjectCode, setSubjectCode] = useState("")
+  const [qaSelected, setQaSelected] = useState("")
+  const [otherSubjects, setOtherSubjects] = useState("") 
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [examType, setExamType] = useState("")
   const [years, setYears] = useState([])
   const [departmentOptions, setDepartmentOptions] = useState([])
-  const [subjects, setSubjects] = useState([])
-  const [topicOptions, setTopicOptions] = useState([])
   const [studentRegs, setStudentRegs] = useState([])
   const [loadingRegs, setLoadingRegs] = useState(false)
   const [topics, setTopics] = useState({})
@@ -79,7 +77,6 @@ const Schedule = () => {
         const data = res.data
         setYears(data.batch || [])
         setDepartmentOptions(data.departments || "")
-        setSubjects(data.subjectList || [])
         setSubjectTopics(data.subjects || [])
 
       } catch (error) {
@@ -116,56 +113,43 @@ const Schedule = () => {
     setRegisterState({ mode: "none", values: [] })
   }, [year])
 
-  useEffect(() => {
-    if (!subject) {
-      setTopicOptions([])
-      setTopics([])
-      return
-    }
+  const qaSubject = useMemo(
+    () => subjectTopics.find(s => s.subject_name === "QA")?.subject_name || "",
+    [subjectTopics]
+  )
 
-    const selectedSubject = subjectTopics.find(
-      (s) => s.subject_name === subject
-    )
-
-    setTopicOptions(selectedSubject?.topics || [])
-    setTopics([]) 
-
-  }, [subject, subjectTopics])
-
-  const splitSubjects = useMemo(() => {
-    if (!subject) return []
-    return subject.split("/").map(s => s.trim())
-  }, [subject])
+  const remainingSubjects = useMemo(
+    () =>
+      subjectTopics
+        .filter(s => s.subject_name !== "QA")
+        .map(s => s.subject_name),
+    [subjectTopics]
+  )
+  
+  const selectedSubjects = useMemo(() => {
+    const subjects = []
+    if (qaSelected) subjects.push(qaSelected)
+    if (otherSubjects) subjects.push(otherSubjects)
+    return subjects
+  }, [qaSelected, otherSubjects])
 
   const getTopicsForSubject = (sub) => {
     return subjectTopics.find(s => s.subject_name === sub)?.topics || []
   }
 
   useEffect(() => {
-    if (!splitSubjects.length) {
+    if (!selectedSubjects.length) {
       setTopics({})
       return
     }
 
-    const initialTopics = {}
-    splitSubjects.forEach(sub => {
-      initialTopics[sub] = []
+    const initial = {}
+    selectedSubjects.forEach(sub => {
+      initial[sub] = []
     })
 
-    setTopics(initialTopics)
-  }, [splitSubjects])
-
-  const handleSubjectSelect = (name) => {
-    const sub = subjects.find((s) => s.name === name)
-    setSubject(name)
-    setSubjectCode(sub?.code || "")
-  }
-
-  const handleCodeSelect = (code) => {
-    const sub = subjects.find((s) => s.code === code)
-    setSubjectCode(code)
-    setSubject(sub?.name || "")
-  }
+    setTopics(initial)
+  }, [selectedSubjects])
 
   function parseTimeSlot(timeSlot) {
     if (!timeSlot) return { start: "", end: "" }
@@ -185,18 +169,27 @@ const Schedule = () => {
       return
     }
 
+    if (selectedSubjects.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Subject Required",
+        text: "Please select at least one subject",
+        confirmButtonColor: "#800000",
+      })
+      return
+    }
+
     const { start, end } = parseTimeSlot(time)
 
     const payload = {
       batch: year,
-      registerNo: registerState.values,
       cie: examType,
-      subject,
-      subjectCode,
-      topics,
+      subject: selectedSubjects,
+      registerNo: registerState.values,
       date,
       start,
       end,
+      topics,
       isRetest
     }
 
@@ -213,6 +206,9 @@ const Schedule = () => {
         Swal.showLoading()
       },
     })
+
+    console.log(payload);
+    
 
     try {
       const res = await fetch("/api/main-backend/examiner/exam-schedule", {
@@ -241,8 +237,8 @@ const Schedule = () => {
       setYear("")
       setDepartments("")
       setRegisterState({ mode: "none", values: [] })
-      setSubject("")
-      setSubjectCode("")
+      setQaSelected("")
+      setOtherSubjects("")
       setDate("")
       setTime("")
       setExamType("")
@@ -267,8 +263,9 @@ const Schedule = () => {
         subHeaderText="QA"
       />
 
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4">
-        <div className="mt-4 px-4 mb-2 flex justify-between items-center w-full">
+      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4 overflow-x-hidden">
+        <div className="mt-4 px-4 mb-2 w-full flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex justify-between items-center w-full md:w-auto">
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
             <Power size={16} className="text-slate-500" />
             <label className="text-sm font-medium text-slate-700">Retest Mode</label>
@@ -279,7 +276,20 @@ const Schedule = () => {
               className="h-4 w-4 accent-[#800000] cursor-pointer"
             />
           </div>
-          <div className="flex gap-1">
+           <button
+            className="qa-logout-btn md:hidden"
+            onClick={() => {
+              sessionStorage.removeItem("userSession");
+              navigate("/");
+            }}
+            title="Log out"
+            type="button"
+          >
+            <Power size={18} />
+            <span>Logout</span>
+          </button>
+          </div>
+          <div className="flex gap-1 grid grid-cols-2 gap-2 md:flex md:gap-1">
             <button
               onClick={() => navigate("/upload", { state: { page: "student" } })}
               className="
@@ -366,7 +376,7 @@ const Schedule = () => {
             </button>
           </div>
           <button
-            className="qa-logout-btn"
+            className="qa-logout-btn !hidden md:!flex"
             onClick={() => {
               sessionStorage.removeItem("userSession");
               navigate("/");
@@ -516,27 +526,26 @@ const Schedule = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <SearchableInput
-              label="Subject Code"
-              icon={Hash}
-              options={subjects.map((s) => s.code)}
-              value={subjectCode}
-              onChange={handleCodeSelect}
-              placeholder="Search code"
+              label="QA Subject"
+              icon={BookOpen}
+              options={qaSubject ? [qaSubject] : []}
+              value={qaSelected}
+              onChange={setQaSelected}
+              placeholder="Select QA"
             />
 
             <SearchableInput
-              label="Subject"
+              label="Other Subjects"
               icon={BookOpen}
-              options={subjects.map((s) => s.name)}
-              value={subject}
-              onChange={handleSubjectSelect}
-              placeholder="Search subject"
+              options={remainingSubjects}
+              value={otherSubjects}
+              onChange={setOtherSubjects}
+              placeholder="Select other subjects"
             />
-
           </div>
 
           <div>
-            {splitSubjects.map((sub) => (
+            {selectedSubjects.map((sub) => (
               <SearchableInput
                 key={sub}
                 label={`Topics - ${sub}`}
@@ -576,7 +585,10 @@ const Schedule = () => {
               icon={Clock}
               value={time}
               onChange={setTime}
-              type={examType}
+              type={{
+                examType,
+                subjectCount: selectedSubjects.length
+              }}
             />
           </div>
 

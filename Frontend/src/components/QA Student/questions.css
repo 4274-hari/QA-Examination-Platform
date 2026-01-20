@@ -1,7 +1,7 @@
 /* Layout */
 .quest_page {
   width: 100%;
-  /* min-height: 85vh; */
+  height: 75vh;
   display: flex;
   justify-content: space-between;
   padding: 20px;

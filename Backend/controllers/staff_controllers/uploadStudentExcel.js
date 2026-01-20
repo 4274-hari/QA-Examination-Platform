@@ -106,14 +106,9 @@ function formatDOB(dob) {
     // CASE 3: Check if it's a number (Excel serial)
     const numValue = parseFloat(dobString);
     if (!isNaN(numValue) && numValue > 10000 && numValue < 60000) {
-        // Only convert to date if it's in a reasonable range for DOB
-        // 10000 = 1927-05-18, 60000 = 2064-04-07
-        // This excludes small numbers like 1234
         const formatted = excelSerialToDate(numValue);
         return formatted;
     }
-    
-    // CASE 4: Return as-is for other formats (like "1234" or small numbers)
     return dobString || '01-01-1990';
 }
 // Helper function to check file extension
@@ -384,7 +379,7 @@ const uploadStudentExcel = async (req, res) => {
                             const programme = row['Programme'] || row['Program'] || row['programme'] || row['program'] || '';
                             const batch = row['Batch'] || row['batch'] || '';
                             const dob = row['Date of Birth'] || row['DOB'] || row['dob'] || row['Date Of Birth'] || '';
-
+                            const section = row['Sec'] || row['Section'] || row['section'] || row['SEC'] || '';
 
                             if (!registerNo) {
                                 console.error(`   ❌ Missing register number`);
@@ -418,8 +413,8 @@ const uploadStudentExcel = async (req, res) => {
                                 phone: mobile ? String(mobile).trim() : '',
                                 password: formatDOB(dob),
                                 department: extractDepartment(programme),
-                                year: 2,
-                                batch: batch ? String(batch).trim() : ''
+                                batch: batch ? String(batch).trim() : '',
+                                section: section ? String(section).trim() : ''
                             };
 
                             studentsToInsert.push(studentDoc);
