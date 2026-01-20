@@ -205,7 +205,7 @@ async function generateExam(
       throw new Error("Exam not found");
     }
 
-    const subjects = subject.split("/").map((s) => s.trim());
+    const subjects = subject.map(s => s.trim());
     
     if (subjects.length < 1 || subjects.length > 2) {
       throw new Error("Only 1 or 2 subjects supported");
