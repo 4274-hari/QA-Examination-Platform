@@ -267,8 +267,9 @@ const Schedule = () => {
         subHeaderText="QA"
       />
 
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4">
-        <div className="mt-4 px-4 mb-2 flex justify-between items-center w-full">
+      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4 overflow-x-hidden">
+        <div className="mt-4 px-4 mb-2 w-full flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex justify-between items-center w-full md:w-auto">
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
             <Power size={16} className="text-slate-500" />
             <label className="text-sm font-medium text-slate-700">Retest Mode</label>
@@ -279,7 +280,20 @@ const Schedule = () => {
               className="h-4 w-4 accent-[#800000] cursor-pointer"
             />
           </div>
-          <div className="flex gap-1">
+           <button
+            className="qa-logout-btn md:hidden"
+            onClick={() => {
+              sessionStorage.removeItem("userSession");
+              navigate("/");
+            }}
+            title="Log out"
+            type="button"
+          >
+            <Power size={18} />
+            <span>Logout</span>
+          </button>
+          </div>
+          <div className="flex gap-1 grid grid-cols-2 gap-2 md:flex md:gap-1">
             <button
               onClick={() => navigate("/upload", { state: { page: "student" } })}
               className="
@@ -366,7 +380,7 @@ const Schedule = () => {
             </button>
           </div>
           <button
-            className="qa-logout-btn"
+            className="qa-logout-btn !hidden md:!flex"
             onClick={() => {
               sessionStorage.removeItem("userSession");
               navigate("/");
