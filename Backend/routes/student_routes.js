@@ -14,7 +14,7 @@ router.post("/answers/next", submitAnswer);
 router.post("/results", qaResult);
 
 // Complete status
-router.post("/completed",closeResult)
+router.post("/complete",closeResult)
 
 // Validate exam code
 router.post("/exam-code/validate", validateExamCode);
