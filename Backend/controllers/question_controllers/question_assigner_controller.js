@@ -157,13 +157,12 @@ async function generateExam(
   registerno,
   cie,
   subject,
-  subjectCode,
   topics,
   date
 ) {
   try {
 
-    if (!batch || !cie || !subject || !subjectCode || !topics) {
+    if (!batch || !cie || !subject  || !topics) {
       throw new Error("Missing required fields");
     }
     
@@ -177,7 +176,6 @@ async function generateExam(
 
     const query = {
       subject,
-      subjectCode,
       cie,
       department: department || null,
       date
