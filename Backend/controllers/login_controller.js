@@ -152,7 +152,7 @@ async function studentLogin(req, res) {
 
     const blockedSession = await sessionCol.findOne({
       registerno,
-      status: { $in: ["TERMINATED", "COMPLETED"] }
+      status: { $in: ["TERMINATED", "COMPLETED", "FINISHED", "RESULT"] }
     });
 
     if(blockedSession){
@@ -173,7 +173,7 @@ async function studentLogin(req, res) {
            }
          });
        }
-       else if (blockedSession.status === "COMPLETED") {
+       else if (blockedSession.status === "COMPLETED" || blockedSession.status === "FINISHED" || blockedSession.status === "RESULT" ) {
          // Session is completed - dont allow recovery
          return res.status(403).json({
            success: false,

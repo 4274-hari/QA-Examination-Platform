@@ -132,7 +132,6 @@ async function activateExam(examId, validFrom, validTill) {
     exam.registerNo,
     exam.cie,
     exam.subject,
-    exam.subjectCode,
     exam.topics,
     exam.date
   );

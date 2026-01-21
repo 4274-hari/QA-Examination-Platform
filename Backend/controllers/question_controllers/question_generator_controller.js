@@ -60,9 +60,9 @@ async function getSubjectQuestions(subjectName) {
     const db = getDb();
     const collection = db.collection("qa_question");
 
-    const subjects = subjectName.includes("/")
-      ? subjectName.split("/")
-      : [subjectName];
+    const subjects = Array.isArray(subjectName)
+  ? subjectName.map(s => s.trim())
+  : subjectName.split("/").map(s => s.trim());
 
     const results = [];
 

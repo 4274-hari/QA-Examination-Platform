@@ -64,7 +64,6 @@ async function exportMarks(req, res) {
         incompleteSchedules.push({
           scheduleId: schedule._id. toString(),
           subject: schedule.subject,
-          subjectCode: schedule.subjectCode,
           department: schedule.department,
           date: schedule.date,
           startTime: schedule.start,
@@ -239,7 +238,6 @@ function constructDateTimeIST(dateString, timeString) {
 
 async function generateSingleDepartmentExcel(examDoc, students, department, scheduleId) {
   const subjectName = examDoc.subject;
-  const subjectCode = examDoc.subjectCode;
   const cie = examDoc. cie;
   const batch = examDoc.batch;
 
@@ -471,7 +469,6 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
   headers.push("Violations");
   const sheetData = [
     ["Subject Name", subjectName],
-    ["Subject Code", subjectCode],
     ["CIE", cie.toUpperCase()],
     ["Batch", batch],
     ["Department", department],
@@ -535,7 +532,6 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
 
 async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, departments, scheduleId) {
   const subjectName = examDoc.subject;
-  const subjectCode = examDoc.subjectCode;
   const cie = examDoc.cie;
   const batch = examDoc.batch;
 
@@ -773,7 +769,6 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
 
   const sheetData = [
     ["Subject Name", subjectName],
-    ["Subject Code", subjectCode],
     ["CIE", cie.toUpperCase()],
     ["Batch", batch],
     ["Departments", departments. join(", ")],
