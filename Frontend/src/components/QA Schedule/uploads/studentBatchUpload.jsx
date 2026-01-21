@@ -24,6 +24,7 @@ const StudentBatchUploadPage = () => {
       apiUrl="/api/main-backend/examiner/students/upload"
       uploadFor="student"
       instructions={instructions}
+      enableBatchDelete={true}
     />
   );
 };
