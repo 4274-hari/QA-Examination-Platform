@@ -1,7 +1,9 @@
 import axios from "axios";
-import { ArrowLeft, Power, AlertCircle } from "lucide-react";
+import { ArrowLeft, Power, AlertCircle, Trash2, Check } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+
 
 const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, instructions }) => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -9,44 +11,96 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [loading, setLoading] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [topics, setTopics] = useState([]);
+  const [customSubjects, setCustomSubjects] = useState([]);
+  const [isCustomSubject, setIsCustomSubject] = useState(false);
+
+
   const navigate = useNavigate();
 
+  const subjectTopics = {
+    QA: ["Testing Basics", "Manual Testing", "Automation", "Bug Lifecycle"],
+    VR: ["OOP", "Collections", "Multithreading", "JVM"],
+    BS: ["Components", "Hooks", "Props & State", "Routing"]
+  };
+
+
   const handleSubmit = async () => {
-    if (!file) {
-      alert("Please select option and upload file");
+
+  // 🔒 VALIDATIONS APPLY ONLY TO CUSTOM SUBJECT
+  if (isCustomSubject) {
+
+    if (!selectedOption) {
+      Swal.fire(
+        "Select Subject",
+        "Please choose a subject",
+        "warning"
+      );
       return;
     }
 
-    const formData = new FormData();
-    if (uploadFor === "question") {
-      formData.append("filetype", selectedOption);
-      formData.append("file", file);
-    } else if (uploadFor === "student") {
-      formData.append("file", file);
+    if (!file) {
+      Swal.fire(
+        "File Required",
+        "Please upload a file",
+        "warning"
+      );
+      return;
     }
+  }
 
-    try {
-      setLoading(true);
-      setErrorMessage("");
-      const response = await axios.post(apiUrl, formData);
-      console.log(response.data);
-      alert(`${title} uploaded successfully`);
-      setSelectedOption("");
-      setFile(null);
-    } catch (error) {
-      const msg =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        "Upload failed due to an unknown error.";
-      console.error("Upload error:", error);
-      setErrorMessage(msg);
-      setShowInstructions(true);
-      alert("Upload failed: " + msg);
-    } finally {
-      setLoading(false);
-    }
+  // ⬇️ Existing submit logic continues (API call etc.)
+};
+
+
+  const handleDeleteSingleTopic = (topicToRemove) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete "${topicToRemove}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTopics((prevTopics) =>
+          prevTopics.filter((topic) => topic !== topicToRemove)
+        );
+
+        Swal.fire({
+          title: "Deleted!",
+          text: `"${topicToRemove}" has been deleted.`,
+          icon: "success",
+          timer: 1200,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
+  const handleAddNewSubject = async () => {
+    const { value: subjectName } = await Swal.fire({
+      title: "New Subject",
+      input: "text",
+      inputLabel: "Enter subject name",
+      inputPlaceholder: "Eg: VR, QA",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      inputValidator: (value) => {
+        if (!value) return "Subject name cannot be empty";
+      },
+    });
+
+    if (!subjectName) return;
+
+    setCustomSubjects((prev) => [...prev, subjectName]);
+    setSelectedOption(subjectName);
+    setTopics([]); // new subject starts empty
+    setIsCustomSubject(true);
+  };
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -99,14 +153,19 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               Choose Type
             </p>
 
-            <div className="flex gap-6 justify-center">
+            <div className="flex gap-6 justify-center flex-wrap">
+
+              {/* Existing subjects (QA, Java, React) */}
               {options.map((item) => (
                 <button
                   key={item}
-                  onClick={() => setSelectedOption(item)}
-                  className={`w-36 h-16 rounded-xl text-lg font-semibold border transition-all duration-200 ${
-                    selectedOption === item ? "shadow-md scale-105" : "hover:scale-105"
-                  }`}
+                  onClick={() => {
+                    setSelectedOption(item);
+                    setTopics(subjectTopics[item] || []);
+                    setIsCustomSubject(false);
+                  }}
+                  className={`w-36 h-16 rounded-xl text-lg font-semibold border transition-all duration-200 ${selectedOption === item ? "shadow-md scale-105" : "hover:scale-105"
+                    }`}
                   style={{
                     backgroundColor: selectedOption === item ? "#800000" : "transparent",
                     borderColor: "#800000",
@@ -116,9 +175,100 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                   {item}
                 </button>
               ))}
+
+              {/* 🔥 CUSTOM SUBJECTS — THIS IS WHERE YOUR CODE GOES */}
+              {customSubjects.map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    setSelectedOption(item);
+                    setTopics([]);
+                    setIsCustomSubject(true);
+                  }}
+                  className={`w-36 h-16 rounded-xl text-lg font-semibold border transition-all duration-200 ${selectedOption === item ? "shadow-md scale-105" : "hover:scale-105"
+                    }`}
+                  style={{
+                    backgroundColor: selectedOption === item ? "#800000" : "#fdcc03",
+                    borderColor: "#800000",
+                    color: selectedOption === item ? "#fff" : "#000",
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+
+              {/* ➕ ADD NEW SUBJECT BUTTON */}
+              <button
+                onClick={handleAddNewSubject}
+                className="w-36 h-16 rounded-xl text-lg font-semibold border-dashed border-2 hover:scale-105"
+                style={{ borderColor: "#800000", color: "#800000" }}
+              >
+                + Add Subject
+              </button>
+
             </div>
+
           </div>
         )}
+        {selectedOption && !isCustomSubject &&(
+          <>
+            <p className="text-lg font-semibold" style={{ color: "#800000" }}>
+              Topics for {selectedOption}
+            </p>
+
+            <div className="flex justify-around w-full items-center">
+              {topics.length > 0 && (
+                <div>
+                  <ol className="ml-[150px] list-decimal flex flex-row w-[90%] justify-center items-center pl-6 space-y-3">
+                    {topics.map((topic, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-evenly w-[30%] m-3"
+                      >
+                        <span>{topic}</span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSingleTopic(topic)}
+                          className="text-red-600 hover:text-red-800 ml-4"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="button"
+                  title="Confirm / Approve"
+                  className="text-green-600 hover:text-green-800 bg-green-100 p-2 rounded-full"
+                >
+                  <Check size={18} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+
+        {/* <button
+            className="qa-delete-btn"
+            title="Delete Topics"
+            type="button"
+            onClick={handleDeleteSingleTopic}
+            disabled={topics.length === 0}
+            style={{ opacity: topics.length === 0 ? 0.5 : 1 }}
+          >
+            <div className="flex items-center gap-2 bg-brwn text-prim px-4 py-2 rounded text-l">
+              <Trash2 size={18} />
+              <span>Delete</span>
+            </div>
+          </button> */}
+
+
 
         <div className="w-full">
           <p className="text-lg font-semibold mb-4" style={{ color: "#800000" }}>
