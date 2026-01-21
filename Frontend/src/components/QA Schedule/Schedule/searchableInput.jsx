@@ -160,6 +160,15 @@ export function MultiSearchDropdown({
       <div className="relative border rounded-md min-h-[48px]
         flex flex-wrap items-center gap-2 px-3">
         <Icon className="w-4 h-4 text-slate-400" />
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOpen(true)
+          }}
+          placeholder={placeholder}
+          className="flex-1 outline-none text-sm"
+        />
 
         {value.map((v) => (
           <span key={v} className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
@@ -174,15 +183,7 @@ export function MultiSearchDropdown({
           </span>
         ))}
 
-        <input
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setOpen(true)
-          }}
-          placeholder={placeholder}
-          className="flex-1 outline-none text-sm"
-        />
+
       </div>
 
       {open && (
@@ -276,10 +277,10 @@ export function Dropdown({ label, icon: Icon, value, onChange, type }) {
                 </option>
               ))
             : EXAM_TYPE.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
         </select>
       </div>
     </div>

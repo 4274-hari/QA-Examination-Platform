@@ -7,6 +7,7 @@ import {
   Calendar,
   Clock,
   Power,
+  ListChecks,
 } from "lucide-react"
 import { Dropdown, MultiSearchDropdown, SearchableInput } from "./searchableInput"
 import Banner from "../../Banner"
@@ -535,12 +536,12 @@ const Schedule = () => {
             />
 
             <SearchableInput
-              label="Other Subjects"
+              label="English Subject"
               icon={BookOpen}
               options={remainingSubjects}
               value={otherSubjects}
               onChange={setOtherSubjects}
-              placeholder="Select other subjects"
+              placeholder="Select English subject"
             />
           </div>
 
@@ -549,7 +550,7 @@ const Schedule = () => {
               <SearchableInput
                 key={sub}
                 label={`Topics - ${sub}`}
-                icon={Building2}
+                icon={BookOpen}
                 options={getTopicsForSubject(sub)}
                 value={topics[sub] || []}
                 onChange={(selected) =>
@@ -575,7 +576,7 @@ const Schedule = () => {
             
             <Dropdown
               label="Exam Type"
-              icon={GraduationCap}
+              icon={ListChecks}
               value={examType}
               onChange={setExamType}
             />
