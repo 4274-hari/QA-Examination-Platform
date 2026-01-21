@@ -45,7 +45,7 @@ router.delete("/subjects", allowRoles("admin"), deleteSubject);
 // ===========================
 // STUDENT MANAGEMENT (ADMIN)
 // ===========================
-router.post("/students/batch", allowRoles("admin"), handleBatchStudent);
+router.delete("/students/batch", allowRoles("admin"), handleBatchStudent);
 router.post("/students", allowRoles("admin"), addStudent);
 router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
 
@@ -59,9 +59,9 @@ router.get("/exam/active-sessions", allowRoles("admin", "staff"), getActiveSessi
 // ===========================
 // QUESTIONS
 // ===========================
-router.post("/questions/upload", uploadQuestion);
-router.delete("/questions", deleteQuestion);
-router.get("/questions/subjects", getSubject);
+router.post("/questions/upload", allowRoles("admin"), uploadQuestion);
+router.delete("/topics", allowRoles("admin"), deleteQuestion);
+router.get("/questions/subjects", allowRoles("admin"), getSubject);
 
 
 

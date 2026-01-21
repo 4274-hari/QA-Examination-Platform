@@ -30,23 +30,19 @@ const toSuperscript = (value) =>
 export const formatMathText = (text = "") => {
   let formatted = text;
 
-  // 1️⃣ Normalize π
   formatted = formatted.replace(/\bpi\b/gi, "π");
   
   formatted = convertNestedSqrt(formatted);
 
-  // 3️⃣ Convert powers: x^n, a^12 → xⁿ, a¹²
   formatted = formatted.replace(/\^([a-zA-Z0-9+\-=]+)/g, (_, power) =>
     toSuperscript(power)
   );
 
-  // 4️⃣ Mixed fractions: 3 1/2 → 3½
   formatted = formatted.replace(
     /(\d+)\s+(1\/2|1\/3|2\/3|1\/4|3\/4)/g,
     (_, whole, frac) => `${whole}${fractionMap[frac]}`
   );
 
-  // 5️⃣ Normal fractions: (a/b) → (a⁄b)
   formatted = formatted.replace(/\((\d+)\s*\/\s*(\d+)\)/g, "($1⁄$2)");
 
   // 6️⃣ Units

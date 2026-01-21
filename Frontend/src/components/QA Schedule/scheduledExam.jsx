@@ -336,7 +336,7 @@ const ScheduledExam = () => {
                   </TableCell>
                   <TableCell>{exam.batch}</TableCell>
                   <TableCell>{exam.cie}</TableCell>
-                  <TableCell>{exam.subject}</TableCell>
+                  <TableCell>{Array.isArray(exam.subject) ? exam.subject.join("/") : exam.subject}</TableCell>
                   <TableCell>{exam.start} - {exam.end}</TableCell>
                   {/* Laptop Exam Code */}
                   <TableCell className="hidden md:table-cell font-semibold">
