@@ -16,7 +16,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState("");
   const [studentRegs, setStudentRegs] = useState("");
-  const [batch, setBatch] = useState([]);
+  const [batchList, setBatchList] = useState([]);
   const [mode, setMode] = useState("upload"); 
   const [studentForm, setStudentForm] = useState({
     name: "",
@@ -31,14 +31,18 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     setSubjects(options)
   }, [options])
 
-  useEffect(async () => {
-    try {
-      const res = await axios.get("/api/main-backend/examiner/forms");
-      setBatch(res.data.batch)
-    } catch (error) {
-      console.error("Error fetching the Student Batch", error);
-    }
-  }, [])
+    useEffect(() => {
+    const fetchBatch = async () => {
+      try {
+        const res = await axios.get("/api/main-backend/examiner/forms");
+        setBatchList(res.data.batch);
+      } catch (error) {
+        console.error("Error fetching the Student Batch", error);
+      }
+    };
+
+    fetchBatch();
+  }, []);
   
 
   const handleSubmit = async () => {
@@ -574,15 +578,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               <select
                 // multiple
                 value={batchToDelete}
-                onChange={(e) =>
-                  setBatchToDelete(
-                    Array.from(e.target.selectedOptions, (option) => option.value)
-                  )
-                }
+                onChange={(e) => setBatchToDelete(e.target.value)}
                 className="border p-3 rounded"
               >
                 
-                {["Select Batch To Delete", ...batch].map((b) => (
+                {["Select Batch To Delete", ...batchList].map((b) => (
                   <option key={b} value={b}>
                     {b}
                   </option>
@@ -590,11 +590,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               </select>
 
               <input
-                type="text"
-                placeholder="Register numbers (comma separated, optional)"
-                value={studentRegs}
-                onChange={(e) => setStudentRegs(e.target.value)}
-                className="border p-3 rounded"
+                // type="text"
+                // placeholder="Register numbers (comma separated, optional)"
+                // value={studentRegs}
+                // onChange={(e) => setStudentRegs(e.target.value)}
+                // className="border p-3 rounded"
               />
 
               <button
