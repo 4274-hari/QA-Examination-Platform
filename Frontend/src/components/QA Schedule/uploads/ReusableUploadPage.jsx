@@ -16,6 +16,10 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState("");
   const [studentRegs, setStudentRegs] = useState("");
+<<<<<<< HEAD
+=======
+  const [batchList, setBatchList] = useState([]);
+>>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
   const [mode, setMode] = useState("upload"); 
   const [studentForm, setStudentForm] = useState({
     name: "",
@@ -29,6 +33,23 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   useEffect(() => {
     setSubjects(options)
   }, [options])
+<<<<<<< HEAD
+=======
+
+    useEffect(() => {
+    const fetchBatch = async () => {
+      try {
+        const res = await axios.get("/api/main-backend/examiner/forms");
+        setBatchList(res.data.batch);
+      } catch (error) {
+        console.error("Error fetching the Student Batch", error);
+      }
+    };
+
+    fetchBatch();
+  }, []);
+  
+>>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
 
   const handleSubmit = async () => {
     // 🔒 VALIDATIONS APPLY ONLY TO CUSTOM SUBJECT
@@ -75,7 +96,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       const response = await axios.post(apiUrl, formData);
       Swal.fire({
         title: "Success!",
+<<<<<<< HEAD
         text: `"${selectedOption}" has been uploaded Successfully.`,
+=======
+        text:  response.data.message || `"${selectedOption}" has been uploaded Successfully.`,
+>>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
         icon: "success",
         timer: 1200,
         showConfirmButton: false,
@@ -388,7 +413,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
           <div className="flex gap-4 my-6">
             {[
               { key: "upload", label: "Upload Excel" },
-              { key: "add", label: "Add Student" },
+              // { key: "add", label: "Add Student" },
               { key: "delete", label: "Delete Student / Batch" }
             ].map(item => (
               <button
@@ -560,20 +585,26 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
 
             <div className="flex flex-col gap-4">
 
-              <input
-                type="text"
-                placeholder="Batch (e.g. 2024-2028)"
+              <select
+                // multiple
                 value={batchToDelete}
                 onChange={(e) => setBatchToDelete(e.target.value)}
                 className="border p-3 rounded"
-              />
+              >
+                
+                {["Select Batch To Delete", ...batchList].map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
 
               <input
-                type="text"
-                placeholder="Register numbers (comma separated, optional)"
-                value={studentRegs}
-                onChange={(e) => setStudentRegs(e.target.value)}
-                className="border p-3 rounded"
+                // type="text"
+                // placeholder="Register numbers (comma separated, optional)"
+                // value={studentRegs}
+                // onChange={(e) => setStudentRegs(e.target.value)}
+                // className="border p-3 rounded"
               />
 
               <button
