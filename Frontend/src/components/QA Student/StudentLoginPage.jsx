@@ -344,7 +344,7 @@ export default function StudentLoginPage() {
             <label>Department*</label>
           </div>
 
-          <div className={`input-group ${formData.year ? "has-value" : ""}`}>
+          <div className={`input-group mt-4 mb-4 ${formData.year ? "has-value" : ""}`}>
             <select
               name="year"
               value={formData.year}

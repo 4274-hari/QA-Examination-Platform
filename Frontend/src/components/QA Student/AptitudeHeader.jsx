@@ -52,7 +52,7 @@ const AptitudeHeader = ({ detailsFlag }) => {
           </a>
 
           {/* Title */}
-          <div className="flex-grow text-center">
+         <div className="flex-grow text-center mr-0 md:mr-[180px]">
             <h1 className="text-[1.7vmax] font-semibold text-amber-800 w-[80%] mx-auto">
               Aptitude Examination Portal
             </h1>
@@ -71,6 +71,7 @@ const AptitudeHeader = ({ detailsFlag }) => {
               </div>
             </div>
           )}
+        
         </div>
         <div className='hidden lg:flex px-4 pb-1.5 font-popp bg-secd text-text z-10 w-full h-[0.75rem] rounded-b-lg transition-all'></div>
       </nav>

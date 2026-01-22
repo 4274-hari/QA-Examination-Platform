@@ -30,10 +30,9 @@ async function viewExamCode(req, res) {
     const response = exams.map(exam => ({
       scheduleId: exam._id,
       batch: exam.batch,
-      department: exam.isRetest ? "Re-test" : exam.department,
-      cie: exam.cie,
+      department: exam.isRetest ? "Re-Test" : exam.department,
+      cie: exam.cie.toUpperCase(),
       subject: exam.subject,
-      subjectCode: exam.subjectCode,
       start: exam.start,
       end: exam.end,
       examCode: exam.examCode,

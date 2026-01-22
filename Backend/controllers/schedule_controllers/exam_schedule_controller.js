@@ -17,7 +17,6 @@ async function storeExamSchedule(req, res) {
       registerNo,
       cie: cieRoman,
       subject,
-      subjectCode,
       topics,
       date,
       start,
@@ -34,7 +33,7 @@ async function storeExamSchedule(req, res) {
 
     const cie = cieMap[cieRoman]
 
-const examDateStr = date; // "2026-01-16"
+const examDateStr = date; 
 const todayStr = new Date().toISOString().split('T')[0];
 
 if (examDateStr < todayStr) {
@@ -49,7 +48,7 @@ if (examDateStr < todayStr) {
        Validation
     ----------------------------- */
 
-    if (!batch || !cie || !subject || !subjectCode || !date || !start || !end || !topics) {
+    if (!batch || !cie || !subject  || !date || !start || !end || !topics) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields"
@@ -75,7 +74,6 @@ if (examDateStr < todayStr) {
 
       cie,
       subject,
-      subjectCode,
 
       isRetest,
 
@@ -136,7 +134,7 @@ if (existingSchedule) {
 
     scheduleExamActivation({
       ...scheduleDoc,
-      _id: result.insertedId,batch, department, cie, subject, subjectCode, topics, date
+      _id: result.insertedId,batch, department, cie, subject, topics, date
     });
 
     /* -----------------------------

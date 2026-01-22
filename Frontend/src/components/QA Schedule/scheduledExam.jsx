@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Banner from "../Banner";
-import { ArrowLeft, Power } from "lucide-react";
+import { ArrowLeft, Pause, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
@@ -16,6 +16,50 @@ const ScheduledExam = () => {
 
   const departments = [...new Set(examData.map(e => e.department))];
   const batches = [...new Set(examData.map(e => e.batch))];
+  const [regNo, setRegNo] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handlePauseExam = async () => {
+    if (!regNo) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Register Number",
+        text: "Please enter a valid register number",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        "api/main-backend/examiner/exam/pause",
+        { registerno: regNo }
+      );
+
+      if (response.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Exam Paused",
+          text: `Student session paused successfully`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        setRegNo("");
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text:
+          error.response?.data?.message ||
+          "Unable to pause exam session",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,20 +165,21 @@ const ScheduledExam = () => {
       headerText="office of controller of examinations"
       subHeaderText="COE"
     />
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between">
-          {session.role === "admin" && (
-            <button className="flex gap-2 justify-center items-center" onClick={() => navigate(-1)}>
-              <ArrowLeft size={16} /> Back
-            </button>
-          )}
-          <h1 className="text-2xl font-bold text-brwn mb-6">
-            Today's Exam Schedule
-          </h1>
-          
-          <div>
-            <button
+         <div className="flex items-center justify-between w-full px-4 mt-4 mb-5">
+            {/* Back button */}
+            {session.role === "admin" ? (
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-2 text-sm font-medium"
+              >
+                <ArrowLeft size={16} />
+                Back
+              </button>
+            ) : <div />}
+
+             {/* <button
               onClick={() => navigate("/qasession")}
               className="
                 inline-flex items-center gap-2
@@ -154,22 +199,76 @@ const ScheduledExam = () => {
             >
               Update Student Session
               <span className="text-base">→</span>
-            </button>
-            <button
-                className="qa-logout-btn"
+            </button> */}
+
+            <div className="flex items-center">
+              <div className="flex flex-col items-center gap-3 bg-white border border-[#800000]/30 rounded-xl px-4 py-2 shadow-sm">
+                <div className="flex items-center mb-2">
+                  <span className="text-[#800000] text-sm font-bold flex items-center gap-2 tracking-wide">
+                    <Pause size={16} /> Pause Individual Student Exam
+                  </span>
+                </div>
+                <div className="gap-2 flex">
+                  <input
+                    type="number"
+                    placeholder="Enter Register No"
+                    className="
+                      w-52
+                      px-4 py-2.5
+                      text-sm
+                      font-medium
+                      border-2 border-gray-300
+                      rounded-lg
+                      focus:border-[#800000]
+                      focus:ring-2 focus:ring-[#800000]/30
+                      shadow-inner
+                    "
+                    value={regNo}
+                    onChange={(e) => setRegNo(e.target.value)}
+                  />
+
+                  <button
+                    onClick={handlePauseExam}
+                    disabled={loading}
+                    className={`
+                      px-5 py-2.5
+                      rounded-lg
+                      text-sm font-semibold
+                      text-white
+                      bg-[#800000]
+                      hover:bg-[#660000]
+                      shadow-md
+                      hover:shadow-lg
+                      active:scale-95
+                      transition
+                      disabled:opacity-60
+                      disabled:cursor-not-allowed
+                    `}
+                  >
+                    {loading ? "Pausing..." : "Pause Exam"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Logout button */}
+              <button
                 onClick={() => {
                   sessionStorage.removeItem("userSession");
                   navigate("/");
                 }}
-                title="Log out"
-                type="button"
-              >
-                <Power size={18} />
-                <span>Logout</span>
-            </button>
+                className="flex items-center ml-4 qa-logout-btn h-fit"
+                title="Logout"
+                >
+                <Power size={16} />
+                Logout
+              </button>
+            </div>
           </div>
-        </div>
-
+          <div className="text-center mb-4">
+            <h1 className="text-lg sm:text-2xl font-bold text-brwn whitespace-nowrap">
+              Today's Exam Schedule
+            </h1>
+          </div>
         {/* Filters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Select
@@ -200,19 +299,22 @@ const ScheduledExam = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
+                {/* Mobile Exam Code */}
+                <TableHead className="md:hidden">
+                  Exam Code
+                </TableHead>
                 <TableHead>Batch</TableHead>
                 <TableHead>CIE</TableHead>
                 <TableHead>Subject</TableHead>
-                <TableHead>Code</TableHead>
                 <TableHead>Time</TableHead>
-                <TableHead>Exam Code</TableHead>
+                {/* Laptop Exam Code */}
+                <TableHead className="hidden md:table-cell">
+                  Exam Code
+                </TableHead>
                 <TableHead>Status</TableHead>
-                {session.role === "admin" && (
-                    <TableHead>Action</TableHead>
-                )}
+                {session.role === "admin" && <TableHead>Action</TableHead>}
               </tr>
             </thead>
-
             <tbody>
               {filteredExams.length === 0 && (
                 <tr>
@@ -228,19 +330,17 @@ const ScheduledExam = () => {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell>{exam.department}</TableCell>
+                  {/* Mobile Exam Code */}
+                  <TableCell className="md:hidden font-semibold">
+                    {exam.examCode || "Will be scheduled"}
+                  </TableCell>
                   <TableCell>{exam.batch}</TableCell>
                   <TableCell>{exam.cie}</TableCell>
-                  <TableCell>{exam.subject}</TableCell>
-                  <TableCell>{exam.subjectCode}</TableCell>
-                  <TableCell>
-                    {exam.start} - {exam.end}
-                  </TableCell>
-                  <TableCell className="font-semibold">
-                    {!exam.examCode ? (
-                      "Will be scheduled"
-                    ) : (
-                      <p className="m-0 p-0">{exam.examCode}</p>
-                    )}
+                  <TableCell>{Array.isArray(exam.subject) ? exam.subject.join("/") : exam.subject}</TableCell>
+                  <TableCell>{exam.start} - {exam.end}</TableCell>
+                  {/* Laptop Exam Code */}
+                  <TableCell className="hidden md:table-cell font-semibold">
+                    {exam.examCode || "Will be scheduled"}
                   </TableCell>
                   <TableCell>
                     <span
@@ -269,7 +369,6 @@ const ScheduledExam = () => {
             </tbody>
           </table>
         </div>
-
         <p className="text-sm text-gray-500 mt-4 text-right">
           Showing {filteredExams.length} exams
         </p>
@@ -298,9 +397,9 @@ function Select({ label, options, value, onChange }) {
   );
 }
 
-function TableHead({ children }) {
+function TableHead({ children, className = "" }) {
   return (
-    <th className="px-4 py-3 font-semibold text-text">
+    <th className={`px-4 py-3 font-semibold text-text ${className}`}>
       {children}
     </th>
   );
