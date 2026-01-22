@@ -16,10 +16,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState("");
   const [studentRegs, setStudentRegs] = useState("");
-<<<<<<< HEAD
-=======
   const [batchList, setBatchList] = useState([]);
->>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
   const [mode, setMode] = useState("upload"); 
   const [studentForm, setStudentForm] = useState({
     name: "",
@@ -33,8 +30,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   useEffect(() => {
     setSubjects(options)
   }, [options])
-<<<<<<< HEAD
-=======
 
     useEffect(() => {
     const fetchBatch = async () => {
@@ -49,7 +44,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     fetchBatch();
   }, []);
   
->>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
 
   const handleSubmit = async () => {
     // 🔒 VALIDATIONS APPLY ONLY TO CUSTOM SUBJECT
@@ -96,11 +90,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       const response = await axios.post(apiUrl, formData);
       Swal.fire({
         title: "Success!",
-<<<<<<< HEAD
-        text: `"${selectedOption}" has been uploaded Successfully.`,
-=======
         text:  response.data.message || `"${selectedOption}" has been uploaded Successfully.`,
->>>>>>> 466ab51f8d0bce6540b179efc6346bef04284f69
         icon: "success",
         timer: 1200,
         showConfirmButton: false,
