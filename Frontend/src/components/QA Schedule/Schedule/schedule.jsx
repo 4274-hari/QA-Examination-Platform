@@ -16,7 +16,6 @@ import Swal from "sweetalert2"
 import axios from "axios"
 
 const Schedule = () => {
-  const [year, setYear] = useState("")
   const [departments, setDepartments] = useState("")
   const [registerState, setRegisterState] = useState({
     mode: "none", // none | partial | all
@@ -25,7 +24,7 @@ const Schedule = () => {
   const [regDropdownOpen, setRegDropdownOpen] = useState(false);
   const regRef = useRef(null)
   const [qaSelected, setQaSelected] = useState("")
-  const [otherSubjects, setOtherSubjects] = useState("") 
+  const [otherSubjects, setOtherSubjects] = useState("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [examType, setExamType] = useState("")
@@ -36,18 +35,22 @@ const Schedule = () => {
   const [topics, setTopics] = useState({})
   const [subjectTopics, setSubjectTopics] = useState([])
   const [isRetest, setIsRetest] = useState(false)
+  const [normalBatch, setNormalBatch] = useState("")
+  const [retestBatch, setRetestBatch] = useState("")
+  const activeBatch = isRetest ? retestBatch : normalBatch
+  const [resetKey, setResetKey] = useState(0)
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!year) return
+    if (!activeBatch) return
 
     const fetchStudents = async () => {
       setLoadingRegs(true)
 
       try {
         const payload = isRetest
-          ? { batch: year }
-          : { department: departments, batch: year }
+          ? { batch: retestBatch }
+          : { department: departments, batch: normalBatch }
 
         const url = isRetest
           ? "/api/main-backend/examiner/forms/register-number/all"
@@ -68,8 +71,20 @@ const Schedule = () => {
     }
 
     fetchStudents()
-  }, [year, departments, isRetest])
+  }, [activeBatch, departments, isRetest])
 
+  useEffect(() => {
+    // Reset QA / Other subjects and topics when batch changes
+    setQaSelected("");
+    setOtherSubjects("");
+    setTopics({});
+
+    // Reset date, exam type, and time when batch changes
+    setDate("");
+    setExamType("");
+    setTime("");
+
+  }, [activeBatch]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,7 +127,7 @@ const Schedule = () => {
     setDepartments("")
     setRegDropdownOpen(false);
     setRegisterState({ mode: "none", values: [] })
-  }, [year])
+  }, [activeBatch])
 
   const qaSubject = useMemo(
     () => subjectTopics.find(s => s.subject_name === "QA")?.subject_name || "",
@@ -126,7 +141,7 @@ const Schedule = () => {
         .map(s => s.subject_name),
     [subjectTopics]
   )
-  
+
   const selectedSubjects = useMemo(() => {
     const subjects = []
     if (qaSelected) subjects.push(qaSelected)
@@ -152,6 +167,14 @@ const Schedule = () => {
     setTopics(initial)
   }, [selectedSubjects])
 
+  useEffect(() => {
+    setNormalBatch("")
+    setRetestBatch("")
+    setStudentRegs([])
+    setRegDropdownOpen(false)
+    setResetKey(prev => prev + 1)
+  }, [isRetest])
+
   function parseTimeSlot(timeSlot) {
     if (!timeSlot) return { start: "", end: "" }
 
@@ -160,7 +183,7 @@ const Schedule = () => {
   }
 
   const submitExamSchedule = async () => {
-    if (!year || !date || !time) {
+    if (!activeBatch || !date || !time) {
       await Swal.fire({
         icon: "warning",
         title: "Missing Details",
@@ -183,7 +206,7 @@ const Schedule = () => {
     const { start, end } = parseTimeSlot(time)
 
     const payload = {
-      batch: year,
+      batch: activeBatch,
       cie: examType,
       subject: selectedSubjects,
       registerNo: registerState.values,
@@ -191,7 +214,7 @@ const Schedule = () => {
       start,
       end,
       topics,
-      isRetest
+      isRetest,
     }
 
     if (!isRetest) {
@@ -209,7 +232,7 @@ const Schedule = () => {
     })
 
     console.log(payload);
-    
+
 
     try {
       const res = await fetch("/api/main-backend/examiner/exam-schedule", {
@@ -235,7 +258,8 @@ const Schedule = () => {
       })
 
       // 🔁 Reset form
-      setYear("")
+      setNormalBatch("")
+      setRetestBatch("")
       setDepartments("")
       setRegisterState({ mode: "none", values: [] })
       setQaSelected("")
@@ -267,28 +291,28 @@ const Schedule = () => {
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4 overflow-x-hidden">
         <div className="mt-4 px-4 mb-2 w-full flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex justify-between items-center w-full md:w-auto">
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
-            <Power size={16} className="text-slate-500" />
-            <label className="text-sm font-medium text-slate-700">Retest Mode</label>
-            <input
-              type="checkbox"
-              checked={isRetest}
-              onChange={(e) => setIsRetest(e.target.checked)}
-              className="h-4 w-4 accent-[#800000] cursor-pointer"
-            />
-          </div>
-           <button
-            className="qa-logout-btn md:hidden"
-            onClick={() => {
-              sessionStorage.removeItem("userSession");
-              navigate("/");
-            }}
-            title="Log out"
-            type="button"
-          >
-            <Power size={18} />
-            <span>Logout</span>
-          </button>
+            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
+              <Power size={16} className="text-slate-500" />
+              <label className="text-sm font-medium text-slate-700">Retest Mode</label>
+              <input
+                type="checkbox"
+                checked={isRetest}
+                onChange={(e) => setIsRetest(e.target.checked)}
+                className="h-4 w-4 accent-[#800000] cursor-pointer"
+              />
+            </div>
+            <button
+              className="qa-logout-btn md:hidden"
+              onClick={() => {
+                sessionStorage.removeItem("userSession");
+                navigate("/");
+              }}
+              title="Log out"
+              type="button"
+            >
+              <Power size={18} />
+              <span>Logout</span>
+            </button>
           </div>
           <div className="flex gap-1 grid grid-cols-2 gap-2 md:flex md:gap-1">
             <button
@@ -397,16 +421,18 @@ const Schedule = () => {
           </div>
 
           <SearchableInput
+            key={`batch-${resetKey}`}
             label="Batch"
             icon={GraduationCap}
             options={years}
-            value={year}
-            onChange={setYear}
+            value={activeBatch}
+            onChange={isRetest ? setRetestBatch : setNormalBatch}
             placeholder="Select Batch"
           />
 
           {!isRetest && (
             <SearchableInput
+              key={`dept-${resetKey}`}
               label="Department"
               icon={Building2}
               options={departmentOptions}
@@ -420,6 +446,7 @@ const Schedule = () => {
             {/* Input box (same style as others) */}
             {isRetest ? (
               <MultiSearchDropdown
+                key={`batch-${resetKey}`}
                 label="Register Numbers"
                 icon={Hash}
                 options={studentRegs}
@@ -527,15 +554,17 @@ const Schedule = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <SearchableInput
+              key={`qa-${resetKey}-${activeBatch}`}
               label="QA Subject"
               icon={BookOpen}
-              options={qaSubject ? [qaSubject] : []}
+              options={qaSubject ? [qaSubject] : []} // QA subject from current batch
               value={qaSelected}
               onChange={setQaSelected}
               placeholder="Select QA"
             />
 
             <SearchableInput
+              key={`other-${resetKey}-${activeBatch}`}
               label="English Subject"
               icon={BookOpen}
               options={remainingSubjects}
@@ -573,7 +602,7 @@ const Schedule = () => {
               value={date}
               onChange={setDate}
             />
-            
+
             <Dropdown
               label="Exam Type"
               icon={ListChecks}
