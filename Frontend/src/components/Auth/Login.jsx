@@ -72,7 +72,7 @@ export default function LoginForm() {
       {/* Email Field */}
       <div className="space-y-2">
         <label className="text-slate-700 font-medium">
-          QA Admin Email
+          Username
         </label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
