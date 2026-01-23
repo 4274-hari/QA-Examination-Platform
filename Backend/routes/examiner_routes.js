@@ -52,7 +52,7 @@ router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
 // ===========================
 // EXAM SESSION CONTROL
 // ===========================
-router.post("/exam/pause", pauseExamSession);
+router.post("/exam/pause",allowRoles("admin", "staff"), pauseExamSession);
 router.get("/exam/active-sessions", allowRoles("admin", "staff"), getActiveSessions);
 
 
