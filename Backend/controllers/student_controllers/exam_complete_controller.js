@@ -1,3 +1,6 @@
+const { ObjectId } = require("mongodb");
+const { getDb } = require("../../config/db");
+
 async function closeResult(req, res) {
   try {
     const db = getDb();
@@ -7,30 +10,35 @@ async function closeResult(req, res) {
       return res.status(401).json({ message: "Not logged in" });
     }
 
-    const { registerno } = req.session.user;
     const { scheduleId } = req.body;
+    const { registerno } = req.session.user;
 
     if (!scheduleId) {
       return res.status(400).json({ message: "scheduleId is required" });
     }
 
+    if (!ObjectId.isValid(scheduleId)) {
+      return res.status(400).json({ message: "Invalid scheduleId" });
+    }
+
+
     const result = await sessionCollection.updateOne(
       {
         scheduleId: new ObjectId(scheduleId),
-        registerno
+        registerno,
+        status: { $ne: "COMPLETED" }
       },
       {
         $set: {
           status: "COMPLETED",
-          isOnline: false
+          isOnline: false,
+          completedAt: new Date()
         }
       }
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({
-        message: "Session not found"
-      });
+      return res.status(404).json({ message: "Session not found or already completed" });
     }
 
     res.json({

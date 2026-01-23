@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./questions.css";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { formatMathText } from "./questionNormalizer";
 
 const alertBox = (title, text, icon = "info") => {
   Swal.fire({
@@ -32,7 +33,11 @@ const QuestionPage = () => {
 
   const exam = location.state?.exam || JSON.parse(localStorage.getItem("exam_data"));
   const student = location.state?.student;
-  const violation = location.state?.violations;
+  const violation = location.state?.violations || {
+    fullscreenExit: 0,
+    tabSwitch: 0,
+  };
+
 
   // ✅ STATE
   const [current, setCurrent] = useState(0);
@@ -49,7 +54,6 @@ const QuestionPage = () => {
 
   const scrollRef = useRef(null);
   const circleRefs = useRef([]);
-  const MAX_VIOLATIONS = 10;
   
   // ✅ Refs to track states
   const isFullscreenWarningShown = useRef(false);
@@ -62,15 +66,27 @@ const QuestionPage = () => {
     }
   }, [exam, student, navigate]);
 
+  
   // Get total questions from exam data or calculate based on exam type
   const totalQuestions = exam?.totalQuestions || (exam?.examType === "cie3" ? 100 : 50);
-
-  const questions = exam?.questions?.map((q, index) => ({
-    id: index + 1,
-    question: q.question,
-    options: [q.A, q.B, q.C, q.D],
-  })) || [];
-
+    
+    const [questions, setQuestions] = useState(() => {
+      if (exam?.questions?.length > 0) {
+        const q = exam.questions[0];
+        return [{
+          id: 1,
+          question: q.question,
+          options: [q.A, q.B, q.C, q.D],
+        }];
+      }
+      return [];
+    });
+    
+    useEffect(() => {
+      if (current > questions.length - 1) {
+        setCurrent(questions.length - 1);
+      }
+    }, [current, questions.length]);
   const q = questions[current];
 
   // ✅ TIMER
@@ -132,24 +148,38 @@ const QuestionPage = () => {
     const resumeExam = async () => {
       try {
         const res = await axios.get("/api/main-backend/exam/qa/session/resume-data");
-        const { currentQuestionIndex, selectedAnswers } = res.data;
 
-        const normalizedSelected = {};
-        const normalizedVisited = {};
+        const {
+          currentQuestionIndex,
+          answeredQuestions
+        } = res.data;
 
-        Object.keys(selectedAnswers || {}).forEach((idx) => {
-          const index = Number(idx);
-          normalizedSelected[index] = selectedAnswers[idx];
-          normalizedVisited[index] = true;
+        // rebuild questions array
+        const rebuiltQuestions = answeredQuestions.map((q, index) => ({
+          id: index + 1,
+          question: q.question,
+          options: [q.A, q.B, q.C, q.D],
+        }));
+
+        const rebuiltSelected = {};
+        const rebuiltVisited = {};
+
+        answeredQuestions.forEach((q, index) => {
+          if (q.selected) {
+            rebuiltSelected[index] = q.selected;
+            rebuiltVisited[index] = true;
+          }
         });
 
-        setCurrent(currentQuestionIndex || 0);
-        setSelected(normalizedSelected);
-        setVisited(normalizedVisited);
+        setQuestions(rebuiltQuestions);
+        setSelected(rebuiltSelected);
+        setVisited(rebuiltVisited);
+        setCurrent(currentQuestionIndex);
       } catch (err) {
         console.error("Resume exam error:", err);
       }
     };
+
     resumeExam();
   }, []);
 
@@ -324,69 +354,55 @@ const QuestionPage = () => {
     }
   };
 
-  // ✅ ELECTRON IPC VIOLATION DETECTION
+  // ✅ TAB SWITCH DETECTION - Separate from window blur
   useEffect(() => {
-    // Check if running in Electron
-    const isElectron = window?.electronAPI || window?.appEnv?.isElectron;
-    
-    if (isElectron) {
-      // Listen for violations from Electron main process
-      if (window.electronAPI?.onViolation) {
-        window.electronAPI.onViolation((type, message) => {
-          registerViolation(type, message);
-        });
-      } else if (window.examSecurity?.onViolation) {
-        // Fallback to legacy API
-        window.examSecurity.onViolation((type) => {
-          registerViolation(type, 'System-level violation detected');
-        });
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        registerViolation("tabSwitch", "Tab or window switch detected.");
       }
-    } else {
-      // Fallback: DOM-based detection for web version
-      // Fullscreen change detection
-      const onFullscreenChange = () => {
-        if (!document.fullscreenElement) {
-          registerViolation("fullscreenExit", "Exited fullscreen mode");
-          // Try to re-enter fullscreen
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
-      };
+    };
 
-      // Visibility change detection (tab switch)
-      const onVisibilityChange = () => {
-        if (document.hidden) {
-          registerViolation("tabSwitch", "Tab or window switch detected.");
-        }
-      };
-
-      // Window blur detection
-      let blurTimeout;
-      const onWindowBlur = () => {
-        blurTimeout = setTimeout(() => {
-          if (!document.hidden) {
-            registerViolation("tabSwitch", "Focus lost - Did you switch windows?");
-          }
-        }, 100);
-      };
-
-      const onWindowFocus = () => {
-        if (blurTimeout) clearTimeout(blurTimeout);
-      };
-
-      document.addEventListener("fullscreenchange", onFullscreenChange);
-      document.addEventListener("visibilitychange", onVisibilityChange);
-      window.addEventListener('blur', onWindowBlur);
-      window.addEventListener('focus', onWindowFocus);
-
-      return () => {
-        document.removeEventListener("fullscreenchange", onFullscreenChange);
-        document.removeEventListener("visibilitychange", onVisibilityChange);
-        window.removeEventListener('blur', onWindowBlur);
-        window.removeEventListener('focus', onWindowFocus);
-        if (blurTimeout) clearTimeout(blurTimeout);
-      };
-    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
+
+  // FULLSCREEN ENFORCEMENT - Fixed to always show warning
+  useEffect(() => {
+    let isHandlingExit = false;
+
+    const forceFullscreen = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    };
+
+    // Enter fullscreen on first interaction
+    document.addEventListener("click", forceFullscreen, { once: true });
+
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement && !isHandlingExit) {
+        isHandlingExit = true;
+
+        // 🚨 Register violation immediately
+        registerViolation(
+          "fullscreenExit",
+          "Exited fullscreen mode"
+        );
+
+        // 🔒 Force fullscreen back instantly
+        setTimeout(() => {
+          forceFullscreen();
+          isHandlingExit = false;
+        }, 200); // small delay to avoid browser race condition
+      }
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, [document.fullscreenElement]);
 
 
   // BACK NAVIGATION BLOCKING
@@ -581,11 +597,28 @@ const QuestionPage = () => {
       return;
     }
 
-    const success = await submitCurrentAnswer();
-    if (!success) return;
+    const data = await submitCurrentAnswer();
+    if (!data) return;
 
     setVisited((prev) => ({ ...prev, [current]: true }));
-    setCurrent((prev) => prev + 1);
+
+    if (data.nextQuestion) {
+      setQuestions(prev => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          question: data.nextQuestion.question,
+          options: [
+            data.nextQuestion.A,
+            data.nextQuestion.B,
+            data.nextQuestion.C,
+            data.nextQuestion.D,
+          ],
+        },
+      ]);
+
+      setCurrent(prev => prev + 1);
+    }
   };
 
   const submitCurrentAnswer = async () => {
@@ -597,13 +630,13 @@ const QuestionPage = () => {
       setLoading(true);
       const currentQuestion = questions[current];
 
-      await axios.post("/api/main-backend/student/answers/next", {
+      const res = await axios.post("/api/main-backend/student/answers/next", {
         question: currentQuestion.question,
         choosedOption: selected[current],
         questionIndex: current,
       });
 
-      return true;
+      return res.data;
     } catch (error) {
       Swal.fire({
         title: "Submission Error",
@@ -636,7 +669,7 @@ const QuestionPage = () => {
         scheduleId: exam.scheduleId
       });
 
-      const { registerno, name, department, batch, totalMarks } = res.data;
+      const { registerno, name, department, batch, totalMarks, violations, cie } = res.data;
 
       // If forced (time up), update backend session status to COMPLETED
       if (forced) {
@@ -661,15 +694,21 @@ const QuestionPage = () => {
             <p><b>Year:</b> ${batch}</p>
             <hr/>
             <h3 style="text-align:center;color:#16a34a">
-              Total Marks: ${totalMarks}/50
+              Total Marks: ${totalMarks}/${cie === 'cie3' ? 100 : 50}
             </h3>
+            <h4 style="margin-top:10px;color:#dc2626">Violation Summary</h4>
+            <p><b>Fullscreen Exits:</b> ${violations.fullscreenExit}</p>
+            <p><b>Tab Switches:</b> ${violations.tabSwitch}</p>
           </div>
         `,
         confirmButtonText: "Finish",
         allowOutsideClick: false,
-      }).then(() => {
+      }).then(async () => {
         localStorage.removeItem("examSession");
         sessionStorage.removeItem("studentDetails");
+        await axios.post("/api/main-backend/student/complete", {
+          scheduleId: exam.scheduleId
+        });
         navigate("/QA/qaexam", { replace: true });
       });
     } catch (error) {
@@ -722,7 +761,7 @@ const QuestionPage = () => {
         <div className="quest_left">
           <h2 className="quest_title">Question</h2>
           <h3 className="quest_question">
-            {q?.id}. {q?.question}
+            {q?.id}. {formatMathText(q?.question)}
           </h3>
         </div>
 
@@ -738,7 +777,7 @@ const QuestionPage = () => {
                   onChange={() => selectOption(opt)}
                   disabled={!isOnline}
                 />
-                <span>{opt}</span>
+                <span>{formatMathText(opt)}</span>
               </label>
             ))}
           </div>
@@ -758,7 +797,7 @@ const QuestionPage = () => {
         <div className="quest_right">
           <h2 className="quest_progress_title">Progress</h2>
           <div className="quest_circles_scroll" ref={scrollRef}>
-            {Array.from({ length: totalQuestions }, (_, index) => (
+            {Array.from({ length: questions.length }, (_, index) => ( // or use  totalQuestions to show initially all the question length
               <div
                 key={index}
                 ref={(el) => (circleRefs.current[index] = el)}

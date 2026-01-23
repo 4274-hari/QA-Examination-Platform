@@ -138,7 +138,6 @@ if (now < validFrom || now > validTill) {
           isResume: true,
           examDetails: {
             subject: exam.subject,
-            subjectCode: exam.subjectCode,
             questions: result[0]?.questions || [],
             totalQuestions: totalQuestions,
             examType: examType,
@@ -210,7 +209,6 @@ if (now < validFrom || now > validTill) {
         scheduleId: schedule._id.toString(),
         examId: exam._id.toString(),
         subject: exam.subject,
-        subjectCode: exam.subjectCode,
         questions: result[0]?.questions?.slice(0,1) || [],
         totalQuestions: totalQuestions,
         examType: examType,

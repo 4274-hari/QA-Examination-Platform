@@ -7,7 +7,7 @@ async function submitAnswer(req, res) {
     const sessionCol = db.collection("qa_exam_sessions");
 
     const { question, choosedOption, questionIndex } = req.body;
-
+    
     if (!question || !choosedOption) {
       return res.status(400).json({ message: "Missing fields" });
     }
@@ -43,6 +43,7 @@ async function submitAnswer(req, res) {
     }
 
     const doc = await collection.findOne({
+      scheduleId:session.scheduleId,
       "students.registerno": registerno,
     });
 
@@ -102,7 +103,6 @@ async function submitAnswer(req, res) {
 
     if (nextQuestionRaw) {
       nextQuestion = {
-        questionIndex: nextQuestionIndex,
         question: nextQuestionRaw.question,
         A: nextQuestionRaw.A,
         B: nextQuestionRaw.B,
@@ -115,7 +115,7 @@ async function submitAnswer(req, res) {
     if (!nextQuestionRaw) {
       await sessionCol.updateOne(
         { registerno },
-        { $set: { status: "COMPLETED", completedAt: new Date() } }
+        { $set: { status: "FINISHED", finishedAt: new Date() } }
       );
     }
 

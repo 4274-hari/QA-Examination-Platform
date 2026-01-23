@@ -6,642 +6,309 @@ const { ListObjectsCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const ExcelJS = require("exceljs");
 const XLSX = require("xlsx");
 
-// Allowed file types and corresponding S3 directories
-const TYPE_PATHS = {
-  qa: "static/xlsx/qa/question/QA/",
-  vr: "static/xlsx/qa/question/VR/",
-  bs: "static/xlsx/qa/question/BS/",
-};
+/* ================= CONSTANTS ================= */
+const BASE_PATH = "static/xlsx/qa/question/";
+const COLLECTION_NAME = "qa_question";
+const SUPPORTED_EXTENSIONS = [".xlsx", ".xls"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-// Map file types to collection names
-const COLLECTION_MAP = {
-  qa: "qa_question",
-  vr: "qa_question",
-  bs: "qa_question",
-};
+/* ================= HELPERS ================= */
 
-// Supported file extensions for conversion
-const SUPPORTED_EXTENSIONS = [
-  '.xlsx', '.xls'
-]; 
+const getTypePath = (filetype) => `${BASE_PATH}${filetype.toUpperCase()}/`;
 
-// Define required columns for valid data
-const REQUIRED_COLUMNS = ['question', 'option a', 'option b', 'option c', 'option d', 'answer','topic','Difficulty level'];
-const OPTIONAL_COLUMNS = ['option e', 'images', 'image', 'difficulty', 'difficulty level'];
+const isSupportedFileType = (filename) =>
+  SUPPORTED_EXTENSIONS.includes(path.extname(filename).toLowerCase());
 
-// Convert various file formats to XLSX buffer
-async function convertToXlsxBuffer(buffer, filename) {
-  const ext = path.extname(filename).toLowerCase();
-  
-  try {
-    // For native XLSX files, return as-is
-    if (ext === '. xlsx') {
-      return buffer;
+const pick = (obj, keys, def = "") => {
+  for (const k of keys) {
+    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") {
+      return obj[k].toString().trim();
     }
-
-    // Use XLSX library to read various formats
-    let workbook;
-    
-    if (ext === '.csv' || ext === '.txt' || ext === '.tsv') {
-      // Handle text-based formats
-      const content = buffer.toString('utf8');
-      const delimiter = ext === '.tsv' ? '\t' : ',';
-      workbook = XLSX.read(content, { type: 'string', raw: true, FS: delimiter });
-    } else {
-      // Handle binary formats (xls, ods, xlsb, xlsm, etc.)
-      workbook = XLSX.read(buffer, { type: 'buffer' });
-    }
-
-    // Convert to XLSX format using ExcelJS for consistency
-    const excelJsWorkbook = new ExcelJS. Workbook();
-    
-    // Iterate through all sheets
-    workbook.SheetNames.forEach((sheetName, index) => {
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-        header: 1, 
-        raw: false,
-        defval: ''
-      });
-      
-      // Create worksheet in ExcelJS
-      const excelSheet = excelJsWorkbook. addWorksheet(sheetName);
-      
-      // Add data to worksheet
-      jsonData.forEach((row, rowIndex) => {
-        if (Array.isArray(row) && row.length > 0) {
-          excelSheet.getRow(rowIndex + 1).values = row;
-        }
-      });
-      
-      // Auto-fit columns
-      excelSheet.columns.forEach((column, colIndex) => {
-        let maxLength = 10;
-        column.eachCell({ includeEmpty: false }, (cell) => {
-          const cellLength = cell.value ? cell.value.toString().length : 10;
-          maxLength = Math. max(maxLength, cellLength);
-        });
-        column.width = Math.min(maxLength + 2, 50);
-      });
-    });
-
-    // Write to buffer
-    const xlsxBuffer = await excelJsWorkbook.xlsx. writeBuffer();
-    return xlsxBuffer;
-    
-  } catch (error) {
-    throw new Error(`Failed to convert ${ext} to XLSX: ${error. message}`);
   }
+  return def;
+};
+
+const normalizeText = (t = "") =>
+  t.toLowerCase().trim().replace(/\s+/g, " ");
+
+function normalizeDifficultyLevel(d) {
+  const n = parseInt(d);
+  return !isNaN(n) && n >= 1 && n <= 3 ? n : null;
 }
 
-// Check if file extension is supported
-function isSupportedFileType(filename) {
-  const ext = path.extname(filename).toLowerCase();
-  return SUPPORTED_EXTENSIONS.includes(ext);
-}
+/* ================= S3 ================= */
 
-// Generate a unique filename if the file already exists
 async function getSafeFilename(typePath, filename) {
-  const baseName = path.basename(filename, path.extname(filename));
-  const extension = '. xlsx';
-  let counter = 2;
-  let newFilename = `${baseName}${extension}`;
+  const base = path.basename(filename, path.extname(filename));
+  let name = `${base}.xlsx`, i = 2;
 
-  const listCommand = new ListObjectsCommand({
-    Bucket: bucketName,
-    Prefix: typePath,
-  });
+  const { Contents = [] } = await s3.send(
+    new ListObjectsCommand({ Bucket: bucketName, Prefix: typePath })
+  );
 
-  const existingFiles = await s3.send(listCommand);
-
-  while (
-    existingFiles.Contents?. some(
-      (item) => item.Key === `${typePath}${newFilename}`
-    )
-  ) {
-    newFilename = `${baseName}(${counter})${extension}`;
-    counter++;
+  while (Contents.some(f => f.Key === `${typePath}${name}`)) {
+    name = `${base}(${i++}).xlsx`;
   }
-
-  return newFilename;
+  return name;
 }
 
-// Helper function to extract plain text from cell value
-const extractPlainText = (cellValue) => {
-  if (!cellValue) return "";
-  
-  // If it's a rich text object
-  if (cellValue.richText && Array.isArray(cellValue.richText)) {
-    return cellValue.richText.map(part => part.text || "").join("");
-  }
-  
-  // If it's a regular value
-  return cellValue.toString().trim();
+/* ================= XLS CONVERSION ================= */
+
+async function convertXlsToXlsx(buffer) {
+  const wb = XLSX.read(buffer, { type: "buffer" });
+  const out = new ExcelJS.Workbook();
+
+  wb.SheetNames.forEach(name => {
+    const data = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: "" });
+    const sheet = out.addWorksheet(name);
+    data.forEach((r, i) => sheet.getRow(i + 1).values = r);
+  });
+
+  return out.xlsx.writeBuffer();
+}
+
+/* ================= EXCEL PARSING ================= */
+
+const extractPlainText = (v) => {
+  if (v == null) return "";
+  if (v === 0) return "0";
+  if (typeof v === "boolean") return String(v);
+  if (v.richText) return v.richText.map(t => t.text || "").join("");
+  if (v.result !== undefined) return String(v.result);
+  if (v.hyperlink && v.text) return v.text;
+  return String(v).trim();
 };
 
-// Normalize text for comparison (remove extra spaces, lowercase, trim)
-function normalizeText(text) {
-  if (!text) return "";
-  return text.toString().toLowerCase().trim().replace(/\s+/g, ' ');
+function isDuplicateQuestion(a, b) {
+  if (normalizeText(a.question) !== normalizeText(b.question)) return false;
+  return ["A","B","C","D","E"].every(
+    k => normalizeText(a[k] || "") === normalizeText(b[k] || "")
+  );
 }
 
-// Normalize difficulty level to numeric format (1, 2, 3)
-function normalizeDifficultyLevel(difficulty) {
-  if (!difficulty) return 1; // Default difficulty level
-  
-  const normalized = normalizeText(difficulty);
-  
-  // If it's already a number, validate and return
-  const numValue = parseInt(difficulty);
-  if (!isNaN(numValue) && numValue >= 1 && numValue <= 3) {
-    return numValue;
-  }
-  
-  // Map text variations to numbers
-  if (normalized === 'easy' || normalized === 'e') {
-    return 1;
-  } else if (normalized === 'medium' || normalized === 'moderate' || normalized === 'm') {
-    return 2;
-  } else if (normalized === 'hard' || normalized === 'difficult' || normalized === 'h') {
-    return 3;
-  }
-  
-  // Default to 1 if unable to parse
-  return 1;
-}
-
-// Check if two questions are duplicates
-function isDuplicateQuestion(question1, question2) {
-  // Compare question text
-  if (normalizeText(question1.question) !== normalizeText(question2.question)) {
-    return false;
-  }
-  
-  // Compare all options
-  if (normalizeText(question1.A) !== normalizeText(question2.A)) return false;
-  if (normalizeText(question1.B) !== normalizeText(question2.B)) return false;
-  if (normalizeText(question1.C) !== normalizeText(question2.C)) return false;
-  if (normalizeText(question1.D) !== normalizeText(question2.D)) return false;
-  
-  // Compare Option E if both have it
-  const hasE1 = question1.E && question1.E.trim() !== "";
-  const hasE2 = question2.E && question2.E.trim() !== "";
-  
-  if (hasE1 && hasE2) {
-    if (normalizeText(question1.E) !== normalizeText(question2.E)) return false;
-  } else if (hasE1 !== hasE2) {
-    return false; // One has E, other doesn't
-  }
-  
-  return true;
-}
-
-// Check if a row contains valid question data
-function isValidQuestionRow(rowData, headers) {
-  // Must have a question
-  if (!rowData.Question && !rowData.question) return false;
-  
-  // Must have at least options A-D
-  const hasOptionA = rowData["Option A"] || rowData. A || rowData["option a"];
-  const hasOptionB = rowData["Option B"] || rowData.B || rowData["option b"];
-  const hasOptionC = rowData["Option C"] || rowData.C || rowData["option c"];
-  const hasOptionD = rowData["Option D"] || rowData.D || rowData["option d"];
-  
-  if (!hasOptionA || !hasOptionB || !hasOptionC || !hasOptionD) return false;
-  
-  // Must have an answer
-  const hasAnswer = rowData["Answer(No Option)"] || rowData.Answer || rowData. answer || rowData.correct_option;
-  if (!hasAnswer) return false;
-  
-  return true;
-}
-
-// Check if sheet contains valid question data
-function isValidQuestionSheet(worksheet) {
-  let foundQuestionColumn = false;
-  let foundOptionColumn = false;
-  
-  worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber > 20) return; // Only check first 20 rows for headers
-    
-    row.eachCell((cell) => {
-      const cellValue = extractPlainText(cell.value).toLowerCase();
-      
-      if (cellValue === 'question') foundQuestionColumn = true;
-      if (cellValue. includes('option') || cellValue === 'a' || cellValue === 'b') {
-        foundOptionColumn = true;
-      }
+function isValidQuestionSheet(ws) {
+  let q = false, o = false;
+  ws.eachRow((r, i) => {
+    if (i > 20) return;
+    r.eachCell(c => {
+      const v = extractPlainText(c.value).toLowerCase();
+      if (v === "question") q = true;
+      if (v.includes("option")) o = true;
     });
   });
-  
-  return foundQuestionColumn && foundOptionColumn;
+  return q && o;
 }
 
-// Parse a single worksheet and extract questions
-function parseWorksheetToQuestions(worksheet, sheetName) {
-  // Helper to find header row
-  let headerRowNumber = null;
-  let headers = {};
+function validateQuestionRow(row, n) {
+  const errors = [];
 
-  worksheet.eachRow((row, rowNumber) => {
-    row.eachCell((cell, colNumber) => {
-      const cellValue = extractPlainText(cell.value).toLowerCase();
-      
-      // Look for 'question' but NOT 'unit' anymore
-      if (cellValue === 'question') {
-        if (! headerRowNumber) {
-          headerRowNumber = rowNumber;
-        }
-      }
-    });
+  if (!pick(row, ["Question","question"]))
+    errors.push(`Row ${n}: Missing 'Question'`);
+
+  ["A","B","C","D"].forEach(o => {
+    if (!pick(row, [`Option ${o}`, o, `option ${o.toLowerCase()}`]))
+      errors.push(`Row ${n}: Missing 'Option ${o}'`);
   });
 
-  if (!headerRowNumber) {
-    return null; // No valid header found
-  }
+  if (!pick(row, ["Answer(No Option)","Answer","answer","correct_option"]))
+    errors.push(`Row ${n}: Missing 'Answer(No Option)'`);
 
-  // Read headers
-  worksheet.getRow(headerRowNumber).eachCell((cell, colNumber) => {
-    const value = extractPlainText(cell. value);
-    if (value) {
-      headers[colNumber] = value;
+  if (!pick(row, ["Topic","topic"]))
+    errors.push(`Row ${n}: Missing 'Topic'`);
+
+  const diff = pick(row, ["Difficulty Level","Difficulty","difficulty","difficulty level"]);
+  if (normalizeDifficultyLevel(diff) === null)
+    errors.push(
+      `Row ${n}: Invalid 'Difficulty Level' - must be 1, 2, or 3 (found: '${diff}')`
+    );
+
+  return { isValid: errors.length === 0, errors };
+}
+
+function parseWorksheetToQuestions(ws, sheetName) {
+  let headerRow;
+  ws.eachRow((r, i) =>
+    r.eachCell(c => {
+      if (extractPlainText(c.value).toLowerCase() === "question" && !headerRow)
+        headerRow = i;
+    })
+  );
+  if (!headerRow) return null;
+
+  const headers = {};
+  ws.getRow(headerRow).eachCell((c, i) => headers[i] = extractPlainText(c.value));
+
+  const data = [], errs = [];
+
+  ws.eachRow((r, i) => {
+    if (i <= headerRow) return;
+    const row = {};
+    r.eachCell((c, j) => headers[j] && (row[headers[j]] = extractPlainText(c.value)));
+    if (Object.keys(row).length) {
+      const v = validateQuestionRow(row, i);
+      v.isValid ? data.push(row) : errs.push(...v.errors);
     }
   });
 
-  const data = [];
+  if (errs.length)
+    throw new Error(`Validation errors in sheet '${sheetName}':\n${errs.join("\n")}`);
 
-  // Read data rows
-  worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber <= headerRowNumber) return;
-
-    const rowData = {};
-    let hasData = false;
-
-    row.eachCell((cell, colNumber) => {
-      const header = headers[colNumber];
-      if (header) {
-        const value = extractPlainText(cell.value);
-        rowData[header] = value;
-        if (value) hasData = true;
-      }
-    });
-
-    // Only add valid question rows
-    if (hasData && isValidQuestionRow(rowData, headers)) {
-      data.push(rowData);
-    }
-  });
-
-  return data. length > 0 ? { sheetName, data } : null;
+  return data.length ? { sheetName, data } : null;
 }
 
-// Parse Excel file from ALL sheets and convert to the required format
 async function parseExcelToQuestions(buffer) {
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(buffer);
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
 
-  const allQuestions = [];
-  const processedSheets = [];
-  const skippedSheets = [];
+  const all = [], processed = [], skipped = [];
 
-  // Process each worksheet
-  for (const worksheet of workbook.worksheets) {
-    const sheetName = worksheet.name;
-    
-    // Check if sheet contains valid question data
-    if (!isValidQuestionSheet(worksheet)) {
-      skippedSheets.push(sheetName);
+  for (const ws of wb.worksheets) {
+    if (!isValidQuestionSheet(ws)) {
+      skipped.push(ws.name);
       continue;
     }
-
-    // Parse the worksheet
-    const result = parseWorksheetToQuestions(worksheet, sheetName);
-    
-    if (result && result.data. length > 0) {
-      allQuestions.push(...result. data);
-      processedSheets.push({ name: sheetName, count: result.data.length });
-    } else {
-      skippedSheets.push(sheetName);
-    }
+    const res = parseWorksheetToQuestions(ws, ws.name);
+    if (res) {
+      all.push(...res.data);
+      processed.push({ name: ws.name, count: res.data.length });
+    } else skipped.push(ws.name);
   }
 
-  if (allQuestions.length === 0) {
-    throw new Error("No valid question data found in any sheet");
-  }
+  if (!all.length) throw new Error("No valid question data found in any sheet");
 
-  // Group questions by topic (removed Unit from topic detection)
-  const topicsMap = {};
-
-  allQuestions.forEach((row) => {
-    const topic = (row.Topic || row.topic || "General").toUpperCase();
-
-  
-    
-    const question = {
-      question: row. Question || row.question || "",
-      A: row["Option A"] || row.A || "",
-      B: row["Option B"] || row.B || "",
-      C: row["Option C"] || row.C || "",
-      D: row["Option D"] || row.D || "",
+  const map = {};
+  all.forEach(r => {
+    const topic = pick(r, ["Topic","topic"], "General").toUpperCase();
+    map[topic] ||= [];
+    const q = {
+      question: pick(r, ["Question","question"]),
+      A: pick(r, ["Option A","A"]),
+      B: pick(r, ["Option B","B"]),
+      C: pick(r, ["Option C","C"]),
+      D: pick(r, ["Option D","D"]),
+      correct_option: pick(r, ["Answer(No Option)","Answer","answer","correct_option"]),
+      difficulty_level: normalizeDifficultyLevel(
+        pick(r, ["Difficulty Level","Difficulty","difficulty","difficulty level"])
+      )
     };
-
-    // Only add Option E if it has a value
-    const optionE = row["Option E"] || row.E || "";
-    if (optionE && optionE.trim() !== "") {
-      question.E = optionE;
-    }
-
-    // Add correct answer
-    question.correct_option = row["Answer(No Option)"] || row.Answer || row.answer || row.correct_option || "";
-
-       // Add difficulty level as a NUMBER (1, 2, or 3)
-    const difficultyValue = row["Difficulty Level"] || row["Difficulty"] || row.difficulty || row["difficulty level"] || "";
-    question.difficulty_level = normalizeDifficultyLevel(difficultyValue);
-
-    // Only add image if it exists
-    const imageName = row["Images (Image name)"] || row.Images || row.image || "";
-    if (imageName && imageName. trim() !== "") {
-      question.image = imageName;
-    }
-
-   
-
-    if (!topicsMap[topic]) {
-      topicsMap[topic] = [];
-    }
-
-    topicsMap[topic].push(question);
+    const E = pick(r, ["Option E","E"]); if (E) q.E = E;
+    const img = pick(r, ["Images (Image name)","Images","image"]); if (img) q.image = img;
+    map[topic].push(q);
   });
-
-  // Convert to exam format
-  const exam = Object.keys(topicsMap).map((topic) => ({
-    topic,
-    topic_question: topicsMap[topic],
-  }));
 
   return {
-    exam,
+    exam: Object.entries(map).map(([topic, topic_question]) => ({ topic, topic_question })),
     metadata: {
-      totalSheets: workbook.worksheets.length,
-      processedSheets,
-      skippedSheets,
-      totalQuestions: allQuestions.length,
+      totalSheets: wb.worksheets.length,
+      processedSheets: processed,
+      skippedSheets: skipped,
+      totalQuestions: all.length
     }
   };
 }
 
-// Append questions to MongoDB with duplicate detection
+/* ================= DB ================= */
+
 async function appendQuestionsToMongo(filetype, newExam) {
-  const db = getDb();
-  const collectionName = COLLECTION_MAP[filetype];
-  const collection = db.collection(collectionName);
+  const col = getDb().collection(COLLECTION_NAME);
+  const subject_name = filetype.toUpperCase();
+  const doc = await col.findOne({ subject_name });
 
-  const subjectName = filetype.toUpperCase();
+  let added = 0, dup = 0;
+  const map = new Map((doc?.exam || []).map(t => [t.topic, t.topic_question]));
 
-  const existingDoc = await collection.findOne({ subject_name: subjectName });
-
-  let duplicatesFound = 0;
-  let questionsAdded = 0;
-
-  if (existingDoc) {
-    const existingExam = existingDoc.exam || [];
-    const mergedExam = [...existingExam];
-
-    newExam.forEach((newTopic) => {
-      const existingTopicIndex = mergedExam. findIndex(
-        (t) => t.topic === newTopic.topic
-      );
-
-      if (existingTopicIndex !== -1) {
-        // Topic exists, check for duplicate questions
-        const existingQuestions = mergedExam[existingTopicIndex].topic_question;
-        
-        newTopic.topic_question.forEach((newQuestion) => {
-          // Check if this question already exists
-          const isDuplicate = existingQuestions. some(existingQuestion => 
-            isDuplicateQuestion(newQuestion, existingQuestion)
-          );
-          
-          if (!isDuplicate) {
-            mergedExam[existingTopicIndex].topic_question.push(newQuestion);
-            questionsAdded++;
-          } else {
-            duplicatesFound++;
-          }
-        });
-      } else {
-        // New topic, add all questions
-        mergedExam. push(newTopic);
-        questionsAdded += newTopic.topic_question. length;
-      }
-    });
-
-    await collection.updateOne(
-      { subject_name: subjectName },
-      { $set: { exam: mergedExam } }
+  newExam.forEach(({ topic, topic_question }) => {
+    map.set(topic, map.get(topic) || []);
+    topic_question.forEach(q =>
+      map.get(topic).some(e => isDuplicateQuestion(q, e))
+        ? dup++
+        : (map.get(topic).push(q), added++)
     );
-  } else {
-    // No existing document, insert all questions
-    newExam.forEach((topic) => {
-      questionsAdded += topic.topic_question.length;
-    });
+  });
 
-    await collection.insertOne({
-      subject_name: subjectName,
-      exam: newExam,
-    });
-  }
+  await col.updateOne(
+    { subject_name },
+    { $set: { exam: [...map].map(([topic, topic_question]) => ({ topic, topic_question })) } },
+    { upsert: true }
+  );
 
-  return { duplicatesFound, questionsAdded };
+  return { duplicatesFound: dup, questionsAdded: added };
 }
 
-// ================= UPLOAD CONTROLLER =================
+/* ================= UPLOAD ================= */
+
+function readUpload(req) {
+  return new Promise((res, rej) => {
+    let buffer, filename, filetype, size = 0;
+    const bb = Busboy({ headers: req.headers });
+
+    bb.on("field", (k, v) => k === "filetype" && (filetype = v.toLowerCase()));
+    bb.on("file", (_, f, info) => {
+      if (!isSupportedFileType(info.filename)) return rej(new Error("Unsupported file type"));
+      filename = info.filename;
+      const chunks = [];
+      f.on("data", d => {
+        size += d.length;
+        if (size > MAX_FILE_SIZE) rej(new Error("File size exceeds 10MB"));
+        chunks.push(d);
+      });
+      f.on("end", () => buffer = Buffer.concat(chunks));
+    });
+    bb.on("finish", () => res({ buffer, filename, filetype }));
+    bb.on("error", rej);
+    req.pipe(bb);
+  });
+}
+
 const uploadQuestion = async (req, res) => {
-  let responded = false;
-  const safeRespond = (status, body) => {
-    if (!responded) {
-      responded = true;
-      res.status(status).json(body);
-    }
-  };
+  try {
+    const { buffer, filename, filetype } = await readUpload(req);
+    const xlsx = path.extname(filename) === ".xls"
+      ? await convertXlsToXlsx(buffer)
+      : buffer;
 
-  let filetype;
-  let uploadBuffer;
-  let originalFilename;
-  let fileSize = 0;
+    const keyPath = getTypePath(filetype);
+    const name = await getSafeFilename(keyPath, filename);
 
-  const busboy = Busboy({ headers: req.headers });
+    await s3.send(new PutObjectCommand({
+      Bucket: bucketName,
+      Key: `${keyPath}${name}`,
+      Body: xlsx,
+      ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }));
 
-  busboy.on("field", (fieldname, value) => {
-    if (fieldname === "filetype") {
-      const lowerValue = value.toLowerCase().trim();
-      
-      if (TYPE_PATHS[lowerValue]) {
-        filetype = lowerValue;
-      }
-    }
-  });
+    const { exam, metadata } = await parseExcelToQuestions(xlsx);
+    const result = await appendQuestionsToMongo(filetype, exam);
 
-  busboy.on("file", (fieldname, file, info) => {
-    const { filename } = info;
-
-    if (! filename || ! isSupportedFileType(filename)) {
-      file.resume();
-      return safeRespond(400, { 
-        error: "Unsupported file type", 
-        supported:  SUPPORTED_EXTENSIONS.join(', '),
-        received: path.extname(filename).toLowerCase()
-      });
-    }
-
-    originalFilename = filename;
-    const chunks = [];
-
-    file.on("data", (data) => {
-      fileSize += data.length;
-      chunks.push(data);
-    });
-
-    file.on("end", () => {
-      uploadBuffer = Buffer.concat(chunks);
-    });
-
-    file.on("error", (err) => {
-      safeRespond(500, { error: "File stream error" });
-    });
-  });
-
-  busboy.on("finish", async () => {
-    if (!uploadBuffer || ! filetype || !TYPE_PATHS[filetype]) {
-      return safeRespond(400, {
-        error: "Invalid upload or missing filetype",
-        received_filetype: filetype,
-        valid_filetypes: Object.keys(TYPE_PATHS),
-      });
-    }
-
-    const typePath = TYPE_PATHS[filetype];
-
-    try {
-      // Convert the uploaded file to XLSX format
-      const xlsxBuffer = await convertToXlsxBuffer(uploadBuffer, originalFilename);
-      
-      const safeName = await getSafeFilename(typePath, originalFilename);
-
-      const uploadParams = {
-        Bucket:  bucketName,
-        Key:  `${typePath}${safeName}`,
-        Body: xlsxBuffer,
-        ContentType:  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      };
-
-      await s3.send(new PutObjectCommand(uploadParams));
-
-      // Parse all sheets and extract valid question data
-      const { exam:  parsedExam, metadata } = await parseExcelToQuestions(xlsxBuffer);
-
-      // Append to MongoDB with duplicate detection
-      const { duplicatesFound, questionsAdded } = await appendQuestionsToMongo(filetype, parsedExam);
-
-      const originalExt = path.extname(originalFilename).toLowerCase();
-      const wasConverted = originalExt !== '.xlsx';
-
-      safeRespond(200, {
-        success: true,
-        message: "File uploaded and questions appended successfully",
-        location: `${typePath}${safeName}`,
-        topicsAdded: parsedExam.length,
-        totalQuestionsInFile: metadata.totalQuestions,
-        questionsAdded:  questionsAdded,
-        duplicatesSkipped: duplicatesFound,
-        originalFormat: originalExt,
-        converted: wasConverted,
-        finalFormat: '.xlsx',
-        sheetsProcessed: metadata.processedSheets,
-        sheetsSkipped: metadata.skippedSheets,
-        totalSheets: metadata.totalSheets,
-      });
-    } catch (err) {
-      safeRespond(500, {
-        error: "File upload or database update failed",
-        details: err. message,
-      });
-    }
-  });
-
-  busboy.on("error", (err) => {
-    safeRespond(500, { error: "Upload parsing failed" });
-  });
-
-  req.pipe(busboy);
+    res.json({ success: true, filePath: `${keyPath}${name}`, ...metadata, ...result });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
 };
 
+/* ================= DELETE / GET ================= */
 
 async function deleteQuestion(req, res) {
-  try {
-    const db = getDb();
-    const question_collection = db.collection("qa_question");
+  const { subject_name, topic } = req.body;
+  if (!subject_name || !topic)
+    return res.status(400).json({ success: false, message: "subject_name and topic are required" });
 
-    const { subject_name, topic } = req.body;
+  const r = await getDb().collection(COLLECTION_NAME)
+    .updateOne({ subject_name }, { $pull: { exam: { topic } } });
 
-    if (!subject_name || !topic) {
-      return res.status(400).json({
-        success: false,
-        message: "subject_name and topic are required"
-      });
-    }
-
-    const result = await question_collection.updateOne(
-      { subject_name },
-      {
-        $pull: {
-          exam: { topic }
-        }
-      }
-    );
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Topic not found or already deleted"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Topic deleted successfully"
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
+  r.modifiedCount
+    ? res.json({ success: true, message: "Topic deleted successfully" })
+    : res.status(404).json({ success: false, message: "Topic not found or already deleted" });
 }
 
-const { fetchSubjectsWithTopics } = require('../../services/get_topics.service');
+const { fetchSubjectsWithTopics } = require("../../services/get_topics.service");
 
 async function getSubject(req, res) {
   try {
-    const db = getDb();
-
-    const data = await fetchSubjectsWithTopics(db);
-
-    res.status(200).json({
-      success: true,
-      data
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    res.json({ success: true, data: await fetchSubjectsWithTopics(getDb()) });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
   }
 }
 
-
-
-
-module.exports = { uploadQuestion , deleteQuestion , getSubject};
+module.exports = { uploadQuestion, deleteQuestion, getSubject };

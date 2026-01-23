@@ -3,7 +3,7 @@ const { getDb } = require("../../config/db");
 async function registerViolation(req, res) {
   const db = getDb();
   const sessionCol = db.collection("qa_exam_sessions");
-
+  const examCol = db.collection("qa_exam"); 
   const { type } = req.body;
   const { registerno } = req.session.user;
 
@@ -28,7 +28,17 @@ async function registerViolation(req, res) {
         }
       }
     );
-
+    await examCol.updateOne(
+      { 
+        _id: session.examId,
+        "students.registerno": registerno 
+      },
+      {
+        $set:  {
+          "students.$.violations": total
+        }
+      }
+    );
     return res.status(403).json({
       terminated: true,
       totalViolations: total

@@ -157,13 +157,12 @@ async function generateExam(
   registerno,
   cie,
   subject,
-  subjectCode,
   topics,
   date
 ) {
   try {
 
-    if (!batch || !cie || !subject || !subjectCode || !topics) {
+    if (!batch || !cie || !subject  || !topics) {
       throw new Error("Missing required fields");
     }
     
@@ -177,7 +176,6 @@ async function generateExam(
 
     const query = {
       subject,
-      subjectCode,
       cie,
       department: department || null,
       date
@@ -194,19 +192,20 @@ async function generateExam(
     }
 
     const studentMatch = department
-      ? { department, batch }   
-      : { registerno: { $in: registerno } };            
+      ? { "students.department":department,"students.batch": batch }   
+      : { "students.registerno": { $in: registerno } };            
 
     // Find exam by scheduleId only
     const examDoc = await examCol.findOne({
-      scheduleId: scheduleDoc._id
+      scheduleId: scheduleDoc._id,
+      ...studentMatch
     });
 
     if (!examDoc) {
       throw new Error("Exam not found");
     }
 
-    const subjects = subject.split("/").map((s) => s.trim());
+    const subjects = subject.map(s => s.trim());
     
     if (subjects.length < 1 || subjects.length > 2) {
       throw new Error("Only 1 or 2 subjects supported");
