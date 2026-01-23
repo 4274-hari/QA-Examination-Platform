@@ -51,8 +51,17 @@ export function SearchableInput({
 
   /* Sync single value into input */
   useEffect(() => {
-    if (!multiple && value) {
-      setQuery(value)
+    if (!multiple) {
+      setQuery(value || "")
+    }
+  }, [value, multiple])
+
+  useEffect(() => {
+    if (
+      (!multiple && !value) ||
+      (multiple && Array.isArray(value) && value.length === 0)
+    ) {
+      setQuery("")
     }
   }, [value, multiple])
 

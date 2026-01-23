@@ -4,6 +4,64 @@ const xlsx = require('xlsx');
 const { s3, bucketName } = require('../../config/s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
+function getSubjectName(examDoc) {
+  const raw = examDoc?.subject;
+
+  if (typeof raw === 'string') return raw;
+  if (raw == null) return '';
+
+  if (Array.isArray(raw)) {
+    return raw
+      .map((v) => {
+        if (typeof v === 'string') return v;
+        if (v && typeof v === 'object') return String(v.name ?? v.subject ?? v.title ?? v.code ?? '');
+        return String(v ?? '');
+      })
+      .filter(Boolean)
+      .join(' / ');
+  }
+
+  if (typeof raw === 'object') {
+    const candidate = raw.name ?? raw.subject ?? raw.title ?? raw.code;
+    if (candidate != null) return String(candidate);
+    try {
+      return JSON.stringify(raw);
+    } catch {
+      return String(raw);
+    }
+  }
+
+  return String(raw);
+}
+
+function toText(value, fallback = '') {
+  if (typeof value === 'string') return value;
+  if (value == null) return fallback;
+
+  if (Array.isArray(value)) {
+    return value
+      .map((v) => {
+        if (typeof v === 'string') return v;
+        if (v && typeof v === 'object') return String(v.name ?? v.title ?? v.code ?? v.subject ?? '');
+        return String(v ?? '');
+      })
+      .filter(Boolean)
+      .join(' / ');
+  }
+
+  if (typeof value === 'object') {
+    const candidate = value.name ?? value.title ?? value.code ?? value.subject;
+    if (candidate != null) return String(candidate);
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+
+  return String(value);
+}
+
 async function exportMarks(req, res) {
   try {
     const { cie, batch } = req.body;
@@ -87,9 +145,14 @@ async function exportMarks(req, res) {
 
     const examCollection = db.collection("qa_exam");
     
-    const examDocs = await examCollection.find({ 
-      scheduleId: { $in: completedScheduleIds }
-    }).toArray();
+    const completedScheduleIdStrings = completedScheduleIds.map((id) => id.toString());
+    const scheduleIdCandidates = [...completedScheduleIds, ...completedScheduleIdStrings];
+
+    const examDocs = await examCollection
+      .find({
+        scheduleId: { $in: scheduleIdCandidates }
+      })
+      .toArray();
     
     if (! examDocs || examDocs. length === 0) {
       return res.status(404).json({ 
@@ -135,6 +198,7 @@ async function exportMarks(req, res) {
         
         try {
           const fileUrl = await generateSingleDepartmentExcel(examDoc, students, department, scheduleId);
+          const examType = getSubjectName(examDoc).toUpperCase().trim();
           
           allFileUrls.push({
             documentId: examDoc._id.toString(),
@@ -142,7 +206,7 @@ async function exportMarks(req, res) {
             department: department,
             fileUrl: fileUrl,
             studentCount: students.length,
-            examType: examDoc.subject. toUpperCase().trim()
+            examType: examType
           });
         } catch (error) {
           allFileUrls.push({
@@ -156,6 +220,7 @@ async function exportMarks(req, res) {
       } else {
         try {
           const fileUrl = await generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, departments, scheduleId);
+          const examType = getSubjectName(examDoc).toUpperCase().trim();
           
           allFileUrls.push({
             documentId: examDoc._id.toString(),
@@ -163,7 +228,7 @@ async function exportMarks(req, res) {
             departments: departments,
             fileUrl:  fileUrl,
             studentCount:  examDoc.students.length,
-            examType: examDoc.subject. toUpperCase().trim()
+            examType: examType
           });
         } catch (error) {
           allFileUrls. push({
@@ -237,7 +302,7 @@ function constructDateTimeIST(dateString, timeString) {
 }
 
 async function generateSingleDepartmentExcel(examDoc, students, department, scheduleId) {
-  const subjectName = examDoc.subject;
+  const subjectName = getSubjectName(examDoc);
   const cie = examDoc. cie;
   const batch = examDoc.batch;
 
@@ -372,10 +437,10 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
   const marksData = students.map((student, index) => {
     const row = [
       index + 1,
-      student.registerno || 'N/A',
-      (student.name || 'N/A').toUpperCase(),
-      department,
-      student.section || 'N/A'
+      toText(student.registerno, 'N/A'),
+      toText(student.name, 'N/A').toUpperCase(),
+      toText(department, 'UNKNOWN'),
+      toText(student.section ?? 'N/A', 'N/A')
     ];
     
     if (! student.questions || ! Array.isArray(student.questions)) {
@@ -469,10 +534,9 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
   headers.push("Violations");
   const sheetData = [
     ["Subject Name", subjectName],
-    ["CIE", cie.toUpperCase()],
-    ["Batch", batch],
-    ["Department", department],
-    ["Exam Type", examType],
+    ["CIE", toText(cie, '').toUpperCase()],
+    ["Batch", toText(batch, '')],
+    ["Department", toText(department, '')],
     [],
     headers,
     ... marksData
@@ -511,7 +575,7 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
     type: 'buffer'
   });
 
-  const safeDept = department.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+  const safeDept = toText(department, 'UNKNOWN').replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
   const safeSubject = subjectName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "").replace(/\//g, "_");
   
   const s3Key = `static/xlsx/qa/result/${safeDept}_${safeSubject}_${cie}_${scheduleId}.xlsx`;
@@ -531,7 +595,7 @@ async function generateSingleDepartmentExcel(examDoc, students, department, sche
 }
 
 async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, departments, scheduleId) {
-  const subjectName = examDoc.subject;
+  const subjectName = getSubjectName(examDoc);
   const cie = examDoc.cie;
   const batch = examDoc.batch;
 
@@ -671,10 +735,10 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
   const marksData = allStudents.map((student, index) => {
     const row = [
       index + 1,
-      student.registerno || 'N/A',
-      (student.name || 'N/A').toUpperCase(),
-      student.department || 'UNKNOWN',
-      student.section || 'N/A'
+      toText(student.registerno, 'N/A'),
+      toText(student.name, 'N/A').toUpperCase(),
+      toText(student.department, 'UNKNOWN'),
+      toText(student.section ?? 'N/A', 'N/A')
     ];
     
     if (!student.questions || ! Array.isArray(student.questions)) {
@@ -769,10 +833,9 @@ async function generateMultipleDepartmentsExcel(examDoc, studentsByDepartment, d
 
   const sheetData = [
     ["Subject Name", subjectName],
-    ["CIE", cie.toUpperCase()],
-    ["Batch", batch],
-    ["Departments", departments. join(", ")],
-    ["Exam Type", examType],
+    ["CIE", toText(cie, '').toUpperCase()],
+    ["Batch", toText(batch, '')],
+    ["Departments", departments.map((d) => toText(d, '')).join(", ")],
     [],
     headers,
     ...marksData
