@@ -5,6 +5,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 
+const dos = [
+  "Stable internet connectivity should be ensured before the examination begins.",
+  "Only one device and a single login session should be used throughout the examination.",
+  "On-screen instructions should be read carefully and followed at all times.",
+  "Questions should be answered strictly in the order presented.",
+  "The examination should be completed within the allotted time."
+];
+
+const donts = [
+  "Multiple logins from the same or different devices should not be attempted.",
+  "The examination application should not be minimized, resized, exited, or force-closed.",
+  "Tabs, windows, other applications, or system keyboard shortcuts should not be used.",
+  "External devices, secondary screens, VPNs, or remote access tools should not be used.",
+  "Cheating, collaboration, screen capture, or proctoring bypass attempts should not be made."
+];
+
 export default function InstructionPage() {
   const [accepted, setAccepted] = useState(false);
   const navigate = useNavigate();
@@ -245,10 +261,9 @@ export default function InstructionPage() {
               <h2 className="section-title">Things to Do</h2>
             </div>
             <ul className="list">
-              <li><span className="bullet">✓</span> Stay connected to stable internet</li>
-              <li><span className="bullet">✓</span> Read each question carefully</li>
-              <li><span className="bullet">✓</span> Submit answers before timer ends</li>
-              <li><span className="bullet">✓</span> Attempt all questions (compulsory)</li>
+              {dos.map((dos,idx) => (
+                <li key={idx}><span className="bullet">✓</span>{dos}</li>
+              ))}
             </ul>
           </div>
 
@@ -259,10 +274,9 @@ export default function InstructionPage() {
               <h2 className="section-title">Things to Avoid</h2>
             </div>
             <ul className="list">
-              <li><span className="bullet">✗</span> Do not switch tabs or minimize the window.</li>
-              <li><span className="bullet">✗</span> Do not use mobile phones or calculators.</li>
-              <li><span className="bullet">✗</span> Do not take screenshots.</li>
-              <li><span className="bullet">✗</span> Do not seek help from anyone.</li>
+              {donts.map((donts,idx) => (
+                <li key={idx}><span className="bullet">✗</span>{donts}</li>
+              ))}
             </ul>
           </div>
         </div>
