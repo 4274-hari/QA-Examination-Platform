@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import axios from "axios"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -22,21 +23,9 @@ export default function LoginForm() {
     setSuccess("")
 
     try {
-      const res = await fetch("/api/main-backend/auth/staff/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.identifier,
-          password: formData.password,
-        }),
-        credentials: 'include'
-      })
+      const res = await axios.post("/api/main-backend/auth/staff/login", { email: formData.identifier, password: formData.password })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed")
-      }
+      const data = res.data;
 
       const sessionData = {
         token: data.token,
@@ -54,7 +43,8 @@ export default function LoginForm() {
 
       setTimeout(() => navigate(redirectPath), 500)
     } catch (err) {
-      setError(err.message)
+      setError(err.response.data.message)
+      console.error(err);
     } finally {
       setLoading(false)
     }
