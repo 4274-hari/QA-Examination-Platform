@@ -13,8 +13,22 @@ const QAExamResults = () => {
 
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [batches, setBatches] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get('/api/main-backend/examiner/forms')
+        setBatches(res.data.batch)
+
+      } catch (error) {
+        console.error("Error fetching the form data",error);
+      }
+    }
+    fetchData();
+  }, [])
 
   const handleFetchResults = async () => {
     if (!filters.cie || !filters.batch) {
@@ -120,7 +134,7 @@ const QAExamResults = () => {
 
             <Select
               label="Batch"
-              options={["2023-2027", "2024-2028", "2025-2029"]}
+              options={batches}
               value={filters.batch}
               onChange={(v) =>
                 setFilters({ ...filters, batch: v })

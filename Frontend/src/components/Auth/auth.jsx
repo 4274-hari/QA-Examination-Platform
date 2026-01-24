@@ -1,9 +1,12 @@
 import { useState } from "react"
-import { Book, BookOpen, Copyright } from "lucide-react"
+import { BookOpen, Copyright } from "lucide-react"
 import LoginForm from "./Login"
+import { SignupForm } from "./Signup"
+import { useLocation } from "react-router-dom"
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true)
+  const location = useLocation()
+  const isLogin = location.pathname === "/"
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#fdcc03]/5 flex items-center justify-center p-4">
@@ -15,15 +18,14 @@ export default function AuthPage() {
           </div>
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Velammal Engineering College</h1>
           <p className="text-slate-600">
-            {isLogin ? "Welcome back! Please sign in to continue." : "Create your admin account to get started."}
+            {isLogin ? "Welcome back! Please sign in to continue." : "Create your admin/staff account to get started."}
           </p>
         </div>
 
         {/* Auth Form div */}
         <div className="p-8 shadow-2xl border-0 bg-white/90 backdrop-blur-sm animate-slide-in-right">
-
           {/* Forms */}
-          <div className="transition-all duration-500 ease-in-out">{<LoginForm />}</div>
+          <div className="transition-all duration-500 ease-in-out">{isLogin ? <LoginForm /> : <SignupForm />}</div>
         </div>
 
         {/* Footer */}
