@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Book, BookOpen } from "lucide-react"
+import { Book, BookOpen, Copyright } from "lucide-react"
 import LoginForm from "./Login"
 
 export default function AuthPage() {
@@ -13,7 +13,7 @@ export default function AuthPage() {
           <div className="w-16 h-16 bg-[#fdcc03] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-glow">
             <BookOpen/>
           </div>
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">VEC College Question Paper Generater Portal</h1>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Velammal Engineering College</h1>
           <p className="text-slate-600">
             {isLogin ? "Welcome back! Please sign in to continue." : "Create your admin account to get started."}
           </p>
@@ -28,7 +28,7 @@ export default function AuthPage() {
 
         {/* Footer */}
         <div className="text-center mt-6 text-sm text-slate-500 animate-fade-in-up">
-          <p>© 2025 VEC College Admin Portal. All rights reserved.</p>
+          <p className="flex justify-center items-center gap-2"><Copyright /> <a href="https://velammal.edu.in/webteam" target="_blank" className="cursor-pointer font-bold text-black" >WebOps VEC</a>, Velammal Engineering College, Chennai</p>
         </div>
       </div>
     </div>
