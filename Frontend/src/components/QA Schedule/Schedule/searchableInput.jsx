@@ -51,8 +51,17 @@ export function SearchableInput({
 
   /* Sync single value into input */
   useEffect(() => {
-    if (!multiple && value) {
-      setQuery(value)
+    if (!multiple) {
+      setQuery(value || "")
+    }
+  }, [value, multiple])
+
+  useEffect(() => {
+    if (
+      (!multiple && !value) ||
+      (multiple && Array.isArray(value) && value.length === 0)
+    ) {
+      setQuery("")
     }
   }, [value, multiple])
 
@@ -160,6 +169,15 @@ export function MultiSearchDropdown({
       <div className="relative border rounded-md min-h-[48px]
         flex flex-wrap items-center gap-2 px-3">
         <Icon className="w-4 h-4 text-slate-400" />
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOpen(true)
+          }}
+          placeholder={placeholder}
+          className="flex-1 outline-none text-sm"
+        />
 
         {value.map((v) => (
           <span key={v} className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
@@ -174,15 +192,7 @@ export function MultiSearchDropdown({
           </span>
         ))}
 
-        <input
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setOpen(true)
-          }}
-          placeholder={placeholder}
-          className="flex-1 outline-none text-sm"
-        />
+
       </div>
 
       {open && (
@@ -203,7 +213,7 @@ export function MultiSearchDropdown({
   )
 }
 
-const TIME_SLOTS = {
+const TIME_SLOT_SINGLE = {
   model: [
     "08:40 AM - 12:10 PM",
     "12:40 PM - 04:00 PM"
@@ -216,6 +226,25 @@ const TIME_SLOTS = {
   ]
 }
 
+const TIME_SLOT_MULTIPLE = {
+  model: [
+    "08:40 AM - 10:20 AM",
+    "10:30 AM - 12:10 PM",
+    "12:40 PM - 02:20 PM",
+    "02:30 PM - 04:00 PM"
+  ],
+  internal: [
+    "08:40 AM - 09:30 AM",
+    "09:30 AM - 10:20 AM",
+    "10:30 AM - 11:20 AM",
+    "11:20 AM - 12:10 PM",
+    "12:50 PM - 01:35 PM",
+    "01:35 PM - 02:20 PM",
+    "02:30 PM - 03:15 PM",
+    "03:15 PM - 4:00 PM"
+  ]
+}
+
 const EXAM_TYPE = [
   "I", "II", "III"
 ]
@@ -224,6 +253,16 @@ const typeMap = {
   I: "internal",
   II: "internal",
   III: "model"
+}
+
+const getTimeSlots = (type, subjectCount) => {
+  if (!type) return []
+
+  const examKey = typeMap[type]
+
+  return subjectCount == 1
+    ? TIME_SLOT_MULTIPLE[examKey]
+    : TIME_SLOT_SINGLE[examKey]
 }
 
 export function Dropdown({ label, icon: Icon, value, onChange, type }) {
@@ -241,16 +280,16 @@ export function Dropdown({ label, icon: Icon, value, onChange, type }) {
         >
           <option value="">{label === "Exam Time" ? "Select Time" : "Select Exam Type"}</option>
           {label === "Exam Time"
-            ? (TIME_SLOTS[typeMap[type]] || []).map((time) => (
+            ? getTimeSlots(type.examType, type.subjectCount)?.map(time => (
                 <option key={time} value={time}>
                   {time}
                 </option>
               ))
             : EXAM_TYPE.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
         </select>
       </div>
     </div>

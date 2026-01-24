@@ -354,16 +354,24 @@ const QuestionPage = () => {
     }
   };
 
-  // ✅ TAB SWITCH DETECTION - Separate from window blur
+  // page hide
   useEffect(() => {
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        registerViolation("tabSwitch", "Tab or window switch detected.");
-      }
+    const onPageHide = () => {
+      registerViolation("pagehide", "Page hidden or navigated away");
     };
 
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", onPageHide);
+    return () => window.removeEventListener("pagehide", onPageHide);
+  }, []);
+
+  // tab blur detection, ✅ TAB SWITCH DETECTION
+  useEffect(() => {
+    const onBlur = () => {
+      registerViolation("tabSwitch", "Window focus lost (Alt+Tab detected)");
+    };
+
+    window.addEventListener("blur", onBlur);
+    return () => window.removeEventListener("blur", onBlur);
   }, []);
 
   // FULLSCREEN ENFORCEMENT - Fixed to always show warning
@@ -686,23 +694,162 @@ const QuestionPage = () => {
       Swal.fire({
         title: forced ? "Time's Up! - Exam Auto-Submitted" : "Exam Result",
         icon: "success",
+        showCloseButton: true,
+        closeButtonHtml: `
+          <div style="
+            width:28px;
+            height:28px;
+            background:#dc2626;
+            color:#fff;
+            border-radius:6px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+          ">✕</div>
+        `,
         html: `
-          <div style="text-align:left;font-size:15px">
-            <p><b>Register No:</b> ${registerno}</p>
-            <p><b>Name:</b> ${name}</p>
-            <p><b>Department:</b> ${department}</p>
-            <p><b>Year:</b> ${batch}</p>
-            <hr/>
-            <h3 style="text-align:center;color:#16a34a">
-              Total Marks: ${totalMarks}/${cie === 'cie3' ? 100 : 50}
-            </h3>
-            <h4 style="margin-top:10px;color:#dc2626">Violation Summary</h4>
-            <p><b>Fullscreen Exits:</b> ${violations.fullscreenExit}</p>
-            <p><b>Tab Switches:</b> ${violations.tabSwitch}</p>
+          <div style="
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size:14px;
+            color:#1f2937;
+            padding:5px 0;
+          ">
+
+            <div style="
+              border:1px solid #e5e7eb;
+              border-radius:8px;
+              padding:12px 16px;
+              background:#f9fafb;
+            ">
+              <table style="
+                width:100%;
+                border-collapse:collapse;
+                text-align:left;
+              ">
+                <tr>
+                  <td style="
+                    width:130px;
+                    padding:6px 0;
+                    font-weight:600;
+                    color:#374151;
+                    vertical-align:top;
+                    text-align:left;
+                  ">
+                    Register No
+                  </td>
+
+                  <td style="
+                    width:20px;
+                    padding:6px 10px;   /* ADDED GAP AROUND : */
+                    font-weight:600;
+                    vertical-align:top;
+                    text-align:center;
+                  ">
+                    :
+                  </td>
+
+                  <td style="
+                    padding:6px 0 6px 10px;  /* ADDED GAP AFTER : */
+                    color:#111827;
+                    vertical-align:top;
+                    text-align:left;
+                  ">
+                    ${registerno}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="width:170px; padding:6px 0; font-weight:600; text-align:left;">
+                    Name
+                  </td>
+                  <td style="width:20px; padding:6px 10px; text-align:center; font-weight:600;">:</td>
+                  <td style="padding:6px 0 6px 10px; text-align:left;">
+                    ${name}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="width:170px; padding:6px 0; font-weight:600; text-align:left;">
+                    Department
+                  </td>
+                  <td style="width:20px; padding:6px 10px; text-align:center; font-weight:600;">:</td>
+                  <td style="padding:6px 0 6px 10px; text-align:left;">
+                    ${department}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="width:170px; padding:6px 0; font-weight:600; text-align:left;">
+                    Year
+                  </td>
+                  <td style="width:20px; padding:6px 10px; text-align:center; font-weight:600;">:</td>
+                  <td style="padding:6px 0 6px 10px; text-align:left;">
+                    ${batch}
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div style="
+              margin-top:14px;
+              padding:12px;
+              text-align:center;
+              border-radius:8px;
+              background:#ecfdf5;
+              border:1px solid #bbf7d0;
+            ">
+              <div style="font-size:18px; font-weight:700; color:#15803d;">
+                Total Marks
+              </div>
+              <div style="font-size:22px; font-weight:800; color:#166534;">
+                ${totalMarks} / ${cie === 'cie3' ? 100 : 50}
+              </div>
+            </div>
+
+            <div style="
+              margin-top:16px;
+              border-top:1px dashed #d1d5db;
+              padding-top:12px;
+            ">
+              <div style="
+                font-weight:700;
+                color:#b91c1c;
+                margin-bottom:8px;
+                text-align:center;
+              ">
+                Violation Summary
+              </div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                background:#fef2f2;
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+              ">
+                <span>Fullscreen Exits</span>
+                <span style="font-weight:700;">${violations.fullscreenExit}</span>
+              </div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                background:#fef2f2;
+                padding:8px 12px;
+                border-radius:6px;
+              ">
+                <span>Tab Switches</span>
+                <span style="font-weight:700;">${violations.tabSwitch}</span>
+              </div>
+            </div>
           </div>
         `,
         confirmButtonText: "Finish",
         allowOutsideClick: false,
+        allowEscapeKey: false,
       }).then(async () => {
         localStorage.removeItem("examSession");
         sessionStorage.removeItem("studentDetails");
@@ -775,7 +922,7 @@ const QuestionPage = () => {
                   name={`q-${current}`}
                   checked={selected[current] === opt}
                   onChange={() => selectOption(opt)}
-                  disabled={!isOnline}
+                  disabled={loading || !isOnline}
                 />
                 <span>{formatMathText(opt)}</span>
               </label>
@@ -797,7 +944,7 @@ const QuestionPage = () => {
         <div className="quest_right">
           <h2 className="quest_progress_title">Progress</h2>
           <div className="quest_circles_scroll" ref={scrollRef}>
-            {Array.from({ length: questions.length }, (_, index) => ( // or use  totalQuestions to show initially all the question length
+            {Array.from({ length: totalQuestions }, (_, index) => ( // or use  totalQuestions to show initially all the question length
               <div
                 key={index}
                 ref={(el) => (circleRefs.current[index] = el)}

@@ -12,6 +12,7 @@ const { uploadQuestion, deleteQuestion,  getSubject } = require("../controllers/
 const { addSubject, deleteSubject} = require("../controllers/staff_controllers/subject_handle_controller");
 const { handleBatchStudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
 
+
 // ===========================
 // EXAM SCHEDULE (ADMIN)
 // ===========================
@@ -44,22 +45,25 @@ router.delete("/subjects", allowRoles("admin"), deleteSubject);
 // ===========================
 // STUDENT MANAGEMENT (ADMIN)
 // ===========================
-router.post("/students/batch", allowRoles("admin"), handleBatchStudent);
+router.delete("/students/batch", allowRoles("admin"), handleBatchStudent);
 router.post("/students", allowRoles("admin"), addStudent);
 router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
 
 // ===========================
 // EXAM SESSION CONTROL
 // ===========================
-router.post("/exam/pause", pauseExamSession);
+router.post("/exam/pause",allowRoles("admin", "staff"), pauseExamSession);
 router.get("/exam/active-sessions", allowRoles("admin", "staff"), getActiveSessions);
 
 
 // ===========================
 // QUESTIONS
 // ===========================
-router.post("/questions/upload", uploadQuestion);
-router.delete("/questions", deleteQuestion);
-router.get("/questions/subjects", getSubject);
+router.post("/questions/upload", allowRoles("admin"), uploadQuestion);
+router.delete("/topics", allowRoles("admin"), deleteQuestion);
+router.get("/questions/subjects", allowRoles("admin"), getSubject);
+
+
+
 
 module.exports = router;

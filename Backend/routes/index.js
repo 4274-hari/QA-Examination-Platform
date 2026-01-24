@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middlewares/auth")
+const requireAuth = require("../middlewares/auth")
 
 // QA Modules
 const loginRoutes = require("./login_routes");
@@ -12,10 +12,10 @@ const examRoutes = require("./exam_routes");
 router.use("/auth", loginRoutes);
 
 // Examiner
-router.use("/examiner", auth, examinerRoutes);
+router.use("/examiner", requireAuth, examinerRoutes);
 
 // Student
-router.use("/student", auth, studentRoutes);
+router.use("/student", requireAuth, studentRoutes);
 
 // Exam
 router.use("/exam", examRoutes);

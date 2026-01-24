@@ -22,7 +22,7 @@ const QuestionPage = React.lazy(() =>
   import("./components/QA Student/questions.jsx")
 );
 const Schedule = React.lazy(() =>
-  import("./components/QA Schedule/Schedule/Schedule.jsx")
+  import("./components/QA Schedule/Schedule/schedule.jsx")
 );
 const UploadContainer = React.lazy(() =>
   import("./components/QA Schedule/uploads/uploadContainer.jsx")
