@@ -1,5 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
+contextBridge.exposeInMainWorld('appEnv', {
+  isElectron: true,
+  platform: process.platform
+})
+
 contextBridge.exposeInMainWorld('electronAPI', {
   // Listen for violation events from main process
   onViolation: (callback) => {

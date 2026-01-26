@@ -44,9 +44,9 @@ async function storeExamSchedule(req, res) {
     const duration = calculateDuration(start, end);
 
     const cieMap = {
-      I: "cie1",
-      II: "cie2",
-      III: "cie3"
+      "CIE I": "cie1",
+      "CIE II": "cie2",
+      "CIE III": "cie3"
     }
 
     const cie = cieMap[cieRoman]

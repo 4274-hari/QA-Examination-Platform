@@ -8,14 +8,15 @@
     "dev": "vite",
     "dev:electron": "concurrently -k -r \"npm:dev\" \"wait-on tcp:5173 && electron .\"",
     "build:web": "vite build",
-    "build:electron": "vite build --mode electron && electron-builder --win --x64",
+    "build:electron": "vite build && electron-builder --win --x64",
     "preview": "vite preview",
     "lint": "eslint ."
   },
   "dependencies": {
     "autoprefixer": "^10.4.23",
     "axios": "^1.13.2",
-    "express": "^5.2.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.2",
     "framer-motion": "^12.25.0",
     "http-proxy-middleware": "^3.0.5",
     "lucide-react": "^0.562.0",
@@ -53,13 +54,17 @@
       "dist/**/*",
       "electron/**/*",
       "package.json",
+      ".env.production",
       "node_modules/express/**/*",
-      "node_modules/http-proxy-middleware/**/*"
+      "node_modules/http-proxy-middleware/**/*",
+      "node_modules/dotenv/**/*"
     ],
     "asarUnpack": [
       "dist/**/*",
+      ".env.production",
       "node_modules/express/**/*",
-      "node_modules/http-proxy-middleware/**/*"
+      "node_modules/http-proxy-middleware/**/*",
+      "node_modules/dotenv/**/*"
     ],
     "extraMetadata": {
       "main": "electron/main.js"
