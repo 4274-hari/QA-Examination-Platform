@@ -3,6 +3,7 @@ const { getDb } = require("../../config/db");
 async function registerViolation(req, res) {
   const db = getDb();
   const sessionCol = db.collection("qa_exam_sessions");
+  const schedulecol = db.collection("qa_schedule");
   const examCol = db.collection("qa_exam"); 
   const { type } = req.body;
   const { registerno } = req.session.user;
@@ -11,13 +12,19 @@ async function registerViolation(req, res) {
 
   if (!session) return res.sendStatus(404);
 
+  const scheduledoc  = await schedulecol.findOne({
+    _id:session.scheduleId});
+
+  const violationlimit = scheduledoc.violation;
+
+
   const currentTotal =
     (session.violations.fullscreenExit || 0) +
     (session.violations.tabSwitch || 0);
 
   const total = currentTotal + 1;
 
-  if (total >= 5) {
+  if (total >= violationlimit) {
     await sessionCol.updateOne(
       { registerno },
       {

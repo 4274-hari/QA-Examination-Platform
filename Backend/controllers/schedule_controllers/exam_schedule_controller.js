@@ -21,7 +21,9 @@ async function storeExamSchedule(req, res) {
       date,
       start,
       end,
-      isRetest
+      violation,
+      isRetest,
+      isArrear
     } = req.body;
   
 
@@ -77,11 +79,14 @@ if (examDateStr < todayStr) {
 
       isRetest,
 
+      isArrear,
+
       topics,
 
       date,
       start,
       end,
+      violation,
       duration: cie == 3 ? 210 : 100,
 
       examCode: null,
