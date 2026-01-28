@@ -415,7 +415,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                 className="qa-logout-btn flex items-center gap-2 px-3 py-2 rounded-md border"
                 onClick={() => {
                   sessionStorage.removeItem("userSession");
-                  navigate("/login");
+                  navigate("/");
                 }}
                 title="Log out"
                 type="button"
@@ -532,6 +532,37 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                   </div>
                 </button>
               </div>
+            </div>
+          )}
+
+          {subjects && subjects.length == 0 && title === "Question Data Upload" && (
+            <div className="w-1/2 flex justify-center gap-2">
+              {customSubjects.map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      setSelectedOption(item);
+                      setTopics([]);
+                      setIsCustomSubject(true);
+                    }}
+                    className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 hover:shadow-lg ${selectedOption === item ? "shadow-lg scale-105" : "hover:scale-105"
+                      }`}
+                    style={{
+                      backgroundColor: selectedOption === item ? "#800000" : "#fff",
+                      borderColor: "#800000",
+                      color: selectedOption === item ? "#fff" : "#800000",
+                    }}
+                  >
+                    {item}
+                  </button>
+                ))}
+              <button
+                onClick={handleAddNewSubject}
+                className="px-6 py-3 rounded-lg text-base font-semibold border-2 border-dashed hover:scale-105 transition-all duration-300"
+                style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+              >
+                + Add Subject
+              </button>
             </div>
           )}
 
