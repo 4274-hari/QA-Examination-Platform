@@ -15,11 +15,10 @@ const alertBox = (title, text, icon = "info") => {
 };
 
 // ✅ REAL INTERNET CHECK - Not just network adapter
-const checkRealInternet = async () => {
+const checkBackendConnection = async () => {
   try {
-    await axios.get("/api/main-backend/exam/qa/session/ping", {
-      timeout: 10000,
-      headers: { "Cache-Control": "no-cache" }
+    const res = await axios.get("/api/main-backend/exam/qa/session/ping", {
+      timeout: 3000 
     });
     return true;
   } catch {
@@ -70,23 +69,15 @@ const QuestionPage = () => {
   // Get total questions from exam data or calculate based on exam type
   const totalQuestions = exam?.totalQuestions || (exam?.examType === "cie3" ? 100 : 50);
     
-  const [questions, setQuestions] = useState(() => {
-    if (exam?.questions?.length > 0) {
-      const q = exam.questions[0];
-      return [{
-        id: 1,
-        question: q.question,
-        options: [q.A, q.B, q.C, q.D],
-      }];
-    }
-    return [];
-  });
+  // ---------------- QUESTIONS ----------------
+  const questions = exam.questions.map((q, index) => ({
+    id: index + 1,
+    question: q.question,
+    options: [q.A, q.B, q.C, q.D],
+  }));
+
+  console.log("Questions",questions);
   
-  useEffect(() => {
-    if (current > questions.length - 1) {
-      setCurrent(questions.length - 1);
-    }
-  }, [current, questions.length]);
 
   const q = questions[current];
 
@@ -100,7 +91,7 @@ const QuestionPage = () => {
         if (err.response?.data?.status === "TIME_UP") {
           await submitExam(true);
         } else {
-          forceExit(err.response?.data || {});
+          forceExit(err.response?.data || { message: "Time up" });
         }
       }
     };
@@ -135,7 +126,7 @@ const QuestionPage = () => {
       try {
         const res = await axios.get("/api/main-backend/exam/qa/session/status");
         if (res.data.status !== "ACTIVE") {
-          forceExit(res.data);
+          forceExit({ message: "Session verification error" });
         }
       } catch (err) {
         console.error("Session verification error:", err);
@@ -172,7 +163,6 @@ const QuestionPage = () => {
           }
         });
 
-        setQuestions(rebuiltQuestions);
         setSelected(rebuiltSelected);
         setVisited(rebuiltVisited);
         setCurrent(currentQuestionIndex);
@@ -196,7 +186,7 @@ const QuestionPage = () => {
       try {
         await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
-        forceExit(err.response?.data || {});
+        forceExit(err.response?.data || { message: "HeartBeat error"});
       }
     }, 15000);
 
@@ -248,11 +238,24 @@ const QuestionPage = () => {
   }, []);
 
   // ✅ FIX #1: REAL OFFLINE/ONLINE HANDLING - Checks actual internet, not just adapter
+  const isBrowserOnline = () => navigator.onLine;
+
+  const checkRealInternet = async () => {
+    if (!isBrowserOnline()) {
+      return false;
+    }
+    
+    return await checkBackendConnection();
+  };
+
   useEffect(() => {
     let checkInterval;
+    let isCheckingInternet = false; // Prevent overlapping checks
 
     const handleOffline = async () => {
-      // Double-check with real internet ping
+      if (isCheckingInternet || offlineAlertShown.current) return;
+      isCheckingInternet = true;
+      
       const hasInternet = await checkRealInternet();
       
       if (!hasInternet && !offlineAlertShown.current) {
@@ -267,10 +270,14 @@ const QuestionPage = () => {
           showConfirmButton: false,
         });
       }
+      
+      isCheckingInternet = false;
     };
 
     const handleOnline = async () => {
-      // Verify real internet before resuming
+      if (isCheckingInternet || !offlineAlertShown.current) return;
+      isCheckingInternet = true;
+      
       const hasInternet = await checkRealInternet();
       
       if (hasInternet && offlineAlertShown.current) {
@@ -297,14 +304,18 @@ const QuestionPage = () => {
           console.error("Failed to resume:", err);
         }
       }
+      
+      isCheckingInternet = false;
     };
 
-    // Listen to browser online/offline events
+    // ✅ Listen to browser events (instant detection)
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
 
-    // Also poll real internet every 5 seconds
+    // ✅ Poll backend every 10 seconds (reduced frequency)
     checkInterval = setInterval(async () => {
+      if (isCheckingInternet) return; 
+      
       const hasInternet = await checkRealInternet();
       
       if (!hasInternet && !offlineAlertShown.current) {
@@ -312,7 +323,7 @@ const QuestionPage = () => {
       } else if (hasInternet && offlineAlertShown.current) {
         handleOnline();
       }
-    }, 5000);
+    }, 10000); 
 
     return () => {
       window.removeEventListener("offline", handleOffline);
@@ -606,28 +617,11 @@ const QuestionPage = () => {
       return;
     }
 
-    const data = await submitCurrentAnswer();
-    if (!data) return;
+    const success = await submitCurrentAnswer();
+    if (!success) return;
 
     setVisited((prev) => ({ ...prev, [current]: true }));
-
-    if (data.nextQuestion) {
-      setQuestions(prev => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          question: data.nextQuestion.question,
-          options: [
-            data.nextQuestion.A,
-            data.nextQuestion.B,
-            data.nextQuestion.C,
-            data.nextQuestion.D,
-          ],
-        },
-      ]);
-
-      setCurrent(prev => prev + 1);
-    }
+    setCurrent(prev => prev + 1);
   };
 
   const submitCurrentAnswer = async () => {
@@ -638,6 +632,7 @@ const QuestionPage = () => {
     try {
       setLoading(true);
       const currentQuestion = questions[current];
+      console.log(currentQuestion, selected[current], current);
 
       const res = await axios.post("/api/main-backend/student/answers/next", {
         question: currentQuestion.question,
@@ -645,7 +640,7 @@ const QuestionPage = () => {
         questionIndex: current,
       });
 
-      return res.data;
+      return true;
     } catch (error) {
       Swal.fire({
         title: "Submission Error",
