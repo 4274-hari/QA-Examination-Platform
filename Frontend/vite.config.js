@@ -61,10 +61,11 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ],
-  // Use relative base for Electron (file://) so assets resolve
-  base: mode === "electron" ? "./" : "/",
+  base: "/",
   build: {
-    outDir: "dist"
+    outDir: "dist",
+    // ✅ Add sourcemap for better debugging
+    sourcemap: mode === 'development',
   },
   server: {
     port: 5173,

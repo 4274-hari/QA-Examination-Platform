@@ -91,7 +91,18 @@ async function heartbeat(req, res) {
 }
 
 async function ping(req, res) {
-  res.json({ ok: true, timestamp: Date.now() });
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
+  
+  res.json({ 
+    ok: true, 
+    timestamp: Date.now(),
+    serverLoad: process.memoryUsage().heapUsed / 1024 / 1024, 
+    uptime: process.uptime() 
+  });
 }
 
 module.exports = { heartbeat, ping }

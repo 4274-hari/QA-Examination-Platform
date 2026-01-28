@@ -43,9 +43,9 @@ const QAExamResults = () => {
     setLoading(true);
 
     const cieMap = {
-        I: "cie1",
-        II: "cie2",
-        III: "cie3"
+      "CIE I": "cie1",
+      "CIE II": "cie2",
+      "CIE III": "cie3"
     }
 
     try {
@@ -125,7 +125,7 @@ const QAExamResults = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <Select
               label="CIE"
-              options={["I", "II", "III"]}
+              options={["CIE I", "CIE II", "CIE III"]}
               value={filters.cie}
               onChange={(v) =>
                 setFilters({ ...filters, cie: v })

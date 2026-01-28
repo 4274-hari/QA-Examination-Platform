@@ -4,6 +4,7 @@ const { getDb } = require("../../config/db");
 async function forceExit(req, res) {
   try {
     const { reason, registerno } = req.body;
+    console.log(reason, registerno);
 
     if (!reason || !registerno) {
       return res.status(400).json({ message: "Missing reason or registerno" });
