@@ -205,7 +205,7 @@ const ScheduledExam = () => {
               <div className="flex flex-col items-center gap-3 bg-white border border-[#800000]/30 rounded-xl px-4 py-2 shadow-sm">
                 <div className="flex items-center mb-2">
                   <span className="text-[#800000] text-sm font-bold flex items-center gap-2 tracking-wide">
-                    <Pause size={16} /> Pause Individual Student Exam
+                    <Pause size={16} /> Resume Individual Student Exam
                   </span>
                 </div>
                 <div className="gap-2 flex">
@@ -245,7 +245,7 @@ const ScheduledExam = () => {
                       disabled:cursor-not-allowed
                     `}
                   >
-                    {loading ? "Pausing..." : "Pause Exam"}
+                    {loading ? "Resuming..." : "Resume Exam"}
                   </button>
                 </div>
               </div>
@@ -281,7 +281,7 @@ const ScheduledExam = () => {
           <Select
             label="Year"
             options={batches}
-            value={filters.batch  }
+            value={filters.year}
             onChange={(v) => setFilters({ ...filters, year: v })}
           />
 

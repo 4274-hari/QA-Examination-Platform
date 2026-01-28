@@ -31,6 +31,15 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     setSubjects(options)
   }, [options])
 
+  const fetchUpdatedSubjects = async () => {
+    try {
+      const response = await axios.get('/api/main-backend/examiner/questions/subjects');
+      setSubjects(response.data.data);
+    } catch (error) {
+      console.error("Error fetching updated subjects:", error);
+    }
+  };
+
     useEffect(() => {
     const fetchBatch = async () => {
       try {
@@ -97,6 +106,10 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       });
       setSelectedOption("");
       setFile(null);
+      // ✅ Refetch updated subjects after successful upload
+      if (uploadFor === "question") {
+        fetchUpdatedSubjects();
+      }
     } catch (error) {
       const msg =
         error?.response?.data?.message ||
@@ -152,6 +165,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
         timer: 1000,
         showConfirmButton: false,
       });
+      // ✅ Refetch updated subjects after topic deletion
+      fetchUpdatedSubjects();
 
     } catch (error) {
       Swal.fire(
@@ -205,6 +220,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
         timer: 1200,
         showConfirmButton: false,
       });
+      // ✅ Refetch updated subjects after deletion
+      fetchUpdatedSubjects();
 
     } catch (error) {
       Swal.fire(
@@ -248,6 +265,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       setSelectedOption(subjectName);
       setTopics([]);
       setIsCustomSubject(true);
+      // ✅ Refetch updated subjects after adding new subject
+      fetchUpdatedSubjects();
 
     } catch (error) {
       Swal.fire({
@@ -486,26 +505,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                   </button>
                 ))}
 
-                {customSubjects.map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => {
-                      setSelectedOption(item);
-                      setTopics([]);
-                      setIsCustomSubject(true);
-                    }}
-                    className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 hover:shadow-lg ${selectedOption === item ? "shadow-lg scale-105" : "hover:scale-105"
-                      }`}
-                    style={{
-                      backgroundColor: selectedOption === item ? "#800000" : "#fff",
-                      borderColor: "#800000",
-                      color: selectedOption === item ? "#fff" : "#800000",
-                    }}
-                  >
-                    {item}
-                  </button>
-                ))}
-
                 {/* ➕ ADD NEW SUBJECT BUTTON */}
                 <button
                   onClick={handleAddNewSubject}
@@ -537,25 +536,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
 
           {subjects && subjects.length == 0 && title === "Question Data Upload" && (
             <div className="w-1/2 flex justify-center gap-2">
-              {customSubjects.map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => {
-                      setSelectedOption(item);
-                      setTopics([]);
-                      setIsCustomSubject(true);
-                    }}
-                    className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 hover:shadow-lg ${selectedOption === item ? "shadow-lg scale-105" : "hover:scale-105"
-                      }`}
-                    style={{
-                      backgroundColor: selectedOption === item ? "#800000" : "#fff",
-                      borderColor: "#800000",
-                      color: selectedOption === item ? "#fff" : "#800000",
-                    }}
-                  >
-                    {item}
-                  </button>
-                ))}
               <button
                 onClick={handleAddNewSubject}
                 className="px-6 py-3 rounded-lg text-base font-semibold border-2 border-dashed hover:scale-105 transition-all duration-300"

@@ -1,5 +1,6 @@
 const express = require("express");
 const compression = require("compression");
+const path = require('path')
 require("dotenv").config();
 
 const connectToDatabase = require("./config/db");
@@ -41,6 +42,9 @@ app.get("/api/main-backend/check-session", (req, res) => {
 
 // Routes
 app.use("/api/main-backend", backendroutes);
+
+// updates
+app.use('/electron-updates', express.static(path.join(__dirname, 'public/electron-updates')))
 
 // Global error handler
 app.use((err, req, res, next) => {
