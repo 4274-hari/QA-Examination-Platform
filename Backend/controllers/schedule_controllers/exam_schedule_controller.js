@@ -79,10 +79,6 @@ async function storeExamSchedule(req, res) {
         message: "Either department or registerNo must be provided"
       });
     }
-// normalizer
-    function timeToMinutes(timeStr) {
-  let [time, period] = timeStr.trim().split(" ");
-  let [hour, minute] = time.split(":").map(Number);
 
     /* -----------------------------
        Build schedule document
@@ -183,7 +179,6 @@ async function storeExamSchedule(req, res) {
     });
   }
 }
-
 
 async function cancelExamSchedule(req, res) {
   try {
