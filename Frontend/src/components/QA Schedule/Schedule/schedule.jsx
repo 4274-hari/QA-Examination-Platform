@@ -25,6 +25,7 @@ const Schedule = () => {
   const regRef = useRef(null)
   const [qaSelected, setQaSelected] = useState("")
   const [otherSubjects, setOtherSubjects] = useState("")
+  const [violationLimit, setViolationLimit] = useState("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [examType, setExamType] = useState("")
@@ -83,10 +84,11 @@ const Schedule = () => {
     setOtherSubjects("");
     setTopics({});
 
-    // Reset date, exam type, and time when batch changes
+    // Reset date, exam type, time, and violation limit when batch changes
     setDate("");
     setExamType("");
     setTime("");
+    setViolationLimit("")
 
   }, [activeBatch]);
 
@@ -177,6 +179,7 @@ const Schedule = () => {
     setArrearBatch("")
     setStudentRegs([])
     setRegDropdownOpen(false)
+    setViolationLimit("")
     setResetKey(prev => prev + 1)
   }, [isRetest, isArrear])
 
@@ -193,6 +196,18 @@ const Schedule = () => {
         icon: "warning",
         title: "Missing Details",
         text: "Please fill all required fields before submitting.",
+        confirmButtonColor: "#800000",
+      })
+      return
+    }
+
+    const numericViolationLimit = Number(violationLimit)
+
+    if (!violationLimit || Number.isNaN(numericViolationLimit) || numericViolationLimit <= 0) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Violation Limit Required",
+        text: "Enter a positive number for violation limit.",
         confirmButtonColor: "#800000",
       })
       return
@@ -221,6 +236,7 @@ const Schedule = () => {
       topics,
       isRetest,
       isArrear,
+      violation: numericViolationLimit,
     }
 
     if (!isRetest && !isArrear) {
@@ -236,9 +252,6 @@ const Schedule = () => {
         Swal.showLoading()
       },
     })
-
-    console.log(payload);
-
 
     try {
       const res = await fetch("/api/main-backend/examiner/exam-schedule", {
@@ -274,6 +287,7 @@ const Schedule = () => {
       setDate("")
       setTime("")
       setExamType("")
+      setViolationLimit("")
       setTopics([])
     } catch (error) {
       console.error("Schedule error:", error)
@@ -646,6 +660,14 @@ const Schedule = () => {
               }}
             />
           </div>
+        
+          <Input
+            label="Violation Limit"
+            icon={ListChecks}
+            type="number"
+            value={violationLimit}
+            onChange={setViolationLimit}
+          />
 
           <button
             onClick={submitExamSchedule}
