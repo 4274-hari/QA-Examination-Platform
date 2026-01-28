@@ -26,20 +26,21 @@ async function storeExamSchedule(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_schedule");
+   const {
+      batch,
+      department,
+      registerNo,
+      cie: cieRoman,
+      subject,
+      topics,
+      date,
+      start,
+      end,
+      violation,
+      isRetest,
+      isArrear
+    } = req.body;
     
-    const {
-       batch,
-       department,
-       registerNo,
-       cie: cieRoman,
-       subject,
-       topics,
-       date,
-       start,
-       end,
-       isRetest
-     } = req.body;
-
     // call durationcalculate
     const duration = calculateDuration(start, end);
 
@@ -97,12 +98,18 @@ async function storeExamSchedule(req, res) {
 
       isRetest,
 
+      isArrear,
+
       topics,
 
       date,
       start,
       end,
+      
+      violation,
+      
       duration,
+
 
       examCode: null,
       validFrom: null,
