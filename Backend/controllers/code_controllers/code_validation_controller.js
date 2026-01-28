@@ -209,7 +209,7 @@ if (now < validFrom || now > validTill) {
         scheduleId: schedule._id.toString(),
         examId: exam._id.toString(),
         subject: exam.subject,
-        questions: result[0]?.questions?.slice(0,1) || [],
+        questions: result[0]?.questions || [],
         totalQuestions: totalQuestions,
         examType: examType,
         date: schedule.date,

@@ -35,9 +35,11 @@ const Schedule = () => {
   const [topics, setTopics] = useState({})
   const [subjectTopics, setSubjectTopics] = useState([])
   const [isRetest, setIsRetest] = useState(false)
+  const [isArrear, setIsArrear] = useState(false)
   const [normalBatch, setNormalBatch] = useState("")
   const [retestBatch, setRetestBatch] = useState("")
-  const activeBatch = isRetest ? retestBatch : normalBatch
+  const [arrearBatch, setArrearBatch] = useState("")
+  const activeBatch = isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch
   const [resetKey, setResetKey] = useState(0)
   const navigate = useNavigate();
 
@@ -50,9 +52,11 @@ const Schedule = () => {
       try {
         const payload = isRetest
           ? { batch: retestBatch }
+          : isArrear
+          ? { batch: arrearBatch }
           : { department: departments, batch: normalBatch }
 
-        const url = isRetest
+        const url = isRetest || isArrear
           ? "/api/main-backend/examiner/forms/register-number/all"
           : "/api/main-backend/examiner/forms/register-number"
 
@@ -71,7 +75,7 @@ const Schedule = () => {
     }
 
     fetchStudents()
-  }, [activeBatch, departments, isRetest])
+  }, [activeBatch, departments, isRetest, isArrear])
 
   useEffect(() => {
     // Reset QA / Other subjects and topics when batch changes
@@ -170,10 +174,11 @@ const Schedule = () => {
   useEffect(() => {
     setNormalBatch("")
     setRetestBatch("")
+    setArrearBatch("")
     setStudentRegs([])
     setRegDropdownOpen(false)
     setResetKey(prev => prev + 1)
-  }, [isRetest])
+  }, [isRetest, isArrear])
 
   function parseTimeSlot(timeSlot) {
     if (!timeSlot) return { start: "", end: "" }
@@ -215,9 +220,10 @@ const Schedule = () => {
       end,
       topics,
       isRetest,
+      isArrear,
     }
 
-    if (!isRetest) {
+    if (!isRetest && !isArrear) {
       payload.department = departments
     }
 
@@ -260,6 +266,7 @@ const Schedule = () => {
       // 🔁 Reset form
       setNormalBatch("")
       setRetestBatch("")
+      setArrearBatch("")
       setDepartments("")
       setRegisterState({ mode: "none", values: [] })
       setQaSelected("")
@@ -291,15 +298,33 @@ const Schedule = () => {
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 mb-4 overflow-x-hidden">
         <div className="mt-4 px-4 mb-2 w-full flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex justify-between items-center w-full md:w-auto">
-            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
-              <Power size={16} className="text-slate-500" />
-              <label className="text-sm font-medium text-slate-700">Retest Mode</label>
-              <input
-                type="checkbox"
-                checked={isRetest}
-                onChange={(e) => setIsRetest(e.target.checked)}
-                className="h-4 w-4 accent-[#800000] cursor-pointer"
-              />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
+                <Power size={16} className="text-slate-500" />
+                <label className="text-sm font-medium text-slate-700">Retest</label>
+                <input
+                  type="checkbox"
+                  checked={isRetest}
+                  onChange={(e) => {
+                    setIsRetest(e.target.checked)
+                    if (e.target.checked) setIsArrear(false)
+                  }}
+                  className="h-4 w-4 accent-[#800000] cursor-pointer"
+                />
+              </div>
+              <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
+                <Power size={16} className="text-slate-500" />
+                <label className="text-sm font-medium text-slate-700">Arrear</label>
+                <input
+                  type="checkbox"
+                  checked={isArrear}
+                  onChange={(e) => {
+                    setIsArrear(e.target.checked)
+                    if (e.target.checked) setIsRetest(false)
+                  }}
+                  className="h-4 w-4 accent-[#800000] cursor-pointer"
+                />
+              </div>
             </div>
             <button
               className="qa-logout-btn md:hidden"
@@ -426,11 +451,11 @@ const Schedule = () => {
             icon={GraduationCap}
             options={years}
             value={activeBatch}
-            onChange={isRetest ? setRetestBatch : setNormalBatch}
+            onChange={isRetest ? setRetestBatch : isArrear ? setArrearBatch : setNormalBatch}
             placeholder="Select Batch"
           />
 
-          {!isRetest && (
+          {!isRetest && !isArrear && (
             <SearchableInput
               key={`dept-${resetKey}`}
               label="Department"
@@ -444,7 +469,7 @@ const Schedule = () => {
 
           <div ref={regRef} className="space-y-2 relative">
             {/* Input box (same style as others) */}
-            {isRetest ? (
+            {isRetest || isArrear ? (
               <MultiSearchDropdown
                 key={`batch-${resetKey}`}
                 label="Register Numbers"

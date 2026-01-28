@@ -27,7 +27,7 @@ const AptitudeHeader = ({ detailsFlag }) => {
             "flex items-center font-popp group bg-white text-slate-200 transition-all ease-in-out duration-300 w-full h-auto h-20"
           }
         >
-          <a href="#" className="flex flex-col items-center justify-center select-none ml-4">
+          <div className="flex flex-col items-center justify-center select-none ml-4">
             <div className="z-10">
               <img
                 src={logo}
@@ -49,7 +49,7 @@ const AptitudeHeader = ({ detailsFlag }) => {
                 (An Autonomous Institution)
               </span>
             </div>
-          </a>
+          </div>
 
           {/* Title */}
          <div className="flex-grow text-center mr-0 md:mr-[180px]">

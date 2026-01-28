@@ -215,13 +215,13 @@ export function MultiSearchDropdown({
 
 const TIME_SLOT_SINGLE = {
   model: [
-    "08:40 AM - 12:10 PM",
-    "12:40 PM - 04:00 PM"
+    "09:00 AM - 12:00 PM",
+    "01:00 PM - 04:00 PM"
   ],
   internal: [
     "08:40 AM - 10:20 AM",
     "10:30 AM - 12:10 PM",
-    "12:40 PM - 02:20 PM",
+    "12:50 PM - 02:20 PM",
     "02:30 PM - 04:00 PM"
   ]
 }
@@ -230,7 +230,7 @@ const TIME_SLOT_MULTIPLE = {
   model: [
     "08:40 AM - 10:20 AM",
     "10:30 AM - 12:10 PM",
-    "12:40 PM - 02:20 PM",
+    "12:50 PM - 02:20 PM",
     "02:30 PM - 04:00 PM"
   ],
   internal: [
@@ -246,13 +246,13 @@ const TIME_SLOT_MULTIPLE = {
 }
 
 const EXAM_TYPE = [
-  "I", "II", "III"
+  "CIE I", "CIE II", "CIE III"
 ]
 
 const typeMap = {
-  I: "internal",
-  II: "internal",
-  III: "model"
+  "CIE I": "internal",
+  "CIE II": "internal",
+  "CIE III": "model"
 }
 
 const getTimeSlots = (type, subjectCount) => {

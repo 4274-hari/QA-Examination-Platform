@@ -124,6 +124,13 @@ const App = () => {
     setCurrentPath(location.pathname); // Update state when route changes
   }, [location]); 
 
+  useEffect(() => {
+    // ✅ Only redirect in Electron, not in web browser
+    if (window.appEnv?.isElectron && location.pathname === '/') {
+      navigate('/QA/qaexam', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   const showStudentDetails = currentPath === "/QA/questions" || currentPath === "/QA/confirm";
 
   if (!isOnline) {
@@ -154,6 +161,7 @@ const App = () => {
           >
             <Routes>
               <Route path="/" element={<AuthPage />} />
+              <Route path="/signup" element={<AuthPage />} />
 
               <Route path="/QA/qaexam" element={<StudentLoginPage />} />
               <Route path="/QA/confirm" element={<InstructionPage />} />
