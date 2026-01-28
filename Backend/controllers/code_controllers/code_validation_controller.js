@@ -130,7 +130,7 @@ if (now < validFrom || now > validTill) {
 
         // Calculate total questions based on exam type
         const examType = schedule.cie || schedule.examType;
-        const totalQuestions = examType === "cie3" ? 100 : 50;
+        const totalQuestions = result[0]?.questions?.length
 
         return res.status(200).json({
           success: true,
@@ -198,7 +198,7 @@ if (now < validFrom || now > validTill) {
     // 10. Return exam details (don't create session yet)
     // Calculate total questions based on exam type
     const examType = schedule.cie || schedule.examType;
-    const totalQuestions = examType === "cie3" ? 100 : 50;
+    const totalQuestions = result[0]?.questions?.length
 
     return res.status(200).json({
       success: true,

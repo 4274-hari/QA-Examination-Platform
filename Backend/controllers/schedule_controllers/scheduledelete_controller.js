@@ -10,7 +10,7 @@ const deleteSchedules = async () => {
     const examcollection = db.collection("qa_exam");
     
     const tenDaysAgo = new Date(
-      Date.now() - 10 * 24 * 60 * 60 * 1000
+      Date.now() - 5 * 24 * 60 * 60 * 1000
     );
 
     const result = await collection.find({

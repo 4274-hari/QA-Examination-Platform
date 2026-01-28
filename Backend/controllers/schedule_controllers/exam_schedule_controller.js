@@ -3,29 +3,45 @@ const { ObjectId } = require("mongodb");
 const {scheduleExamActivation} = require("../code_controllers/code_generator_controller");
 const { createExamFromSchedule } = require("./exam_student_controller");
 
+// normalizer for exam time duration
+function timeToMinutes(timeStr) {
+  let [time, period] = timeStr.trim().split(" ");
+  let [hour, minute] = time.split(":").map(Number);
+
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + minute;
+}
+
+// calculate duration
+function calculateDuration(start, end) {
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+
+  return endMinutes - startMinutes; // duration in minutes
+}
 
 async function storeExamSchedule(req, res) {
   try {
     const db = getDb();
     const collection = db.collection("qa_schedule");
     
-    
+    const {
+       batch,
+       department,
+       registerNo,
+       cie: cieRoman,
+       subject,
+       topics,
+       date,
+       start,
+       end,
+       isRetest
+     } = req.body;
 
-   const {
-      batch,
-      department,
-      registerNo,
-      cie: cieRoman,
-      subject,
-      topics,
-      date,
-      start,
-      end,
-      violation,
-      isRetest,
-      isArrear
-    } = req.body;
-  
+    // call durationcalculate
+    const duration = calculateDuration(start, end);
 
     const cieMap = {
       I: "cie1",
@@ -35,16 +51,15 @@ async function storeExamSchedule(req, res) {
 
     const cie = cieMap[cieRoman]
 
-const examDateStr = date; 
-const todayStr = new Date().toISOString().split('T')[0];
+    const examDateStr = date; 
+    const todayStr = new Date().toISOString().split('T')[0];
 
-if (examDateStr < todayStr) {
-  return res.status(400).json({
-    success: false,
-    message: "Cannot schedule exam for past dates. Please select current or future date."
-  });
-}
-
+    if (examDateStr < todayStr) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot schedule exam for past dates. Please select current or future date."
+      });
+    }
 
     /* -----------------------------
        Validation
@@ -63,7 +78,6 @@ if (examDateStr < todayStr) {
         message: "Either department or registerNo must be provided"
       });
     }
-
 
     /* -----------------------------
        Build schedule document
@@ -86,8 +100,7 @@ if (examDateStr < todayStr) {
       date,
       start,
       end,
-      violation,
-      duration: cie == 3 ? 210 : 100,
+      duration,
 
       examCode: null,
       validFrom: null,
@@ -98,31 +111,31 @@ if (examDateStr < todayStr) {
     };
 
     /* -----------------------------
-   Conflict check
------------------------------ */
+    Conflict check
+    ----------------------------- */
 
-const conflictQuery = {
-  date,
-  batch,
-  status: { $ne: "inactive" },
-  $or: [
-    department ? { department } : null,
-    registerNo && registerNo.length
-      ? { registerNo: { $in: registerNo } }
-      : null
-  ].filter(Boolean)
-};
+    const conflictQuery = {
+      date,
+      batch,
+      status: { $ne: "inactive" },
+      $or: [
+        department ? { department } : null,
+        registerNo && registerNo.length
+          ? { registerNo: { $in: registerNo } }
+          : null
+      ].filter(Boolean)
+    };
 
-const existingSchedule = await collection.findOne(conflictQuery);
+    const existingSchedule = await collection.findOne(conflictQuery);
 
-if (existingSchedule) {
-  return res.status(409).json({
-    success: false,
-    message:
-      "An exam is already scheduled for this department or register number on the same date. Please delete the previous schedule and try again.",
-    existingScheduleId: existingSchedule._id
-  });
-}
+    if (existingSchedule) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "An exam is already scheduled for this department or register number on the same date. Please delete the previous schedule and try again.",
+        existingScheduleId: existingSchedule._id
+      });
+    }
 
 
     /* -----------------------------

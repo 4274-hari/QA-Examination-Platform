@@ -70,23 +70,24 @@ const QuestionPage = () => {
   // Get total questions from exam data or calculate based on exam type
   const totalQuestions = exam?.totalQuestions || (exam?.examType === "cie3" ? 100 : 50);
     
-    const [questions, setQuestions] = useState(() => {
-      if (exam?.questions?.length > 0) {
-        const q = exam.questions[0];
-        return [{
-          id: 1,
-          question: q.question,
-          options: [q.A, q.B, q.C, q.D],
-        }];
-      }
-      return [];
-    });
-    
-    useEffect(() => {
-      if (current > questions.length - 1) {
-        setCurrent(questions.length - 1);
-      }
-    }, [current, questions.length]);
+  const [questions, setQuestions] = useState(() => {
+    if (exam?.questions?.length > 0) {
+      const q = exam.questions[0];
+      return [{
+        id: 1,
+        question: q.question,
+        options: [q.A, q.B, q.C, q.D],
+      }];
+    }
+    return [];
+  });
+  
+  useEffect(() => {
+    if (current > questions.length - 1) {
+      setCurrent(questions.length - 1);
+    }
+  }, [current, questions.length]);
+
   const q = questions[current];
 
   // ✅ TIMER
@@ -694,22 +695,22 @@ const QuestionPage = () => {
       Swal.fire({
         title: forced ? "Time's Up! - Exam Auto-Submitted" : "Exam Result",
         icon: "success",
-        showCloseButton: true,
-        closeButtonHtml: `
-          <div style="
-            width:28px;
-            height:28px;
-            background:#dc2626;
-            color:#fff;
-            border-radius:6px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-          ">✕</div>
-        `,
+        // showCloseButton: true,
+        // closeButtonHtml: `
+        //   <div style="
+        //     width:28px;
+        //     height:28px;
+        //     background:#dc2626;
+        //     color:#fff;
+        //     border-radius:6px;
+        //     display:flex;
+        //     align-items:center;
+        //     justify-content:center;
+        //     font-size:16px;
+        //     font-weight:bold;
+        //     cursor:pointer;
+        //   ">✕</div>
+        // `,
         html: `
           <div style="
             font-family: 'Segoe UI', Arial, sans-serif;
