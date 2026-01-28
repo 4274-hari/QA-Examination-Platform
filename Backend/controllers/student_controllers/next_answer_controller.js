@@ -28,20 +28,6 @@ async function submitAnswer(req, res) {
       });
     }
 
-    const sessionUpdate = await sessionCol.updateOne(
-      { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
-      {
-        $set: {
-          currentQuestionIndex: questionIndex + 1, // move forward
-          lastSeenAt: new Date(),
-        },
-      }
-    );
-
-    if (sessionUpdate.matchedCount === 0) {
-      return res.status(400).json({ message: "Invalid question sequence" });
-    }
-
     const doc = await collection.findOne({
       scheduleId:session.scheduleId,
       "students.registerno": registerno,
@@ -58,10 +44,13 @@ async function submitAnswer(req, res) {
     }
 
     const q = student.questions.find(
-      (q) => q.question.trim() === question.trim()
-    );
+  (q) =>
+    q.questionNumber === questionIndex &&
+    q.question.trim() === question.trim()
+);
 
-    if (!q) {
+
+    if (!q ) {
       return res.status(404).json({ message: "Question not found" });
     }
 
@@ -87,42 +76,13 @@ async function submitAnswer(req, res) {
       }
     );
 
-    const updatedDoc = await collection.findOne({ _id: doc._id });
-    const updatedStudent = updatedDoc.students.find(
-      (s) => s.registerno === registerno
-    );
-
-    const answeredCount = updatedStudent.questions.filter(
+    const answeredCount = student.questions.filter(
       (q) => q.choosedOption && q.choosedOption.trim() !== ""
     ).length;
-
-    const nextQuestionIndex = questionIndex + 1;
-    const nextQuestionRaw = updatedStudent.questions[nextQuestionIndex];
-
-    let nextQuestion = null;
-
-    if (nextQuestionRaw) {
-      nextQuestion = {
-        question: nextQuestionRaw.question,
-        A: nextQuestionRaw.A,
-        B: nextQuestionRaw.B,
-        C: nextQuestionRaw.C,
-        D: nextQuestionRaw.D,
-        E: nextQuestionRaw.E,
-      };
-    }
-
-    if (!nextQuestionRaw) {
-      await sessionCol.updateOne(
-        { registerno },
-        { $set: { status: "FINISHED", finishedAt: new Date() } }
-      );
-    }
 
     res.json({
       message: "Answer updated successfully",
       answeredCount,
-      nextQuestion,
     });
   } catch (err) {
     console.error(err);
