@@ -28,6 +28,21 @@ async function submitAnswer(req, res) {
       });
     }
 
+
+    const sessionUpdate = await sessionCol.updateOne(
+      { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
+      {
+        $set: {
+          currentQuestionIndex: questionIndex + 1, // move forward
+          lastSeenAt: new Date(),
+        },
+      }
+    );
+
+    if (sessionUpdate.matchedCount === 0) {
+      return res.status(400).json({ message: "Invalid question sequence" });
+    }
+
     const doc = await collection.findOne({
       scheduleId:session.scheduleId,
       "students.registerno": registerno,
@@ -45,7 +60,7 @@ async function submitAnswer(req, res) {
 
     const q = student.questions.find(
   (q) =>
-    q.questionNumber === questionIndex &&
+    q.questionNumber === questionIndex + 1 &&
     q.question.trim() === question.trim()
 );
 
@@ -76,13 +91,8 @@ async function submitAnswer(req, res) {
       }
     );
 
-    const answeredCount = student.questions.filter(
-      (q) => q.choosedOption && q.choosedOption.trim() !== ""
-    ).length;
-
     res.json({
       message: "Answer updated successfully",
-      answeredCount,
     });
   } catch (err) {
     console.error(err);
