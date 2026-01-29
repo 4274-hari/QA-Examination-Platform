@@ -66,7 +66,7 @@ async function storeExamSchedule(req, res) {
        Validation
     ----------------------------- */
 
-    if (!batch || !cie || !subject  || !date || !start || !end || !topics) {
+    if (!batch || !cie || !subject  || !date || !start || !end || !topics || !violation) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields"
