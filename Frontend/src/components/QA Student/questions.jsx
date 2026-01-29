@@ -18,7 +18,7 @@ const alertBox = (title, text, icon = "info") => {
 const checkBackendConnection = async () => {
   try {
     const res = await axios.get("/api/main-backend/exam/qa/session/ping", {
-      timeout: 3000 
+      timeout: 10000 
     });
     return true;
   } catch {
