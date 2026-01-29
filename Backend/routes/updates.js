@@ -79,7 +79,7 @@ router.post('/upload',
     //   return res.status(403).json({ error: 'Only admin/staff can upload updates' })
     // }
 
-    const version = req.body?.version
+    const version = req.query.version
     if (!version) {
       return res.status(400).json({ error: 'Version is required in request body' })
     }
@@ -120,6 +120,20 @@ router.post('/upload',
 
       if (!req.files?.exe || !req.files?.yml) {
         return res.status(400).json({ error: 'Missing required files: exe and yml' })
+      }
+
+      const ymlFile = req.files.yml?.[0]
+
+      if (ymlFile) {
+        const rootYmlPath = path.join(UPDATES_DIR, 'latest.yml')
+
+        fs.copyFileSync(
+          path.join(versionDir, ymlFile.filename),
+          rootYmlPath
+        )
+
+        // Optional: remove from version folder
+        fs.unlinkSync(path.join(versionDir, ymlFile.filename))
       }
 
       try {
