@@ -305,7 +305,11 @@ const { fetchSubjectsWithTopics } = require("../../services/get_topics.service")
 
 async function getSubject(req, res) {
   try {
-    res.json({ success: true, data: await fetchSubjectsWithTopics(getDb()) });
+
+    const s3link = "/static/template/uploadquestion.xlsx";
+
+    res.json({ success: true, data: await fetchSubjectsWithTopics(getDb()),s3link });
+    
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
   }

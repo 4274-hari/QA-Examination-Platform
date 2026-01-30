@@ -1,20 +1,26 @@
-[{
-  "type": "qa_details",
-  "data": {
-    "subjects": [
-      {
-        "code": "QA204",
-        "name": "QA/VR"
-      },
-      {
-        "code": "QA301",
-        "name": "QA/BS"
-      },
-      {
-        "code": "QA210",
-        "name": "QA"
-      }
+[
+  {
+    "semester": [
+      "SEM I",
+      "SEM II",
+      "SEM III",
+      "SEM IV",
+      "SEM V",
+      "SEM VI",
+      "SEM VII",
+      "SEM VIII"
+    ]
+  },
+  {
+    "academic_year": [
+      "2025-2026",
+      "2026-2027"
+    ]
+  },
+  {
+    "regulation": [
+      "R-19",
+      "R-23"
     ]
   }
-}
 ]

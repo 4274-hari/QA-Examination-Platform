@@ -11,6 +11,7 @@ const {uploadStudentExcel} = require('../controllers/staff_controllers/uploadStu
 const { uploadQuestion, deleteQuestion,  getSubject } = require("../controllers/question_controllers/question_store_controller");
 const { addSubject, deleteSubject} = require("../controllers/staff_controllers/subject_handle_controller");
 const { handleBatchStudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
+const { deleteHandleForm, addHandleForm } = require('../controllers/staff_controllers/form_handle_controller');
 
 
 // ===========================
@@ -48,6 +49,12 @@ router.delete("/subjects", allowRoles("admin"), deleteSubject);
 router.delete("/students/batch", allowRoles("admin"), handleBatchStudent);
 router.post("/students", allowRoles("admin"), addStudent);
 router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
+
+// ===========================
+// REGULATION AND ACADEMIC YEAR MANAGEMENT (ADMIN)
+// ===========================
+router.delete("/deleteform", allowRoles("admin"), deleteHandleForm);
+router.post("/addform", allowRoles("admin"), addHandleForm);
 
 // ===========================
 // EXAM SESSION CONTROL
