@@ -58,7 +58,7 @@ app.use((err, req, res, next) => {
 // Start server
 async function startServer() {
 
-  require("./middlewares/session_cleanup_cron")
+  require("./middlewares/cron")
   await connectToDatabase();
   app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
