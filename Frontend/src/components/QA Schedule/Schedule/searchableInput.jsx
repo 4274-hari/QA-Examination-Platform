@@ -265,7 +265,7 @@ const getTimeSlots = (type, subjectCount) => {
     : TIME_SLOT_SINGLE[examKey]
 }
 
-export function Dropdown({ label, icon: Icon, value, onChange, type }) {
+export function Dropdown({ label, icon: Icon, value, values = [], onChange, type, placeholder }) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-slate-700">{label}</label>
@@ -278,16 +278,22 @@ export function Dropdown({ label, icon: Icon, value, onChange, type }) {
           className="pl-10 h-12 w-full border border-slate-300 rounded-md
           focus:ring-2 focus:ring-[#fdcc03]/20 bg-white"
         >
-          <option value="">{label === "Exam Time" ? "Select Time" : "Select Exam Type"}</option>
+          <option value="">{placeholder}</option>
           {label === "Exam Time"
             ? getTimeSlots(type.examType, type.subjectCount)?.map(time => (
                 <option key={time} value={time}>
                   {time}
                 </option>
               ))
-            : EXAM_TYPE.map((type) => (
+            : label === "Name Of The Examination" 
+            ? EXAM_TYPE.map((type) => (
               <option key={type} value={type}>
                 {type}
+              </option>
+            ))
+            : values.length > 0 && values?.map((sem,idx) => (
+              <option key={idx} value={sem}>
+                {sem}
               </option>
             ))}
         </select>

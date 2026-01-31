@@ -96,9 +96,9 @@ async function storeExamSchedule(req, res) {
       registerNo: registerNo || null,
 
       cie,
-      subject:Array.isArray(subject) && subject.length === 1 && subject[0] === "QA"
-  ? ["QA", "CS"]
-  : subject,
+      subject: Array.isArray(subject) && subject.length === 1 && subject[0] === "QA"
+        ? ["QA", "CS"]
+        : subject,
 
       isRetest,
 

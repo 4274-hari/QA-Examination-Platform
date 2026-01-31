@@ -27,17 +27,17 @@ async function exportMarks(scheduleId) {
   const violationMap = {};
 
   for (const s of sessions) {
-  const fullscreenExit = s.violations?.fullscreenExit ?? 0;
-  const tabSwitch = s.violations?.tabSwitch ?? 0;
-  const offlineCount = s.offline?.count ?? 0;
+    const fullscreenExit = s.violations?.fullscreenExit ?? 0;
+    const tabSwitch = s.violations?.tabSwitch ?? 0;
+    const offlineCount = s.offline?.count ?? 0;
 
-  const total = fullscreenExit + tabSwitch + offlineCount;
+    const total = fullscreenExit + tabSwitch + offlineCount;
 
- violationMap[s.registerno] = Math.max(
-    violationMap[s.registerno] ?? 0,
-    total
- );
-}
+    violationMap[s.registerno] = Math.max(
+        violationMap[s.registerno] ?? 0,
+        total
+    );
+  }
 
   const subjectTopicMap = {};
 
@@ -76,10 +76,20 @@ async function exportMarks(scheduleId) {
     ["Batch", schedule.batch],
     ["CIE", cieMap[schedule.cie]],
     ["Semester", schedule.semester],
-    ["Department", schedule.department],
-    ["Subject Name", subjects.join(" / ")],
-    ["Date", schedule.date],
   ];
+
+  if (schedule.department != null) {
+    meta.push(["Department", schedule.department]);
+  } else if (schedule.isArrear === true) {
+    meta.push(["Exam Type", "Arrear"]);
+  } else if (schedule.isRetest === true) {
+    meta.push(["Exam Type", "Retest"]);
+  }
+
+  meta.push(
+    ["Subject Name", schedule.subject.join(" / ")],
+    ["Date", schedule.date]
+  );
 
   meta.forEach((row, i) => {
     sheet.getCell(`A${i + 1}`).value = row[0];
@@ -89,20 +99,20 @@ async function exportMarks(scheduleId) {
   const headerRowIndex = meta.length + 2;
 
   const headers = [
-    "S No",
-    "Reg No",
-    "NAME (BLOCK LETTERS)",
-    "Branch"
+    "S NO",
+    "REG NO",
+    "NAME",
+    "BRANCH"
   ];
 
   subjects.forEach(subject => {
     subjectTopics[subject].forEach(topic => headers.push(topic));
-    headers.push(`${subject} Total`);
+    headers.push(`${subject} TOTAL`);
   });
 
-  headers.push("Grand Total");
+  headers.push("GRAND TOTAL");
 
-  headers.push("Violation Count");
+  headers.push("VIOLATION COUNT");
 
   sheet.getRow(headerRowIndex).values = headers;
   sheet.getRow(headerRowIndex).font = { bold: true };
@@ -162,19 +172,14 @@ async function exportMarks(scheduleId) {
 
   let key;
 
-  if(schedule.department!=null){
-
+  if(schedule.department != null){
     key = `qa-exam/result/${schedule.department
       .replace(/\s+/g, "_")}/${schedule.cie}/${schedule._id}.xlsx`;
-
-  }else if(schedule.isArrear === true){
+  } else if (schedule.isArrear === true){
     key = `qa-exam/result/arrear/${schedule.cie}/${schedule._id}.xlsx`;
-
-  }else if(schedule.isRetest === true){
+  } else if (schedule.isRetest === true){
     key = `qa-exam/result/retest/${schedule.cie}/${schedule._id}.xlsx`;
-
   }
-
 
   await s3.send(
     new PutObjectCommand({
