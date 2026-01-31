@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Banner from "../Banner";
-import { ArrowLeft, Power } from "lucide-react";
+import { ArrowLeft, FileSpreadsheet, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
@@ -9,11 +9,20 @@ const QAExamResults = () => {
   const [filters, setFilters] = useState({
     cie: "",
     batch: "",
+    examtype: "",
+    department: "",
+    semester: "",
+    regulation: "",
+    academicYear: "",
   });
 
   const [resultData, setResultData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [batches, setBatches] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [regulations, setRegulations] = useState([]);
+  const [academicYears, setAcademicYears] = useState([]);
 
   const navigate = useNavigate();
 
@@ -22,7 +31,10 @@ const QAExamResults = () => {
       try {
         const res = await axios.get('/api/main-backend/examiner/forms')
         setBatches(res.data.batch)
-
+        setDepartments(res.data.departments)
+        setSemesters(res.data.semesters)
+        setRegulations(res.data.regulation)
+        setAcademicYears(res.data.academic_year)
       } catch (error) {
         console.error("Error fetching the form data",error);
       }
@@ -31,10 +43,10 @@ const QAExamResults = () => {
   }, [])
 
   const handleFetchResults = async () => {
-    if (!filters.cie || !filters.batch) {
+    if (!filters.batch || !filters.regulation || !filters.academicYear) {
       Swal.fire({
         title: "Missing Filters",
-        text: "Please select both CIE and Batch",
+        text: "Please select Batch, Regulation, and Academic Year",
         icon: "warning",
       });
       return;
@@ -45,21 +57,30 @@ const QAExamResults = () => {
     const cieMap = {
       "CIE I": "cie1",
       "CIE II": "cie2",
-      "CIE III": "cie3"
-    }
+      "CIE III": "cie3",
+    };
+
+    // ✅ build payload
+    const payload = {
+      batch: filters.batch,
+      regulation: filters.regulation,
+      academic_year: filters.academicYear,
+    };
+
+    // ✅ optional fields
+    if (filters.cie) payload.cie = cieMap[filters.cie];
+    if (filters.department) payload.department = filters.department;
+    if (filters.examtype) payload.exam_type = filters.examtype;
+    if (filters.semester) payload.semester = filters.semester;
 
     try {
       const response = await axios.post(
         "/api/main-backend/examiner/results/export",
-        {
-          cie: cieMap[filters.cie],
-          batch: filters.batch,
-        }
+        payload
       );
 
-      if (response.data.files) {
-        setResultData(response.data.files);
-
+      if (response.data.results && response.data.results.length > 0) {
+        setResultData(response.data.results);
         Swal.fire({
           title: "Success",
           text: "Results fetched successfully",
@@ -71,13 +92,9 @@ const QAExamResults = () => {
         setResultData([]);
       }
     } catch (error) {
-      console.error("Error fetching exam results", error);
-
       Swal.fire({
         title: "Error",
-        text:
-          error.response?.data?.message ||
-          "Failed to fetch exam results",
+        text: error.response?.data?.message || "Failed to fetch exam results",
         icon: "error",
       });
     }
@@ -122,7 +139,34 @@ const QAExamResults = () => {
           </div>
 
           {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <Select
+              label="Regulation"
+              options={regulations}
+              value={filters.regulation}
+              onChange={(v) =>
+                setFilters({ ...filters, regulation: v })
+              }
+            />
+
+            <Select
+              label="Academic Year"
+              options={academicYears}
+              value={filters.academicYear}
+              onChange={(v) =>
+                setFilters({ ...filters, academicYear: v })
+              }
+            />
+
+            <Select
+              label="Batch"
+              options={batches}
+              value={filters.batch}
+              onChange={(v) =>
+                setFilters({ ...filters, batch: v })
+              }
+            />
+
             <Select
               label="CIE"
               options={["CIE I", "CIE II", "CIE III"]}
@@ -133,11 +177,29 @@ const QAExamResults = () => {
             />
 
             <Select
-              label="Batch"
-              options={batches}
-              value={filters.batch}
+              label="Department"
+              options={departments}
+              value={filters.department}
               onChange={(v) =>
-                setFilters({ ...filters, batch: v })
+                setFilters({ ...filters, department: v })
+              }
+            />
+
+            <Select
+              label="Exam Type"
+              options={["Regular", "Retest", "Arrear"]}
+              value={filters.examtype}
+              onChange={(v) =>
+                setFilters({ ...filters, examtype: v })
+              }
+            />
+
+            <Select
+              label="Semester"
+              options={semesters}
+              value={filters.semester}
+              onChange={(v) =>
+                setFilters({ ...filters, semester: v })
               }
             />
 
@@ -158,7 +220,10 @@ const QAExamResults = () => {
                   <TableHead>S.No</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Total Students</TableHead>
-                  <TableHead>Exam Type</TableHead>
+                  <TableHead>Subject</TableHead>
+                  <TableHead>Exam Name</TableHead>
+                  <TableHead>Semester</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead>Action</TableHead>
                 </tr>
               </thead>
@@ -167,7 +232,7 @@ const QAExamResults = () => {
                 {resultData.length === 0 && !loading && (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="8"
                       className="text-center py-6 text-gray-500"
                     >
                       No results found
@@ -177,16 +242,18 @@ const QAExamResults = () => {
 
                 {resultData.map((item, index) => (
                   <tr
-                    key={item.documentId}
+                    key={index}
                     className="border-b hover:bg-gray-50 transition"
                   >
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.department}</TableCell>
-                    <TableCell>{item.studentCount}</TableCell>
-                    <TableCell>{item.examType}</TableCell>
-
+                    <TableCell>{item.total_students}</TableCell>
+                    <TableCell>{Array.isArray(item.subject) ? item.subject.join("/") : item.subject}</TableCell>
+                    <TableCell>{item.cie}</TableCell>
+                    <TableCell>{item.semester}</TableCell>
+                    <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <a href={item.fileUrl} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs font-medium cursor-pointer" >Download</a>
+                      <a href={item.excel_link} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs w-fit font-medium cursor-pointer flex items-center" ><FileSpreadsheet size={16} /></a>
                     </TableCell>
                   </tr>
                 ))}

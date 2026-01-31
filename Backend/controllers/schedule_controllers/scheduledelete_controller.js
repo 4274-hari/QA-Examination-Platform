@@ -9,13 +9,13 @@ const deleteSchedules = async () => {
 
     const examcollection = db.collection("qa_exam");
     
-    const tenDaysAgo = new Date(
+    const DayAgo = new Date(
       Date.now() - 1* 24 * 60 * 60 * 1000
     );
 
     const result = await collection.find({
-      status:"inactive",
-      createdAt: { $lte: tenDaysAgo }
+      status: { $in: ["inactive", "synced"]},
+      createdAt: { $lte: DayAgo }
     }) .toArray();
 
     const scheduleIds = result.map(s => s._id);

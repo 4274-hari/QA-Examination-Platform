@@ -16,12 +16,14 @@ const QuestionUploadPage = () => {
     "The original sheet structure should be preserved by keeping the column headers and order unchanged, and incomplete, duplicate, or non-compliant entries will be rejected during validation"
   ];
   const [subjects, setSubjects] = useState([]);
+  const [link, setLink] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responce = await axios.get('/api/main-backend/examiner/questions/subjects');
-        setSubjects(responce.data.data)        
+        setSubjects(responce.data.data)
+        setLink(responce.data.s3link)
       } catch (error) {
         console.error("Error fetching Subjects data", error);
       }
@@ -38,6 +40,7 @@ const QuestionUploadPage = () => {
       apiUrl="/api/main-backend/examiner/questions/upload"
       uploadFor="question"
       instructions={instructions}
+      s3link={link}
     />
   );
 };

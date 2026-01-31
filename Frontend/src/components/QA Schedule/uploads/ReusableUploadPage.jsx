@@ -1,10 +1,10 @@
 import axios from "axios";
-import { ArrowLeft, Power, AlertCircle, Trash2, Check } from "lucide-react";
+import { ArrowLeft, Power, AlertCircle, Trash2, Check, Download } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, instructions, enableBatchDelete = false, }) => {
+const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, instructions, s3link, enableBatchDelete = false, batchdetails = [] }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [file, setFile] = useState(null);
@@ -12,7 +12,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [showInstructions, setShowInstructions] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [topics, setTopics] = useState([]);
-  const [customSubjects, setCustomSubjects] = useState([]);
   const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState("");
   const [studentRegs, setStudentRegs] = useState("");
@@ -25,11 +24,18 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     department: "",
     batch: "",
   });
+  const [batchDepartmentData, setBatchDepartmentData] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState("");
+  const [expandBatches, setExpandBatches] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     setSubjects(options)
   }, [options])
+
+  useEffect(() => {
+    setBatchDepartmentData(batchdetails);
+  }, [batchdetails])
 
   const fetchUpdatedSubjects = async () => {
     try {
@@ -40,7 +46,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchBatch = async () => {
       try {
         const res = await axios.get("/api/main-backend/examiner/forms");
@@ -203,10 +209,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       setTopics([]);
       setIsCustomSubject(false);
 
-      setCustomSubjects(prev =>
-        prev.filter(sub => sub !== subjectName)
-      );
-
       setSubjects(prevSubjects =>
         prevSubjects.filter(
           subject => subject.subject_name !== subjectName
@@ -261,7 +263,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
         showConfirmButton: false,
       });
 
-      setCustomSubjects(prev => [...prev, subjectName]);
       setSelectedOption(subjectName);
       setTopics([]);
       setIsCustomSubject(true);
@@ -308,10 +309,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     });
 
     if (!confirm.isConfirmed) return;
-
-    console.log("payload",payload);
     
-
     try {
       await axios.delete("/api/main-backend/examiner/students/batch",{
         data: payload
@@ -417,6 +415,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
             </button>
 
             <div className="flex items-center gap-4">
+
               <button
                 className="flex items-center gap-2 px-3 py-2 rounded-md border"
                 onClick={() => {
@@ -429,6 +428,17 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               >
                 <AlertCircle size={16} />
               </button>
+
+              <a
+                href={s3link || "#"}
+                download
+                className="flex items-center gap-2 px-3 py-2 rounded-md border cursor-pointer"
+                title="Download Excel Template"
+                style={{ borderColor: "#f0c000", color: "#000", backgroundColor: "#fff", textDecoration: "none" }}
+              >
+                <Download size={16} />
+                <span>Download Template</span>
+              </a>
 
               <button
                 className="qa-logout-btn flex items-center gap-2 px-3 py-2 rounded-md border"
@@ -457,8 +467,9 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
             <div className="flex gap-4 my-6">
               {[
                 { key: "upload", label: "Upload Excel" },
+                { key: "existingData", label: "Existing Data" },
                 // { key: "add", label: "Add Student" },
-                { key: "delete", label: "Delete Student / Batch" }
+                // { key: "delete", label: "Delete Student / Batch" }
               ].map(item => (
                 <button
                   key={item.key}
@@ -483,8 +494,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               </p>
 
               <div className="flex gap-4 justify-center flex-wrap">
-
-                {/* Existing subjects (QA, Java, React) */}
                 {subjects.map((item,idx) => (
                   <button
                     key={idx}
@@ -593,7 +602,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                 {["name", "registerno", "password", "department", "batch"].map(field => (
                   <input
                     key={field}
-                    placeholder={field.toUpperCase()}
+                    placeholder={field === "password" ? field.toUpperCase() + " (DD-MM-YYYY)" : field.toUpperCase()}
                     value={studentForm[field]}
                     onChange={(e) =>
                       setStudentForm({ ...studentForm, [field]: e.target.value })
@@ -613,6 +622,81 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
             </div>
           )}
 
+          {mode === "existingData" && (
+            <div className="w-1/2 flex flex-col justify-center items-center border-t">
+              <p className="text-lg font-semibold mb-6" style={{ color: "#800000" }}>
+                Existing Batches
+              </p>
+
+              {/* BATCHES LIST */}
+              <div className="mb-8">
+                <p className="text-md font-medium mb-4 text-gray-700">Choose Batch</p>
+                <div className="flex flex-wrap gap-3 justify-start mb-3">
+                  {batchDepartmentData.slice(0, expandBatches ? batchDepartmentData.length : 4).map((item) => (
+                    <button
+                      key={item.batch}
+                      onClick={() => setSelectedBatch(item.batch)}
+                      className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 ${
+                        selectedBatch === item.batch ? "shadow-lg scale-105" : "hover:scale-105"
+                      }`}
+                      style={{
+                        backgroundColor: selectedBatch === item.batch ? "#800000" : "#fff",
+                        borderColor: "#800000",
+                        color: selectedBatch === item.batch ? "#ffffff" : "#800000",
+                      }}
+                    >
+                      {item.batch}
+                    </button>
+                  ))}
+                </div>
+                {batchDepartmentData.length > 4 && !expandBatches && (
+                  <button
+                    onClick={() => setExpandBatches(true)}
+                    className="px-4 py-2 rounded-lg font-semibold border-2 border-dashed"
+                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+                  >
+                    ... ({batchDepartmentData.length - 4} more)
+                  </button>
+                )}
+                {expandBatches && (
+                  <button
+                    onClick={() => setExpandBatches(false)}
+                    className="px-4 py-2 rounded-lg font-semibold border-2 border-dashed"
+                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+                  >
+                    Show Less
+                  </button>
+                )}
+              </div>
+
+              {/* DEPARTMENTS LIST */}
+              {selectedBatch && (
+                <div>
+                  <p className="text-md font-medium mb-4 text-gray-700">
+                    Departments in {selectedBatch}
+                  </p>
+                  <div className="flex flex-wrap gap-3 justify-start">
+                    {batchDepartmentData
+                      .find((item) => item.batch === selectedBatch)
+                      ?.departments.map((dept) => (
+                        <button
+                          key={dept}
+                          className="px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                          style={{
+                            backgroundColor: "#fff",
+                            borderColor: "#fdcc03",
+                            color: "#800000",
+                          }}
+                        >
+                          {dept}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {mode === "delete" && enableBatchDelete && (
             <div className="w-1/2 mt-6 border-t pt-6">
               <p className="text-lg font-semibold mb-4" style={{ color: "#800000" }}>
@@ -622,10 +706,10 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               <div className="flex flex-col gap-4">
 
                 <select
-                  // multiple
                   value={batchToDelete}
                   onChange={(e) => setBatchToDelete(e.target.value)}
                   className="border p-3 rounded"
+                  required
                 >
                   
                   {["Select Batch To Delete", ...batchList].map((b) => (
@@ -636,11 +720,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                 </select>
 
                 <input
-                  // type="text"
-                  // placeholder="Register numbers (comma separated, optional)"
-                  // value={studentRegs}
-                  // onChange={(e) => setStudentRegs(e.target.value)}
-                  // className="border p-3 rounded"
+                  type="text"
+                  placeholder="Register numbers (comma separated, optional if need to remove specific students)"
+                  value={studentRegs}
+                  onChange={(e) => setStudentRegs(e.target.value)}
+                  className="border p-3 rounded"
                 />
 
                 <button

@@ -17,7 +17,7 @@ const alertBox = (title, text, icon = "info") => {
 // ✅ REAL INTERNET CHECK - Not just network adapter
 const checkBackendConnection = async () => {
   try {
-    const res = await axios.get("/api/main-backend/exam/qa/session/ping", {
+    await axios.get("/api/main-backend/exam/qa/session/ping", {
       timeout: 10000 
     });
     return true;
@@ -75,9 +75,6 @@ const QuestionPage = () => {
     question: q.question,
     options: [q.A, q.B, q.C, q.D],
   }));
-
-  console.log("Questions",questions);
-  
 
   const q = questions[current];
 
@@ -268,6 +265,8 @@ const QuestionPage = () => {
           icon: "warning",
           allowOutsideClick: false,
           showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
         });
       }
       
@@ -298,6 +297,7 @@ const QuestionPage = () => {
             text: "Exam resumed successfully",
             icon: "success",
             timer: 2000,
+            timerProgressBar: true,
             showConfirmButton: false,
           });
         } catch (err) {
@@ -690,22 +690,6 @@ const QuestionPage = () => {
       Swal.fire({
         title: forced ? "Time's Up! - Exam Auto-Submitted" : "Exam Result",
         icon: "success",
-        // showCloseButton: true,
-        // closeButtonHtml: `
-        //   <div style="
-        //     width:28px;
-        //     height:28px;
-        //     background:#dc2626;
-        //     color:#fff;
-        //     border-radius:6px;
-        //     display:flex;
-        //     align-items:center;
-        //     justify-content:center;
-        //     font-size:16px;
-        //     font-weight:bold;
-        //     cursor:pointer;
-        //   ">✕</div>
-        // `,
         html: `
           <div style="
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -800,7 +784,7 @@ const QuestionPage = () => {
                 Total Marks
               </div>
               <div style="font-size:22px; font-weight:800; color:#166534;">
-                ${totalMarks} / ${cie === 'cie3' ? 100 : 50}
+                ${totalMarks} / ${totalQuestions}
               </div>
             </div>
 
@@ -940,7 +924,7 @@ const QuestionPage = () => {
         <div className="quest_right">
           <h2 className="quest_progress_title">Progress</h2>
           <div className="quest_circles_scroll" ref={scrollRef}>
-            {Array.from({ length: totalQuestions }, (_, index) => ( // or use  totalQuestions to show initially all the question length
+            {Array.from({ length: totalQuestions }, (_, index) => (
               <div
                 key={index}
                 ref={(el) => (circleRefs.current[index] = el)}

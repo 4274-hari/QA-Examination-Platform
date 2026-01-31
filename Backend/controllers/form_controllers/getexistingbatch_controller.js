@@ -26,7 +26,7 @@ async function existingBatch(req, res) {
         $sort: { batch: -1 }
       }
     ]).toArray();
-    res.status(200).json(result);
+    res.status(200).json({ success: true, result, s3link: "hello"});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

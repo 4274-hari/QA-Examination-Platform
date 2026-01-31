@@ -10,12 +10,18 @@ const ScheduledExam = () => {
     department: "",
     batch: "",
     time: "",
+    regulation: "",
+    academicYear: "",
+    semester: "",
   });
   const [examData, setExamData] = useState([]);
   const navigate = useNavigate();
 
   const departments = [...new Set(examData.map(e => e.department))];
   const batches = [...new Set(examData.map(e => e.batch))];
+  const regulation = [...new Set(examData.map(e => e.regulation))];
+  const academicYears = [...new Set(examData.map(e => e.academic_year))];
+  const semesters = [...new Set(examData.map(e => e.semester))];
   const [regNo, setRegNo] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -94,7 +100,10 @@ const ScheduledExam = () => {
     return (
       (!filters.department || exam.department === filters.department) &&
       (!filters.batch || exam.batch === filters.batch) &&
-      (!filters.time || filters.time === timeSlot)
+      (!filters.time || filters.time === timeSlot) &&
+      (!filters.regulation || exam.regulation === filters.regulation) &&
+      (!filters.academicYear || exam.academic_year === filters.academicYear) &&
+      (!filters.semester || exam.semester === filters.semester)
     );
   });
 
@@ -165,90 +174,20 @@ const ScheduledExam = () => {
       headerText="office of controller of examinations"
       subHeaderText="COE"
     />
-    <div className="min-h-screen bg-gray-100 p-6 overflow-x-hidden">
+    <div className="min-h-screen bg-gray-100 p-3 sm:p-6 overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
-         <div className="flex items-center justify-between w-full px-4 mt-4 mb-5">
+         <div className="flex flex-col gap-3 sm:gap-4 w-full mb-5">
             {/* Back button */}
-            {session.role === "admin" ? (
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-sm font-medium"
-              >
-                <ArrowLeft size={16} />
-                Back
-              </button>
-            ) : <div />}
-
-             {/* <button
-              onClick={() => navigate("/qasession")}
-              className="
-                inline-flex items-center gap-2
-                px-4 py-2
-                rounded-lg
-                border border-[#800000]/30
-                bg-white
-                text-[#800000]
-                text-sm font-medium
-                shadow-sm
-                hover:bg-[#800000]
-                hover:text-white
-                hover:border-[#800000]
-                transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-[#800000]/30
-            "
-            >
-              Update Student Session
-              <span className="text-base">→</span>
-            </button> */}
-
-            <div className="flex items-center">
-              <div className="flex flex-col items-center gap-3 bg-white border border-[#800000]/30 rounded-xl px-4 py-2 shadow-sm">
-                <div className="flex items-center mb-2">
-                  <span className="text-[#800000] text-sm font-bold flex items-center gap-2 tracking-wide">
-                    <Pause size={16} /> Resume Individual Student Exam
-                  </span>
-                </div>
-                <div className="gap-2 flex">
-                  <input
-                    type="number"
-                    placeholder="Enter Register No"
-                    className="
-                      w-52
-                      px-4 py-2.5
-                      text-sm
-                      font-medium
-                      border-2 border-gray-300
-                      rounded-lg
-                      focus:border-[#800000]
-                      focus:ring-2 focus:ring-[#800000]/30
-                      shadow-inner
-                    "
-                    value={regNo}
-                    onChange={(e) => setRegNo(e.target.value)}
-                  />
-
-                  <button
-                    onClick={handlePauseExam}
-                    disabled={loading}
-                    className={`
-                      px-5 py-2.5
-                      rounded-lg
-                      text-sm font-semibold
-                      text-white
-                      bg-[#800000]
-                      hover:bg-[#660000]
-                      shadow-md
-                      hover:shadow-lg
-                      active:scale-95
-                      transition
-                      disabled:opacity-60
-                      disabled:cursor-not-allowed
-                    `}
-                  >
-                    {loading ? "Resuming..." : "Resume Exam"}
-                  </button>
-                </div>
-              </div>
+            <div className="flex items-center justify-between">
+              {session.role === "admin" ? (
+                <button
+                  onClick={() => navigate(-1)}
+                  className="flex items-center gap-2 text-xs sm:text-sm font-medium"
+                >
+                  <ArrowLeft size={16} />
+                  Back
+                </button>
+              ) : <div />}
 
               {/* Logout button */}
               <button
@@ -256,12 +195,62 @@ const ScheduledExam = () => {
                   sessionStorage.removeItem("userSession");
                   navigate("/");
                 }}
-                className="flex items-center ml-4 qa-logout-btn h-fit"
+                className="flex items-center gap-1 sm:gap-2 qa-logout-btn text-xs sm:text-sm px-2 sm:px-3 py-2 h-fit"
                 title="Logout"
-                >
-                <Power size={16} />
-                Logout
+              >
+                <Power size={14} className="sm:w-4 sm:h-4" />
+                <span>Logout</span>
               </button>
+            </div>
+
+            {/* Resume Exam Container */}
+            <div className="flex flex-col gap-2 bg-white border border-[#800000]/30 rounded-xl px-3 sm:px-4 py-3 shadow-sm w-full md:w-fit md:mx-auto md:min-w-96">
+              <div className="flex items-center justify-center">
+                <span className="text-[#800000] text-xs sm:text-sm font-bold flex items-center gap-2 tracking-wide">
+                  <Pause size={16} /> Resume Individual Student Exam
+                </span>
+              </div>
+              <div className="gap-2 flex flex-col w-full">
+                <input
+                  type="number"
+                  placeholder="Enter Register No"
+                  className="
+                    w-full
+                    px-3 sm:px-4 py-2.5
+                    text-xs sm:text-sm
+                    font-medium
+                    border-2 border-gray-300
+                    rounded-lg
+                    focus:border-[#800000]
+                    focus:ring-2 focus:ring-[#800000]/30
+                    shadow-inner
+                  "
+                  value={regNo}
+                  onChange={(e) => setRegNo(e.target.value)}
+                />
+
+                <button
+                  onClick={handlePauseExam}
+                  disabled={loading}
+                  className={`
+                    px-4 sm:px-5 py-2.5
+                    rounded-lg
+                    text-xs sm:text-sm font-semibold
+                    text-white
+                    bg-[#800000]
+                    hover:bg-[#660000]
+                    shadow-md
+                    hover:shadow-lg
+                    active:scale-95
+                    transition
+                    disabled:opacity-60
+                    disabled:cursor-not-allowed
+                    w-full
+                  `}
+                >
+                  {loading ? "Resuming..." : "Resume Exam"}
+                </button>
+              </div>
             </div>
           </div>
           <div className="text-center mb-4">
@@ -270,7 +259,28 @@ const ScheduledExam = () => {
             </h1>
           </div>
         {/* Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          <Select
+            label="Regulation"
+            options={regulation}
+            value={filters.regulation}
+            onChange={(v) => setFilters({ ...filters, regulation: v })}
+          />
+
+          <Select
+            label="Academic Year"
+            options={academicYears}
+            value={filters.academicYear}
+            onChange={(v) => setFilters({ ...filters, academicYear: v })}
+          />
+
+          <Select
+            label="Semester"
+            options={semesters}
+            value={filters.semester}
+            onChange={(v) => setFilters({ ...filters, semester: v })}
+          />
+
           <Select
             label="Department"
             options={departments}

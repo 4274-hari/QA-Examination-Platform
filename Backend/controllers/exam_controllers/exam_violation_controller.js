@@ -35,17 +35,7 @@ async function registerViolation(req, res) {
         }
       }
     );
-    await examCol.updateOne(
-      { 
-        _id: session.examId,
-        "students.registerno": registerno 
-      },
-      {
-        $set:  {
-          "students.$.violations": total
-        }
-      }
-    );
+    
     return res.status(403).json({
       terminated: true,
       totalViolations: total
