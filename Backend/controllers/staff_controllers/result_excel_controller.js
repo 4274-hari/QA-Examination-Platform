@@ -4,6 +4,7 @@ const {PutObjectCommand} = require('@aws-sdk/client-s3');
 const {s3, bucketName} = require('../../config/s3.js');
 const {getDb} = require('../../config/db.js');
 
+
 async function exportMarks(scheduleId) {
   const db = getDb();
 
@@ -17,6 +18,26 @@ async function exportMarks(scheduleId) {
   });
   if (!exam || !exam.students?.length)
     throw new Error("No exam data");
+
+  const sessions = await db
+  .collection("qa_exam_session")
+  .find({ scheduleId: new ObjectId(scheduleId) })
+  .toArray();
+
+  const violationMap = {};
+
+  for (const s of sessions) {
+  const fullscreenExit = s.violations?.fullscreenExit ?? 0;
+  const tabSwitch = s.violations?.tabSwitch ?? 0;
+  const offlineCount = s.offline?.count ?? 0;
+
+  const total = fullscreenExit + tabSwitch + offlineCount;
+
+ violationMap[s.registerno] = Math.max(
+    violationMap[s.registerno] ?? 0,
+    total
+ );
+}
 
   const subjectTopicMap = {};
 
@@ -81,6 +102,8 @@ async function exportMarks(scheduleId) {
 
   headers.push("Grand Total");
 
+  headers.push("Violation Count");
+
   sheet.getRow(headerRowIndex).values = headers;
   sheet.getRow(headerRowIndex).font = { bold: true };
 
@@ -126,7 +149,10 @@ async function exportMarks(scheduleId) {
       grandTotal += subjectTotal;
     });
 
+    const violationCount = violationMap[student.registerno] ?? 0;
+
     row.push(grandTotal);
+    row.push(violationCount);
 
     sheet.getRow(rowIndex).values = row;
     rowIndex++;
@@ -134,8 +160,21 @@ async function exportMarks(scheduleId) {
 
   const buffer = await workbook.xlsx.writeBuffer();
 
-  const key = `qa-exam/result/${schedule.department
-    .replace(/\s+/g, "_")}/${schedule.cie}/${schedule._id}.xlsx`;
+  let key;
+
+  if(schedule.department!=null){
+
+    key = `qa-exam/result/${schedule.department
+      .replace(/\s+/g, "_")}/${schedule.cie}/${schedule._id}.xlsx`;
+
+  }else if(schedule.isArrear === true){
+    key = `qa-exam/result/arrear/${schedule.cie}/${schedule._id}.xlsx`;
+
+  }else if(schedule.isRetest === true){
+    key = `qa-exam/result/retest/${schedule.cie}/${schedule._id}.xlsx`;
+
+  }
+
 
   await s3.send(
     new PutObjectCommand({
@@ -156,21 +195,33 @@ async function ResultStore() {
 
     const scheduleCollection = db.collection("qa_schedule");
     const resultCollection = db.collection("qa_result");
+    const studentCollection = db.collection("student");
 
+    
     const schedules = await scheduleCollection.find({
       status: "inactive"
     }).toArray();
-
+    
     if (!schedules.length) {
       console.log("[CRON] No schedules found to sync");
       return;
     }
-
+    
     const resultDocs = [];
-
+    
+    const cieMap = {
+      cie1 : "CIE I",
+      cie2 : "CIE II",
+      cie3 : "CIE III",
+    }
+    
     for (const schedule of schedules) {
       try {
         
+        const totalStudents = await studentCollection.countDocuments({
+          batch: schedule.batch,
+          department: schedule.department,
+        });
         // Check duplicate BEFORE heavy export
         const exists = await resultCollection.findOne({
           scheduleId: schedule._id
@@ -192,15 +243,17 @@ async function ResultStore() {
           batch: schedule.batch,
           semester: schedule.semester,
           department: schedule.department ?? null,
-          registerNo: schedule.registerNo ?? [],
-          cie: schedule.cie,
+          total_students:totalStudents,
+          cie: cieMap[schedule.cie],
           subject: schedule.subject ?? [],
-          isRetest: Boolean(schedule.isRetest),
-          isArrear: Boolean(schedule.isArrear),
           date: schedule.date,
           excel_link,
-          createdAt: new Date()
         });
+
+        await scheduleCollection.updateOne(
+          { _id: schedule._id },
+          { $set: { status: "synced"} }
+        );
 
         console.log(`[CRON] Synced schedule ${schedule._id}`);
 
@@ -213,7 +266,7 @@ async function ResultStore() {
         // Optional: mark failed
         await scheduleCollection.updateOne(
           { _id: schedule._id },
-          { $set: { status: "failed", error: scheduleErr.message } }
+          { $set: { status: "inactive", error: scheduleErr.message } }
         );
       }
     }
@@ -273,7 +326,6 @@ async function Excelgenerator(req, res) {
 
     const results = await resultCollection
       .find(filter)
-      .project({ _id: 0, excel_link: 1 })
       .toArray();
 
     if (!results.length) {
@@ -282,13 +334,9 @@ async function Excelgenerator(req, res) {
       });
     }
 
-    // Extract only excel links
-    const excelLinks = results.map(r => r.excel_link);
-
     return res.json({
       message: "Excel links fetched successfully",
-      count: excelLinks.length,
-      excel_link: excelLinks
+      results
     });
 
   } catch (err) {

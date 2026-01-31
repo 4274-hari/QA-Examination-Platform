@@ -29,6 +29,9 @@ async function viewExamCode(req, res) {
 
     const response = exams.map(exam => ({
       scheduleId: exam._id,
+      regulation: exam.regulation,
+      semester: exam.semester,
+      academic_year: exam.academic_year,
       batch: exam.batch,
       department: exam.isRetest ? "Re-Test" : exam.isArrear ? "Arrear" : exam.department,
       cie: exam.cie.toUpperCase(),
