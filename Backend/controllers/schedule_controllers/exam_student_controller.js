@@ -69,6 +69,10 @@ async function createExamFromSchedule(scheduleId) {
   const examDoc = {
     scheduleId: schedule._id,
 
+    isRetest:schedule.isRetest,
+
+    isArrear:schedule.isArrear,
+
     regulation : schedule.regulation,
 
     academic_year: schedule.academic_year,
