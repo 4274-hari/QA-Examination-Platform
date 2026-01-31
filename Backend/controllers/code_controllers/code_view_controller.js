@@ -33,6 +33,7 @@ async function viewExamCode(req, res) {
       department: exam.isRetest ? "Re-Test" : exam.isArrear ? "Arrear" : exam.department,
       cie: exam.cie.toUpperCase(),
       subject: exam.subject,
+      date:exam.date,
       start: exam.start,
       end: exam.end,
       examCode: exam.examCode,
