@@ -5,7 +5,7 @@ const {
   studentLogin,
 } = require("../controllers/login_controller");
 const {
-  getStudent,
+  getStudentform,
 } = require("../controllers/form_controllers/studentform_controller");
 const router = express.Router();
 
@@ -19,6 +19,6 @@ router.post("/student/login", studentLogin);
 /* ===========================
    STUDENT FORM ROUTES
    =========================== */
-router.get("/students", getStudent);
+router.get("/students", getStudentform);
 
 module.exports = router;

@@ -1,23 +1,22 @@
 const { getDb } = require("../../config/db");
+const { fetchBatch } = require("../../services/get_batch.service");
+const { fetchDepartment } = require("../../services/get_department.service");
 
-async function getStudent(req, res) {
+async function getStudentform(req, res) {
   try {
     const db = getDb();
-    const collection = db.collection("student");
     
-    const departments = await collection.aggregate([
-      { $group: { _id: "$department" } },
-      { $project: { _id: 0, department: "$_id" } }
-    ]).toArray();
+    const departments = await fetchDepartment(db);
 
-    const departmentArray = departments.map(d => d.department);
+   const batches = await fetchBatch(db);
 
-   const batches = await collection.distinct("batch");
+   const s3link = "/static/template/uploadstudent.xlsx";
 
 
     res.json({
-      departments: departmentArray,
-      batches: batches
+      departments,
+      batches: batches,
+      s3link
     }); 
 
   } catch (err) {
@@ -25,4 +24,4 @@ async function getStudent(req, res) {
   }
 }
 
-module.exports = { getStudent };
+module.exports = { getStudentform };
