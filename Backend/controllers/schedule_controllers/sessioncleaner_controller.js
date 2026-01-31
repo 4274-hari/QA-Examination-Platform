@@ -1,4 +1,5 @@
 const { getDb } = require("../../config/db");
+const { ResultStore } = require("../staff_controllers/result_excel_controller");
 
 const SessionClean = async () => {
   try {
@@ -30,7 +31,11 @@ const SessionClean = async () => {
 
       const cleanupTime = new Date(validTill.getTime() + 5 * 60 * 1000);
 
-      if (now >= cleanupTime) {
+      let resultStored = false;
+
+      if (now >= cleanupTime && !resultStored) {
+        await ResultStore();
+        resultStored = true;
         const exam = await qaExamCol.findOne({ scheduleId: schedule._id });
         if (!exam?.students?.length) continue;
 
@@ -45,6 +50,7 @@ const SessionClean = async () => {
       }
     }
   } catch (error) {
+     console.error("[CRON] SessionClean failed:", error);
   }
 };
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const { viewExamCode } = require('../controllers/code_controllers/code_view_controller')
 const { storeExamSchedule, cancelExamSchedule } = require('../controllers/schedule_controllers/exam_schedule_controller');
 const { allowRoles  } = require('../middlewares/role_access_middleware')
-const {exportMarks} = require('../controllers/staff_controllers/result_excel_controller');
+const {Excelgenerator} = require('../controllers/staff_controllers/result_excel_controller');
 const {qaForm, getQaForm} = require('../controllers/form_controllers/form_controller');
 const {pauseExamSession} = require("../controllers/staff_controllers/status_pause_controller");
 const {getActiveSessions} = require("../controllers/staff_controllers/active_sessions_controller");
@@ -12,6 +12,7 @@ const { uploadQuestion, deleteQuestion,  getSubject } = require("../controllers/
 const { addSubject, deleteSubject} = require("../controllers/staff_controllers/subject_handle_controller");
 const { handleBatchStudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
 const { deleteHandleForm, addHandleForm } = require('../controllers/staff_controllers/form_handle_controller');
+const { existingBatch } = require('../controllers/form_controllers/getexistingbatch_controller');
 
 
 // ===========================
@@ -34,7 +35,7 @@ router.post("/forms/register-number", allowRoles("admin"), qaForm);
 // ===========================
 // RESULTS (ADMIN)
 // ===========================
-router.post("/results/export", allowRoles("admin"), exportMarks);
+router.post("/results/export", allowRoles("admin"), Excelgenerator);
 
 // ===========================
 // SUBJECT MANAGEMENT (ADMIN)
@@ -48,6 +49,7 @@ router.delete("/subjects", allowRoles("admin"), deleteSubject);
 router.delete("/students/batch", allowRoles("admin"), handleBatchStudent);
 router.post("/students", allowRoles("admin"), addStudent);
 router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
+router.get("/students/existingbatch", allowRoles("admin"), existingBatch);
 
 // ===========================
 // REGULATION AND ACADEMIC YEAR MANAGEMENT (ADMIN)
