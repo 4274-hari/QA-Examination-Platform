@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import http from 'node:http'
 import { readFileSync, existsSync } from 'node:fs'
+import updater from 'electron-updater'
+const { autoUpdater } = updater
 
 // Simple MIME type mapper (built-in, no dependencies)
 const MIME_TYPES = {
@@ -35,6 +37,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const isDev = !app.isPackaged
 
+// ✅ Get backend URL from environment or use default
+const BACKEND_URL = process.env.VITE_API_URL || 'http://localhost:5000'
+
+// ✅ Disable auto-download and auto-install for controlled updates
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
+
 /* -------------------------------------------------- */
 /* Load Environment Variables */
 /* -------------------------------------------------- */
@@ -48,9 +57,14 @@ if (!isDev) {
   console.log('[Electron] Loaded development environment variables from:', envPath)
 }
 
-// ✅ Get backend URL from environment or use default
-const BACKEND_URL = process.env.VITE_API_URL || 'http://localhost:5000'
-console.log('[Electron] Backend URL:', BACKEND_URL)
+
+// ✅ ADDED: Update retry configuration with exponential backoff
+const UPDATE_RETRY_CONFIG = {
+  maxRetries: 3,
+  initialDelay: 1000, // 1 second
+  maxDelay: 30000, // 30 seconds
+  backoffMultiplier: 2
+}
 
 /* -------------------------------------------------- */
 /* 🔐 SINGLE INSTANCE LOCK (CRITICAL) */
@@ -77,8 +91,6 @@ function createStaticServer() {
   const distPath = path.join(process.resourcesPath, 'app.asar.unpacked', 'dist')
   
   const server = http.createServer((req, res) => {
-    console.log('[Static Server] Request:', req.method, req.url)
-    
     // Get requested path
     let filePath = req.url === '/' ? '/index.html' : req.url
     
@@ -87,8 +99,6 @@ function createStaticServer() {
     
     // Build full file path
     const fullPath = path.join(distPath, filePath)
-    
-    console.log('[Static Server] Serving:', fullPath)
     
     // Check if file exists
     if (existsSync(fullPath) && fullPath.includes('.')) {
@@ -105,14 +115,9 @@ function createStaticServer() {
         res.end('Internal Server Error')
       }
     } else {
-      // ✅ CRITICAL FIX: For SPA routing - ALWAYS serve index.html for non-file requests
-      // This includes routes like /QA/qaexam
       try {
         const indexPath = path.join(distPath, 'index.html')
         const content = readFileSync(indexPath)
-        
-        console.log('[Static Server] SPA Route - Serving index.html for:', req.url)
-        
         res.writeHead(200, { 'Content-Type': 'text/html' })
         res.end(content)
       } catch (err) {
@@ -139,16 +144,29 @@ async function createWindow() {
     fullscreen: true,
     kiosk: !isDev,                 // blocks Alt+F4, Win key (partially)
     alwaysOnTop: !isDev,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: false,
     show: false,
     icon: path.join(__dirname, '../src/assets/icons/icon.ico'),
     webPreferences: {
+      devTools: isDev,
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
       preload: path.join(__dirname, 'preload.cjs'),
+      disableBlinkFeatures: 'Auxclick'
     }
   })
+
+  win.setContentProtection(true)
+
+  win.on('minimize', e => e.preventDefault())
+  win.on('maximize', e => e.preventDefault())
+  win.on('unmaximize', e => e.preventDefault())
+  win.on('restore', e => e.preventDefault())
   
   /* -------------------------------------------------- */
   /* 🍪 CONFIGURE SESSION FOR COOKIES WITH MANUAL HANDLING */
@@ -220,12 +238,12 @@ async function createWindow() {
   /* -------------------------------------------------- */
   /* 🚫 HARD BLOCK DEVTOOLS (UNBYPASSABLE) */
   /* -------------------------------------------------- */
-  // if (!isDev) {
-  //   win.webContents.on('devtools-opened', () => {
-  //     win.webContents.closeDevTools()
-  //     app.quit() // tampering detected in production only
-  //   })
-  // }
+  if (!isDev) {
+    win.webContents.on('devtools-opened', () => {
+      win.webContents.closeDevTools()
+      app.quit() // tampering detected in production only
+    })
+  }
   
   /* -------------------------------------------------- */
   /* Show only when fully ready */
@@ -319,50 +337,126 @@ async function createWindow() {
   })
 
   /* -------------------------------------------------- */
+  /* 🔄 AUTO-UPDATE IPC HANDLERS WITH RETRY LOGIC */
+  /* -------------------------------------------------- */
+  const checkForUpdatesWithRetry = async (retries = 0) => {
+    try {
+      const result = await autoUpdater.checkForUpdates()
+      return result
+    } catch (error) {
+      if (retries < UPDATE_RETRY_CONFIG.maxRetries) {
+        const delay = Math.min(
+          UPDATE_RETRY_CONFIG.initialDelay * Math.pow(UPDATE_RETRY_CONFIG.backoffMultiplier, retries),
+          UPDATE_RETRY_CONFIG.maxDelay
+        )
+        await new Promise(resolve => setTimeout(resolve, delay))
+        return checkForUpdatesWithRetry(retries + 1)
+      }
+      throw error
+    }
+  }
+
+  const isValidVersion = (version) => {
+    return /^\d+\.\d+\.\d+/.test(version)
+  }
+
+  ipcMain.handle('check-for-updates', async () => {
+    try {
+      const result = await checkForUpdatesWithRetry()
+      const currentVersion = app.getVersion()
+      const updateVersion = result.updateInfo?.version
+      
+      // ✅ ADDED: Version validation
+      if (global.examRunning) {
+        return { available: false, message: 'Exam in progress' }
+      } else if (updateVersion && isValidVersion(updateVersion)) {
+        return { available: true, info: result.updateInfo, currentVersion }
+      } else {
+        return { available: false, message: 'Invalid update version' }
+      }
+    } catch (error) {
+      return { available: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('download-update', async () => {
+    try {
+      await autoUpdater.downloadUpdate()
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('install-update', () => {
+    autoUpdater.quitAndInstall(false, true)
+  })
+
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion()
+  })
+
+  /* -------------------------------------------------- */
+  /* 🔄 AUTO-UPDATER EVENT HANDLERS */
+  /* -------------------------------------------------- */
+  autoUpdater.on('checking-for-update', () => {
+    win.webContents.send('update-checking')
+  })
+
+  autoUpdater.on('update-available', (info) => {
+    win.webContents.send('update-available', info)
+  })
+
+  autoUpdater.on('update-not-available', (info) => {
+    win.webContents.send('update-not-available', info)
+  })
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    win.webContents.send('update-download-progress', progressObj)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    win.webContents.send('update-downloaded', info)
+  })
+
+  autoUpdater.on('error', (err) => {
+    win.webContents.send('update-error', err.message)
+  })
+
+  /* -------------------------------------------------- */
   /* ✅ LOAD APP  */
   /* -------------------------------------------------- */
   if (isDev) {
     await win.loadURL('http://localhost:5173/')
-    
-    // ✅ Wait for React to be ready, then navigate
+
     win.webContents.once('did-finish-load', () => {
       setTimeout(() => {
-        win.webContents.executeJavaScript(`
-          if (window.location.pathname !== '/QA/qaexam') {
-            window.location.href = '/QA/qaexam';
-          }
-        `)
+        setTimeout(() => {
+          autoUpdater.checkForUpdates().catch(err => {
+            console.error('[Electron] Update check failed:', err)
+          })
+        }, 2000)
       }, 500)
     })
   } else {
-    // Production: Start local HTTP server and load from it
     staticServer = createStaticServer()
     
-    // Wait for server to start
     await new Promise(resolve => setTimeout(resolve, 100))
     
     const port = staticServer.address().port
     const serverUrl = `http://127.0.0.1:${port}`
-    
-    console.log('[Electron] Static server running at:', serverUrl)
-    
-    // ✅ Load root first
+
     await win.loadURL(serverUrl)
     
-    // ✅ Wait for React to be ready, then navigate to /QA/qaexam
     win.webContents.once('did-finish-load', () => {
       setTimeout(() => {
-        win.webContents.executeJavaScript(`
-          console.log('[Electron] Current path:', window.location.pathname);
-          if (window.location.pathname !== '/QA/qaexam') {
-            console.log('[Electron] Navigating to /QA/qaexam');
-            window.location.href = '/QA/qaexam';
-          }
-        `)
-      }, 500) // Give React Router time to initialize
+        setTimeout(() => {
+          autoUpdater.checkForUpdates()
+        }, 2000)
+      }, 500) 
     })
-    win.webContents.openDevTools({ mode: 'detach' })
   }
+  return win
 }
 
 /* -------------------------------------------------- */

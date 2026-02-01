@@ -1,21 +1,38 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Velammal College QA Examination Platform",
+  "author": "Velammal Engineering College",
+  "publish": {
+    "provider": "github",
+    "owner": "Ajith-ajay",
+    "repo": "my-electron-demo"
+  },
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
     "dev:electron": "concurrently -k -r \"npm:dev\" \"wait-on tcp:5173 && electron .\"",
     "build:web": "vite build",
-    "build:electron": "vite build && electron-builder --win --x64",
+    "build:win": "vite build && electron-builder --win --x64 --publish=never",
+    "build:mac": "vite build && electron-builder --mac --x64 --arm64 --publish=never",
+    "build:linux": "vite build && electron-builder --linux --x64 --publish=never",
+    "build:all": "vite build && electron-builder --win --mac --linux --publish=never",
+    "build:electron": "npm run build:win",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "dotenv -- sh -c \"vite build && electron-builder --win --mac --linux --publish=always\"",
+    "release:win": "dotenv -- sh -c \"vite build && electron-builder --win --x64 --publish=always\"",
+    "release:mac": "dotenv -- sh -c \"vite build && electron-builder --mac --x64 --arm64 --publish=always\"",
+    "release:linux": "dotenv -- sh -c \"vite build && electron-builder --linux --x64 --publish=always\"",
+    "release:check": "dotenv -- node -e \"console.log(!!process.env.GH_TOKEN)\""
   },
   "dependencies": {
     "autoprefixer": "^10.4.23",
     "axios": "^1.13.2",
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.2.3",
+    "electron-updater": "^6.1.7",
     "express": "^4.18.2",
     "framer-motion": "^12.25.0",
     "http-proxy-middleware": "^3.0.5",
@@ -33,11 +50,13 @@
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.2.1",
+    "dotenv-cli": "^11.0.0",
     "electron": "^39.2.7",
     "electron-builder": "^26.4.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "form-data": "^4.0.0",
     "globals": "^16.5.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
@@ -49,31 +68,148 @@
   "build": {
     "appId": "com.qa.examination",
     "productName": "QA Examination Platform",
+    "copyright": "Copyright © 2025 Velammal Engineering College",
+    "publish": {
+      "provider": "github",
+      "owner": "Ajith-ajay",
+      "repo": "my-electron-demo"
+    },
+    "generateUpdatesFilesForAllChannels": true,
     "icon": "public/VEC_Logo.ico",
     "files": [
       "dist/**/*",
       "electron/**/*",
       "package.json",
-      ".env.production",
-      "node_modules/express/**/*",
-      "node_modules/http-proxy-middleware/**/*",
-      "node_modules/dotenv/**/*"
+      ".env.production"
     ],
     "asarUnpack": [
       "dist/**/*",
-      ".env.production",
-      "node_modules/express/**/*",
-      "node_modules/http-proxy-middleware/**/*",
-      "node_modules/dotenv/**/*"
+      ".env.production"
     ],
     "extraMetadata": {
       "main": "electron/main.js"
     },
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "icon": "public/VEC_Logo.ico"
+      "icon": "public/VEC_Logo.ico",
+      "artifactName": "${productName} Setup ${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Velammal QA Exam",
+      "installerIcon": "public/VEC_Logo.ico",
+      "uninstallerIcon": "public/VEC_Logo.ico",
+      "installerHeader": "public/installerHeader.png",
+      "installerSidebar": "public/installerSidebar.png",
+      "displayLanguageSelector": false,
+      "perMachine": false
+    },
+    "mac": {
+      "icon": "assets/VEC_Logo.app.iconset",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "${productName} ${version} macOS ${arch}.${ext}",
+      "category": "public.app-category.education",
+      "entitlements": "entitlements.plist",
+      "entitlementsInherit": "entitlements.plist",
+      "hardenedRuntime": true
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "icon": "assets/VEC_Logo.app.iconset",
+      "iconSize": 80,
+      "contents": [
+        {
+          "x": 140,
+          "y": 150,
+          "type": "file"
+        },
+        {
+          "x": 380,
+          "y": 150,
+          "type": "dir",
+          "path": "/Applications"
+        }
+      ],
+      "background": "assets/dmg-background.png",
+      "window": {
+        "x": 200,
+        "y": 200,
+        "width": 560,
+        "height": 320
+      }
+    },
+    "linux": {
+      "icon": "assets/linux/VEC_Logo_512x512.png",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName} ${version} Linux ${arch}.${ext}",
+      "category": "Education",
+      "desktop": {
+        "Name": "QA Examination Platform",
+        "Comment": "Secure examination management for Velammal Engineering College",
+        "Keywords": [
+          "exam",
+          "qa",
+          "education",
+          "velammal"
+        ],
+        "StartupNotify": true
+      }
+    },
+    "appImage": {
+      "systemIntegration": "appimage-update-desktop"
+    },
+    "deb": {
+      "depends": [
+        "gvfs",
+        "gvfs-backends-udisks2",
+        "udisks2",
+        "libgconf-2-4"
+      ]
+    },
+    "rpm": {
+      "depends": [
+        "gvfs",
+        "gvfs-backends-udisks2",
+        "udisks2"
+      ]
     },
     "directories": {
       "output": "release"
