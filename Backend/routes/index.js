@@ -7,7 +7,6 @@ const loginRoutes = require("./login_routes");
 const examinerRoutes = require("./examiner_routes");
 const studentRoutes = require("./student_routes");
 const examRoutes = require("./exam_routes");
-const updateRoutes = require('./updates')
 
 // Auth
 router.use("/auth", loginRoutes);
@@ -20,9 +19,5 @@ router.use("/student", requireAuth, studentRoutes);
 
 // Exam
 router.use("/exam", examRoutes);
-
-// Updates
-router.use('/updates', updateRoutes)
-
 
 module.exports = router;

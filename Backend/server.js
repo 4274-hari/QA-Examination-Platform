@@ -43,9 +43,6 @@ app.get("/api/main-backend/check-session", (req, res) => {
 // Routes
 app.use("/api/main-backend", backendroutes);
 
-// updates
-app.use('/electron-updates', express.static(path.join(__dirname, '../electron-updates')))
-
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Global Error:", err);
