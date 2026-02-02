@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ArrowLeft, Power, AlertCircle, Trash2, Check, Download } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -16,6 +16,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [batchToDelete, setBatchToDelete] = useState("");
   const [studentRegs, setStudentRegs] = useState("");
   const [batchList, setBatchList] = useState([]);
+  const [regulations, setRegulations] = useState([]);
+  const [acadamicYears, setAcadamicYears] = useState([]);
   const [mode, setMode] = useState("upload"); 
   const [studentForm, setStudentForm] = useState({
     name: "",
@@ -27,6 +29,12 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [batchDepartmentData, setBatchDepartmentData] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState("");
   const [expandBatches, setExpandBatches] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [studentDetails, setStudentDetails] = useState([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+  const tableTopRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +59,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       try {
         const res = await axios.get("/api/main-backend/examiner/forms");
         setBatchList(res.data.batch);
+        setAcadamicYears(res.data.academic_year);
+        setRegulations(res.data.regulation);
       } catch (error) {
         console.error("Error fetching the Student Batch", error);
       }
@@ -278,6 +288,194 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     }
   };
 
+  const handleAddNewRegulation = async () => {
+    const { value: regulationName, isConfirmed } = await Swal.fire({
+      title: "New Regulation",
+      input: "text",
+      inputLabel: "Enter regulation name",
+      inputPlaceholder: "Eg: R-20, R-22",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      inputValidator: (value) => {
+        if (!value) return "Regulation name cannot be empty";
+      },
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      const res = await axios.post(
+        "/api/main-backend/examiner/addform",
+        { regulation: [regulationName] }
+      );
+
+      Swal.fire({
+        title: "Added!",
+        text: res.data.message || `"${regulationName}" added.`,
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+      setRegulations([...regulations, regulationName]);
+
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error?.response?.data?.error || "Failed to add regulation",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleDeleteRegulation = async (regulationName) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete regulation "${regulationName}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(
+        "/api/main-backend/examiner/deleteform",
+        {
+          data: { regulation: [regulationName] },
+        }
+      );
+
+      // ✅ UPDATE STATE AFTER SUCCESS
+      setRegulations(prevRegulations =>
+        prevRegulations.filter(reg => reg !== regulationName)
+      );
+
+      Swal.fire({
+        title: "Deleted!",
+        text: `"${regulationName}" has been deleted.`,
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.error || "Failed to delete regulation",
+        "error"
+      );
+    }
+  };
+
+  const handleAddNewAcademicYear = async () => {
+    const { value: academicYear, isConfirmed } = await Swal.fire({
+      title: "New Academic Year",
+      input: "text",
+      inputLabel: "Enter academic year",
+      inputPlaceholder: "Eg: 2023-2024, 2024-2025",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      inputValidator: (value) => {
+        if (!value) return "Academic year cannot be empty";
+      },
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      const res = await axios.post(
+        "/api/main-backend/examiner/addform",
+        { academic_year: [academicYear] }
+      );
+
+      Swal.fire({
+        title: "Added!",
+        text: res.data.message || `"${academicYear}" added.`,
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+      setAcadamicYears([...acadamicYears, academicYear]);
+
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error?.response?.data?.error || "Failed to add academic year",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleDeleteAcademicYear = async (academicYear) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete academic year "${academicYear}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#800000",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axios.delete(
+        "/api/main-backend/examiner/deleteform",
+        {
+          data: { academic_year: [academicYear] },
+        }
+      );
+
+      // ✅ UPDATE STATE AFTER SUCCESS
+      setAcadamicYears(prevYears =>
+        prevYears.filter(year => year !== academicYear)
+      );
+
+      Swal.fire({
+        title: "Deleted!",
+        text: `"${academicYear}" has been deleted.`,
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.error || "Failed to delete academic year",
+        "error"
+      );
+    }
+  };
+
+  const fetchStudentDetails = async (batch, department) => {
+    setLoadingDetails(true);
+      setCurrentPage(1);
+    try {
+      const response = await axios.post(
+        "/api/main-backend/examiner/students/existingdetails",
+        { batch, department }
+      );
+      setStudentDetails(response.data.result || []);
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Failed to fetch student details",
+        "error"
+      );
+      setStudentDetails([]);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
   const handleBatchDelete = async () => {
     if (!batchToDelete) {
       Swal.fire("Batch required", "Enter batch name", "warning");
@@ -468,6 +666,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               {[
                 { key: "upload", label: "Upload Excel" },
                 { key: "existingData", label: "Existing Data" },
+                { key: "handle", label: "Regulation/Academic Year" },
                 // { key: "add", label: "Add Student" },
                 // { key: "delete", label: "Delete Student / Batch" }
               ].map(item => (
@@ -623,7 +822,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
           )}
 
           {mode === "existingData" && (
-            <div className="w-1/2 flex flex-col justify-center items-center border-t">
+            <div className="w-full flex flex-col justify-center items-center border-t">
               <p className="text-lg font-semibold mb-6" style={{ color: "#800000" }}>
                 Existing Batches
               </p>
@@ -671,7 +870,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
 
               {/* DEPARTMENTS LIST */}
               {selectedBatch && (
-                <div>
+                <div className="w-[70%]">
                   <p className="text-md font-medium mb-4 text-gray-700">
                     Departments in {selectedBatch}
                   </p>
@@ -681,9 +880,15 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                       ?.departments.map((dept) => (
                         <button
                           key={dept}
-                          className="px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                          onClick={() => {
+                            setSelectedDepartment(dept);
+                            fetchStudentDetails(selectedBatch, dept);
+                          }}
+                          className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 ${
+                            selectedDepartment === dept ? "shadow-lg scale-105" : "hover:shadow-lg hover:scale-105"
+                          }`}
                           style={{
-                            backgroundColor: "#fff",
+                            backgroundColor: selectedDepartment === dept ? "#fdcc03" : "#fff",
                             borderColor: "#fdcc03",
                             color: "#800000",
                           }}
@@ -692,8 +897,184 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                         </button>
                       ))}
                   </div>
+
+                  {/* STUDENT DETAILS TABLE */}
+                  {selectedDepartment && (
+                    <div ref={tableTopRef} className="mt-8 w-full">
+                      <p className="text-md font-medium mb-4 text-gray-700">
+                        Students in {selectedBatch} - {selectedDepartment}
+                      </p>
+                      {loadingDetails ? (
+                        <p className="text-gray-500">Loading student details...</p>
+                      ) : studentDetails.length > 0 ? (
+                        <>
+                          <div className="overflow-x-auto border rounded-lg">
+                            <table className="w-full text-sm">
+                            <thead>
+                              <tr style={{ backgroundColor: "#800000" }}>
+                                <th className="px-4 py-2 text-white text-left">S.No</th>
+                                <th className="px-4 py-2 text-white text-left">Name</th>
+                                <th className="px-4 py-2 text-white text-left">Register No</th>
+                                <th className="px-4 py-2 text-white text-left">Batch</th>
+                                <th className="px-4 py-2 text-white text-left">Department</th>
+                                <th className="px-4 py-2 text-white text-left">Section</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {studentDetails
+                                .slice(
+                                  (currentPage - 1) * itemsPerPage,
+                                  currentPage * itemsPerPage
+                                )
+                                .map((student, index) => (
+                                <tr
+                                  key={index}
+                                  className={`border-t ${
+                                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                  }`}
+                                >
+                                  <td className="px-4 py-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                                  <td className="px-4 py-2">{student.name}</td>
+                                  <td className="px-4 py-2">{student.registerno}</td>
+                                  <td className="px-4 py-2">{student.batch}</td>
+                                  <td className="px-4 py-2 text-xs">{student.department}</td>
+                                  <td className="px-4 py-2">{student.section || "N/A"}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            </table>
+                          </div>
+
+                          {/* PAGINATION CONTROLS */}
+                          <div className="mt-4 flex justify-between items-center">
+                            <p className="text-sm text-gray-600">
+                              Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, studentDetails.length)} of {studentDetails.length} students
+                            </p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setCurrentPage(prev => Math.max(1, prev - 1));
+                                  tableTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }}
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 rounded-lg font-semibold border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  backgroundColor: currentPage === 1 ? "#e5e7eb" : "#800000",
+                                  color: currentPage === 1 ? "#9ca3af" : "#fff",
+                                  borderColor: "#800000"
+                                }}
+                              >
+                                Previous
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setCurrentPage(prev =>
+                                    Math.min(Math.ceil(studentDetails.length / itemsPerPage), prev + 1)
+                                  );
+                                  tableTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }}
+                                disabled={currentPage >= Math.ceil(studentDetails.length / itemsPerPage)}
+                                className="px-4 py-2 rounded-lg font-semibold border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  backgroundColor: currentPage >= Math.ceil(studentDetails.length / itemsPerPage) ? "#e5e7eb" : "#800000",
+                                  color: currentPage >= Math.ceil(studentDetails.length / itemsPerPage) ? "#9ca3af" : "#fff",
+                                  borderColor: "#800000"
+                                }}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-gray-500 text-sm italic">No students found for this department</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
+            </div>
+          )}
+
+          {mode === "handle" && (
+            <div className="w-full max-w-2xl">
+              <p className="text-lg font-semibold mb-8" style={{ color: "#800000" }}>
+                Manage Regulations & Academic Years
+              </p>
+
+              {/* REGULATIONS SECTION */}
+              <div className="mb-12">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-md font-semibold text-gray-800">Regulations</h3>
+                  <button
+                    onClick={handleAddNewRegulation}
+                    className="px-6 py-3 rounded-lg text-base font-semibold border-2 border-dashed hover:scale-105 transition-all duration-300"
+                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+                  >
+                    + Add Regulation
+                  </button>
+                </div>
+
+                {regulations.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {regulations.map((regulation) => (
+                      <div
+                        key={regulation}
+                        className="flex items-center justify-between p-4 border-2 rounded-lg transition-all hover:shadow-md"
+                        style={{ borderColor: "#800000" }}
+                      >
+                        <span className="font-medium text-gray-700">{regulation}</span>
+                        <button
+                          onClick={() => handleDeleteRegulation(regulation)}
+                          className="p-2 rounded-lg transition-all hover:bg-red-100"
+                          title="Delete regulation"
+                        >
+                          <Trash2 size={18} color="#800000" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm italic">No regulations added yet</p>
+                )}
+              </div>
+
+              {/* ACADEMIC YEARS SECTION */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-md font-semibold text-gray-800">Academic Years</h3>
+                  <button
+                    onClick={handleAddNewAcademicYear}
+                    className="px-6 py-3 rounded-lg text-base font-semibold border-2 border-dashed hover:scale-105 transition-all duration-300"
+                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+                  >
+                    + Add Academic Year
+                  </button>
+                </div>
+
+                {acadamicYears.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {acadamicYears.map((year) => (
+                      <div
+                        key={year}
+                        className="flex items-center justify-between p-4 border-2 rounded-lg transition-all hover:shadow-md"
+                        style={{ borderColor: "#800000" }}
+                      >
+                        <span className="font-medium text-gray-700">{year}</span>
+                        <button
+                          onClick={() => handleDeleteAcademicYear(year)}
+                          className="p-2 rounded-lg transition-all hover:bg-red-100"
+                          title="Delete academic year"
+                        >
+                          <Trash2 size={18} color="#800000" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm italic">No academic years added yet</p>
+                )}
+              </div>
             </div>
           )}
 

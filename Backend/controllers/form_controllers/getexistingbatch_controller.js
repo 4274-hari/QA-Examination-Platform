@@ -48,12 +48,12 @@ async function getStudentsdetails(req, res) {
 
     const collection = db.collection("student");
 
-  const result = await collection
-  .find(
-    { batch, department },        
-    { projection: { _id:0, password: 0, email:0, phone:0 } } 
-  )
-  .toArray();
+    const result = await collection
+      .find(
+        { batch, department },        
+        { projection: { _id:0, password: 0, email:0, phone:0 } } 
+      )
+      .toArray();
 
     if (!result) {
       return res.status(404).json({
