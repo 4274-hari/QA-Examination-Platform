@@ -106,7 +106,7 @@ const Schedule = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get("/api/main-backend/examiner/forms")
-        const data = res.data
+        const data = res.data        
         setYears(data.batch || [])
         setDepartmentOptions(data.departments || "")
         setSubjectTopics(data.subjects || [])

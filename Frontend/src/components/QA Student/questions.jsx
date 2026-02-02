@@ -632,8 +632,6 @@ const QuestionPage = () => {
     try {
       setLoading(true);
       const currentQuestion = questions[current];
-      console.log(currentQuestion, selected[current], current);
-
       const res = await axios.post("/api/main-backend/student/answers/next", {
         question: currentQuestion.question,
         choosedOption: selected[current],

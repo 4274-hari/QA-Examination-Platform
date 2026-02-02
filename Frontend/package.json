@@ -113,7 +113,11 @@
       "installerHeader": "public/installerHeader.png",
       "installerSidebar": "public/installerSidebar.png",
       "displayLanguageSelector": false,
-      "perMachine": false
+      "perMachine": false,
+      "installerHeaderIcon": "public/VEC_Logo.ico",
+      "showLanguageSelector": false,
+      "warningIcon": "public/VEC_Logo.ico",
+      "dialogLanguage": "English"
     },
     "mac": {
       "icon": "assets/VEC_Logo.app.iconset",
