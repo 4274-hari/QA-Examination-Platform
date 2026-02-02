@@ -31,11 +31,8 @@ const SessionClean = async () => {
 
       const cleanupTime = new Date(validTill.getTime() + 5 * 60 * 1000);
 
-      let resultStored = false;
-
-      if (now >= cleanupTime && !resultStored) {
-        await ResultStore();
-        resultStored = true;
+      if (now >= cleanupTime ) {
+        
         const exam = await qaExamCol.findOne({ scheduleId: schedule._id });
         if (!exam?.students?.length) continue;
 
@@ -45,6 +42,8 @@ const SessionClean = async () => {
           scheduleId: schedule._id,
           registerno: { $in: registerNumbers },
         });
+
+        await ResultStore();
 
         
       }

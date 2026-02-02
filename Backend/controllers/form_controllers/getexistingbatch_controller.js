@@ -33,4 +33,43 @@ async function existingBatch(req, res) {
 
 }
 
-module.exports = {existingBatch}
+
+async function getStudentsdetails(req, res) {
+  try {
+    const { department, batch } = req.body;
+
+    if (!department || !batch) {
+      return res.status(400).json({
+        message: "Department and batch are required"
+      });
+    }
+
+    const db = getDb();
+
+    const collection = db.collection("student");
+
+  const result = await collection
+  .find(
+    { batch, department },        
+    { projection: { _id:0, password: 0, email:0, phone:0 } } 
+  )
+  .toArray();
+
+    if (!result) {
+      return res.status(404).json({
+        message: "No students found"
+      });
+    }
+
+    res.status(200).json({ success: true, result });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message
+    });
+  }
+}
+
+
+module.exports = {existingBatch, getStudentsdetails}

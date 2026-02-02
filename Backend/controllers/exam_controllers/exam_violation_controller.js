@@ -24,6 +24,20 @@ async function registerViolation(req, res) {
 
   const total = currentTotal + 1;
 
+ await examCol.updateOne(
+  { "students.registerno": registerno },
+  {
+    $set: {
+      "students.$[student].violation": total
+    }
+  },
+  {
+    arrayFilters: [
+      { "student.registerno": registerno }
+    ]
+  }
+);
+
   if (total >= violationlimit) {
     await sessionCol.updateOne(
       { registerno },

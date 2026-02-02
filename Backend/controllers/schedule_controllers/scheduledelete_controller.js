@@ -1,4 +1,5 @@
 const {getDb} = require("../../config/db");
+const { ResultStore } = require("../staff_controllers/result_excel_controller");
 
 const deleteSchedules = async () => {
   try {
@@ -13,10 +14,12 @@ const deleteSchedules = async () => {
       Date.now() - 1* 24 * 60 * 60 * 1000
     );
 
+    
     const result = await collection.find({
-      status: { $in: ["inactive", "synced"]},
+      status: { $in: ["synced"]},
       createdAt: { $lte: DayAgo }
     }) .toArray();
+    
 
     const scheduleIds = result.map(s => s._id);
 
