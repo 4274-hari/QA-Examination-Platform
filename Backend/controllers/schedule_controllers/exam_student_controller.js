@@ -59,6 +59,7 @@ async function createExamFromSchedule(scheduleId) {
     name: s.name,
     department: s.department,
     batch: s.batch,
+    violation:0,
     section: s.section
   }));
 

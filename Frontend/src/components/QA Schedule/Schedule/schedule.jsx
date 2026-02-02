@@ -481,6 +481,35 @@ const Schedule = () => {
               CIE Schedule {`For ${heading} Candidates`} </h2>
           </div>
 
+          <div className="grid grid-cols-3 gap-4">
+            <Dropdown
+              label="Regulation"
+              placeholder={"Select Regulation"}
+              icon={ListOrdered}
+              value={regulation}
+              values={regulations}
+              onChange={setRegulation}
+            />
+
+            <Dropdown
+              label="Academic Year"
+              placeholder={"Select Academic Year"}
+              icon={CalendarRange}
+              value={acadamicYear}
+              values={acadamicYears}
+              onChange={setAcadamicYear}
+            />
+
+            <Dropdown
+              label="Semester"
+              placeholder={"Select Semester"}
+              icon={BookCheck}
+              value={semester}
+              values={semesters}
+              onChange={setSemester}
+            />
+          </div>
+
           <SearchableInput
             key={`batch-${resetKey}`}
             label="Batch"
@@ -612,35 +641,6 @@ const Schedule = () => {
                 )}
               </div>
             )}
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <Dropdown
-              label="Regulation"
-              placeholder={"Select Regulation"}
-              icon={ListOrdered}
-              value={regulation}
-              values={regulations}
-              onChange={setRegulation}
-            />
-
-            <Dropdown
-              label="Academic Year"
-              placeholder={"Select Academic Year"}
-              icon={CalendarRange}
-              value={acadamicYear}
-              values={acadamicYears}
-              onChange={setAcadamicYear}
-            />
-
-            <Dropdown
-              label="Semester"
-              placeholder={"Select Semester"}
-              icon={BookCheck}
-              value={semester}
-              values={semesters}
-              onChange={setSemester}
-            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -18,26 +18,12 @@ async function exportMarks(scheduleId) {
   });
   if (!exam || !exam.students?.length)
     throw new Error("No exam data");
-
-  const sessions = await db
-  .collection("qa_exam_session")
-  .find({ scheduleId: new ObjectId(scheduleId) })
-  .toArray();
-
+  
   const violationMap = {};
 
-  for (const s of sessions) {
-    const fullscreenExit = s.violations?.fullscreenExit ?? 0;
-    const tabSwitch = s.violations?.tabSwitch ?? 0;
-    const offlineCount = s.offline?.count ?? 0;
-
-    const total = fullscreenExit + tabSwitch + offlineCount;
-
-    violationMap[s.registerno] = Math.max(
-        violationMap[s.registerno] ?? 0,
-        total
-    );
-  }
+for (const student of exam.students) {
+  violationMap[student.registerno] = student.violation?? 0;
+}
 
   const subjectTopicMap = {};
 
@@ -53,7 +39,6 @@ async function exportMarks(scheduleId) {
     }
   }
 
-  // Preserve insertion order
   const subjects = Object.keys(subjectTopicMap);
   const subjectTopics = {};
   subjects.forEach(
