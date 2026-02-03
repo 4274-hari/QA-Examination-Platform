@@ -142,7 +142,7 @@ async function createWindow() {
     width: 1200,
     height: 800,
     fullscreen: true,
-    kiosk: !isDev,                 // blocks Alt+F4, Win key (partially)
+    kiosk: !isDev,
     alwaysOnTop: !isDev,
     resizable: false,
     minimizable: false,
@@ -224,10 +224,6 @@ async function createWindow() {
     callback({ requestHeaders: details.requestHeaders })
   })
   
-  console.log('[Electron] Cookie storage configured with manual handling for:', BACKEND_URL)
-  
-  console.log('[Electron] Cookie storage configured with manual handling')
-  
   /* -------------------------------------------------- */
   /* Open dev tool for testing */
   /* -------------------------------------------------- */
@@ -241,7 +237,7 @@ async function createWindow() {
   if (!isDev) {
     win.webContents.on('devtools-opened', () => {
       win.webContents.closeDevTools()
-      app.quit() // tampering detected in production only
+      app.quit()
     })
   }
   
