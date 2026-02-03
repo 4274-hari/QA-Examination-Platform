@@ -114,10 +114,7 @@
       "installerSidebar": "public/installerSidebar.png",
       "displayLanguageSelector": false,
       "perMachine": false,
-      "installerHeaderIcon": "public/VEC_Logo.ico",
-      "showLanguageSelector": false,
-      "warningIcon": "public/VEC_Logo.ico",
-      "dialogLanguage": "English"
+      "installerHeaderIcon": "public/VEC_Logo.ico"
     },
     "mac": {
       "icon": "assets/VEC_Logo.app.iconset",
@@ -186,19 +183,13 @@
       "artifactName": "${productName} ${version} Linux ${arch}.${ext}",
       "category": "Education",
       "desktop": {
-        "Name": "QA Examination Platform",
-        "Comment": "Secure examination management for Velammal Engineering College",
-        "Keywords": [
-          "exam",
-          "qa",
-          "education",
-          "velammal"
-        ],
-        "StartupNotify": true
+        "entry": {
+          "Name": "QA Examination Platform",
+          "Comment": "Secure examination management for Velammal Engineering College",
+          "Keywords": "exam;qa;education;velammal;",
+          "StartupNotify": true
+        }
       }
-    },
-    "appImage": {
-      "systemIntegration": "appimage-update-desktop"
     },
     "deb": {
       "depends": [
