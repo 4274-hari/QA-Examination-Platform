@@ -32,6 +32,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [studentDetails, setStudentDetails] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
   const tableTopRef = useRef(null);
@@ -322,7 +323,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: error?.response?.data?.error || "Failed to add regulation",
+        text: error?.response?.data?.message || "Failed to add regulation",
         icon: "error",
       });
     }
@@ -365,7 +366,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     } catch (error) {
       Swal.fire(
         "Error",
-        error?.response?.data?.error || "Failed to delete regulation",
+        error?.response?.data?.message || "Failed to delete regulation",
         "error"
       );
     }
@@ -405,7 +406,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: error?.response?.data?.error || "Failed to add academic year",
+        text: error?.response?.data?.message || "Failed to add academic year",
         icon: "error",
       });
     }
@@ -448,7 +449,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     } catch (error) {
       Swal.fire(
         "Error",
-        error?.response?.data?.error || "Failed to delete academic year",
+        error?.response?.data?.message || "Failed to delete academic year",
         "error"
       );
     }
@@ -456,7 +457,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
 
   const fetchStudentDetails = async (batch, department) => {
     setLoadingDetails(true);
-      setCurrentPage(1);
+    setCurrentPage(1);
+    setSearchQuery("");
     try {
       const response = await axios.post(
         "/api/main-backend/examiner/students/existingdetails",
@@ -475,6 +477,10 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       setLoadingDetails(false);
     }
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handleBatchDelete = async () => {
     if (!batchToDelete) {
@@ -568,6 +574,15 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       );
     }
   };
+
+  const filteredStudents = studentDetails.filter((student) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.trim().toLowerCase();
+    const name = (student?.name || "").toLowerCase();
+    const regno = String(student?.registerno || "").toLowerCase();
+    return name.includes(query) || regno.includes(query);
+  });
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
 
   return (
     <>
@@ -904,9 +919,28 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                       <p className="text-md font-medium mb-4 text-gray-700">
                         Students in {selectedBatch} - {selectedDepartment}
                       </p>
+                      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search by name or register no"
+                          className="w-full md:max-w-md border p-3 rounded-lg"
+                        />
+                        {searchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setSearchQuery("")}
+                            className="px-4 py-2 rounded-lg font-semibold border-2 transition-all"
+                            style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
                       {loadingDetails ? (
                         <p className="text-gray-500">Loading student details...</p>
-                      ) : studentDetails.length > 0 ? (
+                      ) : filteredStudents.length > 0 ? (
                         <>
                           <div className="overflow-x-auto border rounded-lg">
                             <table className="w-full text-sm">
@@ -921,7 +955,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                               </tr>
                             </thead>
                             <tbody>
-                              {studentDetails
+                              {filteredStudents
                                 .slice(
                                   (currentPage - 1) * itemsPerPage,
                                   currentPage * itemsPerPage
@@ -948,7 +982,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                           {/* PAGINATION CONTROLS */}
                           <div className="mt-4 flex justify-between items-center">
                             <p className="text-sm text-gray-600">
-                              Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, studentDetails.length)} of {studentDetails.length} students
+                              Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
                             </p>
                             <div className="flex gap-2">
                               <button
@@ -969,15 +1003,15 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                               <button
                                 onClick={() => {
                                   setCurrentPage(prev =>
-                                    Math.min(Math.ceil(studentDetails.length / itemsPerPage), prev + 1)
+                                    Math.min(totalPages, prev + 1)
                                   );
                                   tableTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
-                                disabled={currentPage >= Math.ceil(studentDetails.length / itemsPerPage)}
+                                disabled={currentPage >= totalPages}
                                 className="px-4 py-2 rounded-lg font-semibold border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  backgroundColor: currentPage >= Math.ceil(studentDetails.length / itemsPerPage) ? "#e5e7eb" : "#800000",
-                                  color: currentPage >= Math.ceil(studentDetails.length / itemsPerPage) ? "#9ca3af" : "#fff",
+                                  backgroundColor: currentPage >= totalPages ? "#e5e7eb" : "#800000",
+                                  color: currentPage >= totalPages ? "#9ca3af" : "#fff",
                                   borderColor: "#800000"
                                 }}
                               >
