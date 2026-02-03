@@ -5,6 +5,7 @@ const path = require("path");
 const { ListObjectsCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const ExcelJS = require("exceljs");
 const XLSX = require("xlsx");
+require("dotenv").config();
 
 /* ================= CONSTANTS ================= */
 const BASE_PATH = "static/xlsx/qa/question/";
@@ -306,7 +307,7 @@ const { fetchSubjectsWithTopics } = require("../../services/get_topics.service")
 async function getSubject(req, res) {
   try {
 
-    const s3link = "/static/template/uploadquestion.xlsx";
+    const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Question_Bank_Format_Sample.xls`;
 
     res.json({ success: true, data: await fetchSubjectsWithTopics(getDb()),s3link });
     
