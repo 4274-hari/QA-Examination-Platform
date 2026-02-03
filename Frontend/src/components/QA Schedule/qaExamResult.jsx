@@ -88,14 +88,41 @@ const QAExamResults = () => {
           timer: 2000,
           showConfirmButton: false,
         });
+        setFilters({
+          cie: "",
+          batch: "",
+          examtype: "",
+          department: "",
+          semester: "",
+          regulation: "",
+          academicYear: "",
+        });
       } else {
         setResultData([]);
+        setFilters({
+          cie: "",
+          batch: "",
+          examtype: "",
+          department: "",
+          semester: "",
+          regulation: "",
+          academicYear: "",
+        });
       }
     } catch (error) {
       Swal.fire({
         title: "Error",
         text: error.response?.data?.message || "Failed to fetch exam results",
         icon: "error",
+      });
+      setFilters({
+          cie: "",
+          batch: "",
+          examtype: "",
+          department: "",
+          semester: "",
+          regulation: "",
+          academicYear: "",
       });
     }
 
@@ -176,14 +203,6 @@ const QAExamResults = () => {
               }
             />
 
-            <Select
-              label="Department"
-              options={departments}
-              value={filters.department}
-              onChange={(v) =>
-                setFilters({ ...filters, department: v })
-              }
-            />
 
             <Select
               label="Exam Type"
@@ -193,6 +212,17 @@ const QAExamResults = () => {
                 setFilters({ ...filters, examtype: v })
               }
             />
+
+            {(!filters.examtype || filters.examtype === "Regular") && (
+              <Select
+                label="Department"
+                options={departments}
+                value={filters.department}
+                onChange={(v) =>
+                  setFilters({ ...filters, department: v })
+                }
+              />
+            )}
 
             <Select
               label="Semester"
