@@ -1,4 +1,5 @@
 const {getDb} = require('../../config/db');
+require("dotenv").config();
 
 async function existingBatch(req, res) {
 
@@ -26,7 +27,11 @@ async function existingBatch(req, res) {
         $sort: { batch: -1 }
       }
     ]).toArray();
-    res.status(200).json({ success: true, result, s3link: "hello"});
+
+    
+   const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Student_Database_Format_Sample.xls`;
+
+   return  res.status(200).json({ success: true, result, s3link});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

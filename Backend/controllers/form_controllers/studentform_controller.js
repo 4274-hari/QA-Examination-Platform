@@ -10,13 +10,9 @@ async function getStudentform(req, res) {
 
    const batches = await fetchBatch(db);
 
-   const s3link = "/static/template/uploadstudent.xlsx";
-
-
-    res.json({
+    return res.status(200).json({
       departments,
-      batches: batches,
-      s3link
+      batches: batches
     }); 
 
   } catch (err) {
