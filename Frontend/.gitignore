@@ -29,4 +29,6 @@ release
 .env
 .env.production
 .env.development
-.env.electron
+
+./scripts
+scripts

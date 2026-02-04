@@ -27,7 +27,10 @@ async function storeExamSchedule(req, res) {
     const db = getDb();
     const collection = db.collection("qa_schedule");
    const {
+    regulation,
+    academic_year,
       batch,
+      semester,
       department,
       registerNo,
       cie: cieRoman,
@@ -66,7 +69,7 @@ async function storeExamSchedule(req, res) {
        Validation
     ----------------------------- */
 
-    if (!batch || !cie || !subject  || !date || !start || !end || !topics || !violation) {
+    if (!batch || !cie || !subject  || !date || !start || !end || !topics || !violation || !academic_year || !semester || !regulation) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields"
@@ -85,12 +88,17 @@ async function storeExamSchedule(req, res) {
     ----------------------------- */
 
     const scheduleDoc = {
+      regulation:regulation.toUpperCase(),
+      academic_year,
       batch,
+      semester,
       department: department || null,
       registerNo: registerNo || null,
 
       cie,
-      subject,
+      subject: Array.isArray(subject) && subject.length === 1 && subject[0] === "QA"
+        ? ["QA", "CS"]
+        : subject,
 
       isRetest,
 

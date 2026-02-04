@@ -3,70 +3,57 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadComp from '../components/LoadComp';
 
-export const ProtectedRoute = ({ children, roles = [] }) => {
+const ProtectedRoute = ({ children, roles = [] }) => {
   const navigate = useNavigate();
   const { auth, validateSession, logout } = useAuth();
-  const [isInitialValidating, setIsInitialValidating] = useState(true);
-  const [isValid, setIsValid] = useState(false);
-  const hasValidatedOnce = useRef(false);
+
+  const [status, setStatus] = useState('loading'); 
+  // loading | allowed | denied
+
+  const mounted = useRef(true);
 
   useEffect(() => {
-    const checkSession = async (isInitialCheck = false) => {
-      // Only show loading screen on initial check
-      if (isInitialCheck) {
-        setIsInitialValidating(true);
-      }
+    mounted.current = true;
 
-      // Check if user is logged in
+    const validate = async () => {
       if (!auth) {
         navigate('/', { replace: true });
-        setIsInitialValidating(false);
         return;
       }
 
-      // Check if backend is still running (silently in background after first check)
-      const isSessionValid = await validateSession();
-      
-      if (!isSessionValid) {
+      const valid = await validateSession();
+      if (!mounted.current) return;
+
+      if (!valid) {
         logout();
         navigate('/', { replace: true });
-        setIsInitialValidating(false);
         return;
       }
 
-      // Check role if specified
-      if (roles.length > 0 && !roles.includes(auth.role)) {
+      if (roles.length && !roles.includes(auth.role)) {
         navigate('/', { replace: true });
-        setIsInitialValidating(false);
         return;
       }
 
-      setIsValid(true);
-      if (isInitialCheck) {
-        setIsInitialValidating(false);
-        hasValidatedOnce.current = true;
-      }
+      setStatus('allowed');
     };
 
-    // Initial validation on mount
-    if (!hasValidatedOnce.current) {
-      checkSession(true);
-    }
+    validate();
 
-    // Re-validate session every 60 seconds (silently in background)
-    const interval = setInterval(() => checkSession(false), 60000);
+    return () => {
+      mounted.current = false;
+    };
+  }, [auth, roles, navigate, validateSession, logout]);
 
-    return () => clearInterval(interval);
-  }, [auth, navigate, validateSession, logout, roles]);
-
-  // Only show loading screen during initial validation
-  if (isInitialValidating && !hasValidatedOnce.current) {
+  if (status === 'loading') {
     return <LoadComp txt="Validating session..." />;
   }
 
-  if (!isValid && hasValidatedOnce.current === false) {
+  if (status === 'denied') {
     return null;
   }
 
   return children;
 };
+
+export default ProtectedRoute;

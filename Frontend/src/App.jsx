@@ -1,17 +1,24 @@
+// External dependencies
 import React, { useEffect, useState, Suspense, useCallback } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import styled, { createGlobalStyle } from "styled-components";
 
-import LoadComp from "./components/LoadComp.jsx";
-import AptitudeHeader from "./components/QA Student/AptitudeHeader.jsx";
-import Boot from "./components/BootUp/BootUp.jsx";
-import AuthPage from "./components/Auth/auth.jsx";
+// Context & Styles
 import { AuthProvider } from "./context/AuthContext.jsx";
-import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
-import "./App.css"
+import "./App.css";
 
-/* Lazy Loaded Pages */
+// Core components (always needed)
+import AptitudeHeader from "./components/QA Student/AptitudeHeader.jsx";
+import UpdateChecker from "./components/updateChecker.jsx";
+
+// Lazy-loaded components
+const LoadComp = React.lazy(() => import("./components/LoadComp.jsx"));
+const Boot = React.lazy(() => import("./components/BootUp/BootUp.jsx"));
+const AuthPage = React.lazy(() => import("./components/Auth/auth.jsx"));
+const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute.jsx"));
+
+// Lazy-loaded pages
 const StudentLoginPage = React.lazy(() =>
   import("./components/QA Student/StudentLoginPage.jsx")
 );
@@ -76,8 +83,6 @@ const App = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [currentPath, setCurrentPath] = useState(location.pathname);
-
-  // useGoogleAnalytics();
 
   /* ---------------- Boot Logic ---------------- */
   const [loaded, setLoaded] = useState(false);
@@ -146,6 +151,7 @@ const App = () => {
     <GlobalStyle />
     <AuthProvider>
     <AppContainer>
+      <UpdateChecker />
       {location.pathname === "/" && showBoot && (
         <Boot isAuth={isAuth} isLoaded={loaded} />
       )}

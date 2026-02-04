@@ -6,7 +6,7 @@ cron.schedule("*/1 * * * *", async () => {
   await SessionClean();
 });
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("*/1 * * * *", async () => {
   await deleteSchedules();
 });
 

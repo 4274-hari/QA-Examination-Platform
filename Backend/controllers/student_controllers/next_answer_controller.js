@@ -7,7 +7,7 @@ async function submitAnswer(req, res) {
     const sessionCol = db.collection("qa_exam_sessions");
 
     const { question, choosedOption, questionIndex } = req.body;
-    
+
     if (!question || !choosedOption) {
       return res.status(400).json({ message: "Missing fields" });
     }
@@ -59,10 +59,10 @@ async function submitAnswer(req, res) {
     }
 
     const q = student.questions.find(
-  (q) =>
-    q.questionNumber === questionIndex + 1 &&
-    q.question.trim() === question.trim()
-);
+      (q) =>
+        q.questionNumber === questionIndex + 1 &&
+        q.question.trim() === question.trim()
+    );
 
 
     if (!q ) {

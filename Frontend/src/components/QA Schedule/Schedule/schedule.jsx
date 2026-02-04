@@ -8,6 +8,9 @@ import {
   Clock,
   Power,
   ListChecks,
+  ListOrdered,
+  CalendarRange,
+  BookCheck,
 } from "lucide-react"
 import { Dropdown, MultiSearchDropdown, SearchableInput } from "./searchableInput"
 import Banner from "../../Banner"
@@ -29,6 +32,12 @@ const Schedule = () => {
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
   const [examType, setExamType] = useState("")
+  const [semesters, setSemesters ] = useState(["SEM I", "SEM II"])
+  const [semester, setSemester] = useState("");  
+  const [regulations, setRegulations] = useState([])
+  const [regulation, setRegulation] = useState("");
+  const [acadamicYears, setAcadamicYears] = useState([]);
+  const [acadamicYear, setAcadamicYear] = useState("");
   const [years, setYears] = useState([])
   const [departmentOptions, setDepartmentOptions] = useState([])
   const [studentRegs, setStudentRegs] = useState([])
@@ -41,39 +50,40 @@ const Schedule = () => {
   const [retestBatch, setRetestBatch] = useState("")
   const [arrearBatch, setArrearBatch] = useState("")
   const activeBatch = isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch
+  const heading = isRetest ? "Retest" : isArrear ? "Arrear" : "Regular"
   const [resetKey, setResetKey] = useState(0)
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!activeBatch) return
 
-    const fetchStudents = async () => {
-      setLoadingRegs(true)
+   const fetchStudents = async () => {
+  setLoadingRegs(true)
 
-      try {
-        const payload = isRetest
-          ? { batch: retestBatch }
-          : isArrear
-          ? { batch: arrearBatch }
-          : { department: departments, batch: normalBatch }
-
-        const url = isRetest || isArrear
-          ? "/api/main-backend/examiner/forms/register-number/all"
-          : "/api/main-backend/examiner/forms/register-number"
-
-        const res = await axios.post(url, payload)
-
-        setStudentRegs(res.data.students || [])
-
-        setRegisterState({ mode: "none", values: [] })
-
-      } catch (err) {
-        console.error("Failed to fetch students", err)
-        setStudentRegs([])
-      } finally {
-        setLoadingRegs(false)
-      }
+  try {
+    const payload = {
+      department: departments,
+      batch: isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch,
     }
+
+    const url = "/api/main-backend/examiner/forms/register-number"
+    const res = await axios.post(url, payload)
+
+    setStudentRegs(res.data.students || [])
+
+    // ✅ ONLY reset in Regular mode
+    if (!isRetest && !isArrear) {
+      setRegisterState({ mode: "none", values: [] })
+    }
+
+  } catch (err) {
+    console.error("Failed to fetch students", err)
+    setStudentRegs([])
+  } finally {
+    setLoadingRegs(false)
+  }
+}
+
 
     fetchStudents()
   }, [activeBatch, departments, isRetest, isArrear])
@@ -96,11 +106,13 @@ const Schedule = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get("/api/main-backend/examiner/forms")
-        const data = res.data
+        const data = res.data        
         setYears(data.batch || [])
         setDepartmentOptions(data.departments || "")
         setSubjectTopics(data.subjects || [])
-
+        setAcadamicYears(data.academic_year || [])
+        setSemesters(data.semesters || [])
+        setRegulations(data.regulation || [])
       } catch (error) {
         console.error("Error fetching data:", error)
       }
@@ -124,9 +136,11 @@ const Schedule = () => {
 
   // Dept changed → reset registers
   useEffect(() => {
+    if (isRetest || isArrear) return; 
     setRegisterState({ mode: "none", values: [] })
     setRegDropdownOpen(false);
-  }, [departments])
+  }, [departments, isRetest, isArrear])
+
 
   // Year changed → reset dept + register
   useEffect(() => {
@@ -180,6 +194,9 @@ const Schedule = () => {
     setStudentRegs([])
     setRegDropdownOpen(false)
     setViolationLimit("")
+    setRegulation("")
+    setAcadamicYear("")
+    setSemester("")
     setResetKey(prev => prev + 1)
   }, [isRetest, isArrear])
 
@@ -237,6 +254,9 @@ const Schedule = () => {
       isRetest,
       isArrear,
       violation: numericViolationLimit,
+      regulation,
+      academic_year: acadamicYear,
+      semester
     }
 
     if (!isRetest && !isArrear) {
@@ -288,6 +308,9 @@ const Schedule = () => {
       setTime("")
       setExamType("")
       setViolationLimit("")
+      setRegulation("")
+      setAcadamicYear("")
+      setSemester("")
       setTopics([])
     } catch (error) {
       console.error("Schedule error:", error)
@@ -455,8 +478,36 @@ const Schedule = () => {
         <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border p-8 space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-brwn text-center flex-1">
-              CIE Details Entry
-            </h2>
+              CIE Schedule {`For ${heading} Candidates`} </h2>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <Dropdown
+              label="Regulation"
+              placeholder={"Select Regulation"}
+              icon={ListOrdered}
+              value={regulation}
+              values={regulations}
+              onChange={setRegulation}
+            />
+
+            <Dropdown
+              label="Academic Year"
+              placeholder={"Select Academic Year"}
+              icon={CalendarRange}
+              value={acadamicYear}
+              values={acadamicYears}
+              onChange={setAcadamicYear}
+            />
+
+            <Dropdown
+              label="Semester"
+              placeholder={"Select Semester"}
+              icon={BookCheck}
+              value={semester}
+              values={semesters}
+              onChange={setSemester}
+            />
           </div>
 
           <SearchableInput
@@ -469,17 +520,15 @@ const Schedule = () => {
             placeholder="Select Batch"
           />
 
-          {!isRetest && !isArrear && (
-            <SearchableInput
-              key={`dept-${resetKey}`}
-              label="Department"
-              icon={Building2}
-              options={departmentOptions}
-              value={departments}
-              onChange={setDepartments}
-              placeholder="Select department(s)"
-            />
-          )}
+          <SearchableInput
+            key={`dept-${resetKey}`}
+            label="Department"
+            icon={Building2}
+            options={departmentOptions}
+            value={departments}
+            onChange={setDepartments}
+            placeholder="Select department(s)"
+          />
 
           <div ref={regRef} className="space-y-2 relative">
             {/* Input box (same style as others) */}
@@ -488,7 +537,7 @@ const Schedule = () => {
                 key={`batch-${resetKey}`}
                 label="Register Numbers"
                 icon={Hash}
-                options={studentRegs}
+                options={studentRegs.filter(reg => !registerState.values.includes(reg))}
                 value={registerState.values}
                 onChange={(vals) =>
                   setRegisterState({ mode: "partial", values: vals })
@@ -497,28 +546,31 @@ const Schedule = () => {
                 multiple
               />
             ) : (
-              <div
-                className="relative border border-slate-300 rounded-md min-h-[48px]
-              flex items-center gap-2 px-3 cursor-pointer
-              focus-within:ring-2 focus-within:ring-[#fdcc03]/20"
-                onClick={() => setRegDropdownOpen((v) => !v)}
-              >
-                <Hash className="w-4 h-4 text-slate-400" />
+              <>
+                <label className="text-slate-700 font-medium text-sm">Register Numbers</label>
+                <div
+                  className="relative border border-slate-300 rounded-md min-h-[48px]
+                  flex items-center gap-2 px-3 cursor-pointer
+                  focus-within:ring-2 focus-within:ring-[#fdcc03]/20"
+                  onClick={() => setRegDropdownOpen((v) => !v)}
+                >
+                  <Hash className="w-4 h-4 text-slate-400" />
 
-                {registerState.mode === "all" ? (
-                  <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
-                    All students selected ({registerState.values.length})
-                  </span>
-                ) : registerState.values.length > 0 ? (
-                  <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
-                    {registerState.values.length} students selected
-                  </span>
-                ) : (
-                  <span className="text-slate-400 text-sm">
-                    Select register numbers
-                  </span>
-                )}
-              </div>
+                  {registerState.mode === "all" ? (
+                    <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
+                      All students selected ({registerState.values.length})
+                    </span>
+                  ) : registerState.values.length > 0 ? (
+                    <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
+                      {registerState.values.length} students selected
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm">
+                      Select register numbers
+                    </span>
+                  )}
+                </div>
+              </>
             )}
 
             {/* Actions */}
@@ -643,14 +695,16 @@ const Schedule = () => {
             />
 
             <Dropdown
-              label="Exam Type"
+              label="Name Of The Examination"
               icon={ListChecks}
               value={examType}
               onChange={setExamType}
+              placeholder={"Select Exam Name"}
             />
 
             <Dropdown
               label="Exam Time"
+              placeholder={"Select Exam Time"}
               icon={Clock}
               value={time}
               onChange={setTime}
@@ -683,7 +737,7 @@ const Schedule = () => {
   )
 }
 
-function Input({ label, icon: Icon, type, value, onChange }) {
+function Input({ label, icon: Icon, type, value, onChange, placeholder = "" }) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-slate-700">{label}</label>
@@ -693,6 +747,7 @@ function Input({ label, icon: Icon, type, value, onChange }) {
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
           className="pl-10 h-12 w-full border border-slate-300 rounded-md
           focus:ring-2 focus:ring-[#fdcc03]/20"
         />
