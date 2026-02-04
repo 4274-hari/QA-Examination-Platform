@@ -126,6 +126,14 @@ async function studentLogin(req, res) {
           }
         );
       } else if (activeSession.status === "PAUSED") {
+
+        req.session.user = {
+      id: student._id,
+      registerno: student.registerno,
+      department: student.department,
+      batch: student.batch,
+    };
+    
         // Session is paused - allow recovery
         return res.status(200).json({
           success: true,

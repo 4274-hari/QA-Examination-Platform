@@ -18,10 +18,10 @@ function sessionMiddleware() {
       httpOnly: true,
       secure: false, 
       sameSite: "lax", 
-      maxAge: 3 * 60 * 60 * 1000,
+      maxAge: 4 * 60 * 60 * 1000,
       path: '/' 
     },
-    rolling: true, 
+    rolling: false, 
     proxy: true 
   });
 }
