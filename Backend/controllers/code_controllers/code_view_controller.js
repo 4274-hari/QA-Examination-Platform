@@ -1,29 +1,19 @@
 const { getDb } = require("../../config/db");
 
-/**
- * View today's exam schedules (staff/admin)
- * Date is derived from server time (SAFE)
- */
 async function viewExamCode(req, res) {
   try {
     const db = getDb();
-    const collection = db.collection("qa_schedule");
-
-    // Server-side date (YYYY-MM-DD)
-   const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in ms
-    const istDate = new Date(now.getTime() + istOffset);
-    const today = istDate.toISOString().slice(0, 10);
+    const collection = db.collection("qa_schedule");  
 
     const exams = await collection
-      .find({ date: today })
+      .find({ status: { $in: ["scheduled", "active"] } })
       .sort({ start: 1 })
       .toArray();
 
     if (exams.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No exams scheduled for today"
+        message: "No exams scheduled"
       });
     }
 
@@ -45,13 +35,70 @@ async function viewExamCode(req, res) {
 
     return res.status(200).json({
       success: true,
-      date: today,
       count: response.length,
       exams: response
     });
 
   } catch (error) {
-    console.error("❌ Error fetching today's exams:", error);
+    console.error("❌ Error fetching Schedule exams details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+}
+
+async function viewExamCodeHistory(req, res) {
+  try {
+    const db = getDb();
+    const collection = db.collection("qa_schedule");
+
+    const exams = await collection
+      .find({ status: { $in: ["synced", "inactive"] } })
+      .sort({ start: 1 })
+      .toArray();
+
+    if (exams.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No exam history found"
+      });
+    }
+
+    const response = exams.map(exam => ({
+      scheduleId: exam._id,
+      regulation: exam.regulation,
+      semester: exam.semester,
+      academic_year: exam.academic_year,
+      batch: exam.batch,
+      department: exam.isRetest ? "Re-Test" : exam.isArrear ? "Arrear" : exam.department,
+      cie: exam.cie.toUpperCase(),
+      subject: exam.subject,
+      date: exam.date,
+      start: exam.start,
+      end: exam.end,
+      examCode: exam.examCode,
+      status: exam.status
+    }));
+
+    const multiplier = 100;
+
+const expandedResponse = Array(multiplier)
+  .fill(response)
+  .flat()
+  .map((exam, i) => ({
+    ...exam,
+    scheduleId: `${exam.scheduleId}_${i}` // avoid duplicate keys in frontend
+  }));
+
+    return res.status(200).json({
+      success: true,
+      count: response.length,
+      exams: expandedResponse
+    });
+
+  } catch (error) {
+    console.error("❌ Error fetching exam history:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error"
@@ -60,5 +107,6 @@ async function viewExamCode(req, res) {
 }
 
 module.exports = {
-  viewExamCode
+  viewExamCode,
+  viewExamCodeHistory
 };

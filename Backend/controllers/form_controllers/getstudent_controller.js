@@ -15,13 +15,13 @@ async function getStudentsByDeptbatch(department, batch) {
         batch: batch
       },
       {
-        projection: { registerno: 1, _id: 0 }
+        projection: { registerno: 1, name: 1, _id: 0 }
       }
     )
     .toArray();
 
 
-  return students.map(s => s.registerno);
+  return students.map(s => ({ registerno: s.registerno, name: s.name }));
 }
 
 
@@ -39,13 +39,13 @@ async function getStudentsByBatch(batch) {
         batch: batch
       },
       {
-        projection: { registerno: 1, _id: 0 }
+        projection: { registerno: 1, name: 1, _id: 0 }
       }
     )
     .toArray();
 
 
-  return students.map(s => s.registerno);
+  return students.map(s => ({ registerno: s.registerno, name: s.name }));
 }
 
 
