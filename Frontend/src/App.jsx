@@ -17,6 +17,7 @@ import ScheduledExamHistory from "./components/QA Schedule/scheduledExamHistory.
 const LoadComp = React.lazy(() => import("./components/LoadComp.jsx"));
 const Boot = React.lazy(() => import("./components/BootUp/BootUp.jsx"));
 const AuthPage = React.lazy(() => import("./components/Auth/auth.jsx"));
+const ForgotPassword = React.lazy(() => import("./components/Auth/ForgotPassword.jsx"));
 const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute.jsx"));
 
 // Lazy-loaded pages
@@ -169,6 +170,15 @@ const App = () => {
             <Routes>
               <Route path="/" element={<AuthPage />} />
               <Route path="/signup" element={<AuthPage />} />
+              <Route path="/forgot-password" element={
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#fdcc03]/5 flex items-center justify-center p-4">
+                  <div className="relative w-full max-w-md">
+                    <div className="p-8 shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+                      <ForgotPassword />
+                    </div>
+                  </div>
+                </div>
+              } />
 
               <Route path="/QA/qaexam" element={<StudentLoginPage />} />
               <Route path="/QA/confirm" element={<InstructionPage />} />
