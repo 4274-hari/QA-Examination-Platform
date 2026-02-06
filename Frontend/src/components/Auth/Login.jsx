@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Eye, EyeOff, Mail, Lock } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import axios from "axios"
 
@@ -91,7 +91,8 @@ export default function LoginForm() {
             placeholder="Enter your password"
             value={formData.password}
             onChange={handleChange}
-            className="pl-10 pr-10 h-12 w-full border-slate-300 focus:border-[#fdcc03] focus:ring-2 focus:ring-[#fdcc03]/20 transition-all"
+            autoComplete="current-password"
+            className="pl-10 pr-10 h-12 w-full border-slate-300 focus:border-[#fdcc03] focus:ring-2 focus:ring-[#fdcc03]/20 transition-all [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
             required
           />
           <button
@@ -102,6 +103,16 @@ export default function LoginForm() {
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+      </div>
+
+      {/* Forgot Password Link */}
+      <div className="text-right">
+        <Link
+          to="/forgot-password"
+          className="text-sm text-[#800000] hover:underline font-medium cursor-pointer"
+        >
+          Forgot Password
+        </Link>
       </div>
 
       {/* Submit */}
