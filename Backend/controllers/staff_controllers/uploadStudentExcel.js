@@ -219,28 +219,28 @@ const uploadStudentExcel = async (req, res) => {
         // Validations
         if (!isRegisterNoValid(row.reg)) {
           logExcelError(row.rowIndex, "Register No", row.reg, "Invalid Register Number");
-          return res.status(400).json({ success: false, message: "Invalid Register Number" });
+          return res.status(400).json({ success: false, message: "Invalid Register Number Format example: 113223072030" });
         }
 
         if (!isBatchValid(String(row.batch || ""))) {
           logExcelError(row.rowIndex, "Batch", row.batch, "Invalid Batch");
-          return res.status(400).json({ success: false, message: "Invalid Batch" });
+          return res.status(400).json({ success: false, message: `Invalid Batch Format example: 2023-2027` });
         }
 
         if (!isProgrammeValid(String(row.programme || ""))) {
           logExcelError(row.rowIndex, "Programme", row.programme, "Invalid Programme");
-          return res.status(400).json({ success: false, message: "Invalid Programme" });
+          return res.status(400).json({ success: false, message: `Invalid Programme Format example: B.Tech. Artificial Intelligence and Data Science` });
         }
 
         if (!isSectionValid(String(row.sec || ""))) {
           logExcelError(row.rowIndex, "Sec", row.sec, "Invalid Section");
-          return res.status(400).json({ success: false, message: "Invalid Section" });
+          return res.status(400).json({ success: false, message: "Invalid Section Format example: A" });
         }
 
         const dob = normalizeDOB(row.dobRaw);
         if (!isDOBValid(dob)) {
           logExcelError(row.rowIndex, "Date of Birth", row.dobRaw, "Invalid DOB");
-          return res.status(400).json({ success: false, message: "Invalid DOB" });
+          return res.status(400).json({ success: false, message: "Invalid DOB Format example: 26-07-2006" });
         }
 
         studentsToInsert.push({

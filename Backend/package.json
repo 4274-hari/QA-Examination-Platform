@@ -13,6 +13,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.966.0",
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "busboy": "^1.6.0",
     "compression": "^1.8.1",
     "connect-mongo": "^6.0.0",
@@ -26,6 +27,7 @@
     "mongodb": "^7.0.0",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
+    "nodemailer": "^8.0.0",
     "nodemon": "^3.1.11",
     "path": "^0.12.7",
     "uuid": "^8.3.2",
