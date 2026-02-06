@@ -11,6 +11,7 @@ import "./App.css";
 // Core components (always needed)
 import AptitudeHeader from "./components/QA Student/AptitudeHeader.jsx";
 import UpdateChecker from "./components/updateChecker.jsx";
+import ScheduledExamHistory from "./components/QA Schedule/scheduledExamHistory.jsx";
 
 // Lazy-loaded components
 const LoadComp = React.lazy(() => import("./components/LoadComp.jsx"));
@@ -186,6 +187,11 @@ const App = () => {
               <Route path="/scheduled-exam" element={
                 <ProtectedRoute roles={['admin', 'staff']}>
                   <ScheduledExam />
+                </ProtectedRoute>
+              } />
+              <Route path="/scheduled-exam/history" element={
+                <ProtectedRoute roles={['admin', 'staff']}>
+                  <ScheduledExamHistory />
                 </ProtectedRoute>
               } />
               <Route path="/qaresult" element={

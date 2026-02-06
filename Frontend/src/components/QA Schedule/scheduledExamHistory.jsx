@@ -1,11 +1,10 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import Banner from "../Banner";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Pause, Power } from "lucide-react";
 import { useNavigate } from "react-router";
-import Swal from "sweetalert2";
+import Banner from "../Banner";
 
-const ScheduledExam = () => {
+const ScheduledExamHistory = () => {
   const [filters, setFilters] = useState({
     department: "",
     batch: "",
@@ -13,9 +12,13 @@ const ScheduledExam = () => {
     regulation: "",
     academicYear: "",
     semester: "",
+    status: "",
     date: "",
   });
   const [examData, setExamData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+  const tableTopRef = useRef(null);
   const navigate = useNavigate();
 
   const departments = [...new Set(examData.map(e => e.department))];
@@ -23,55 +26,12 @@ const ScheduledExam = () => {
   const regulation = [...new Set(examData.map(e => e.regulation))];
   const academicYears = [...new Set(examData.map(e => e.academic_year))];
   const semesters = [...new Set(examData.map(e => e.semester))];
-  const [regNo, setRegNo] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handlePauseExam = async () => {
-    if (!regNo) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing Register Number",
-        text: "Please enter a valid register number",
-      });
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await axios.post(
-        "api/main-backend/examiner/exam/pause",
-        { registerno: regNo }
-      );
-
-      if (response.data.success) {
-        Swal.fire({
-          icon: "success",
-          title: "Exam Paused",
-          text: `Student session paused successfully`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-
-        setRegNo("");
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text:
-          error.response?.data?.message ||
-          "Unable to pause exam session",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const status = [...new Set(examData.map(e => e.status))];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responce = await axios.get("/api/main-backend/examiner/exam-code");
+        const responce = await axios.get("/api/main-backend/examiner/exam-code/history");
 
         setExamData(responce.data.exams);
         
@@ -105,60 +65,21 @@ const ScheduledExam = () => {
       (!filters.regulation || exam.regulation === filters.regulation) &&
       (!filters.academicYear || exam.academic_year === filters.academicYear) &&
       (!filters.semester || exam.semester === filters.semester) &&
+      (!filters.status || exam.status === filters.status) &&
       (!filters.date || exam.date === filters.date)
     );
   });
 
-  const handleCancel = async (scheduleId) => {
-    const result = await Swal.fire({
-      title: "Cancel Exam ?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, cancel it",
-      cancelButtonText: "No",
-    });
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExams = filteredExams.slice(startIndex, endIndex);
 
-    if (!result.isConfirmed) return;
-
-    try {
-      const response = await axios.post(
-        "/api/main-backend/examiner/exam-schedule/cancel",
-        { scheduleId }
-      );
-
-      if (response.data.success) {
-        // Update UI immediately
-        setExamData((prev) =>
-          prev.map((exam) =>
-            exam.scheduleId === scheduleId
-              ? { ...exam, status: "cancelled", examCode: null }
-              : exam
-          )
-        );
-
-        Swal.fire({
-          title: "Cancelled!",
-          text: "Exam schedule has been cancelled successfully.",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      }
-    } catch (error) {
-      console.error("Error cancelling exam schedule", error);
-
-      Swal.fire({
-        title: "Error",
-        text:
-          error.response?.data?.message ||
-          "Failed to cancel exam schedule",
-        icon: "error",
-      });
-    }
-  };
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const statusStyles = {
     active: "bg-green-100 text-green-700",
@@ -169,10 +90,13 @@ const ScheduledExam = () => {
 
   const session = JSON.parse(sessionStorage.getItem("userSession"));
 
+  const scrollToTableTop = () => {
+    tableTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <>
-    <Banner
-      backgroundImage="./Banners/examsbanner.webp"
+    <Banner 
       headerText="office of controller of examinations"
       subHeaderText="COE"
     />
@@ -204,84 +128,11 @@ const ScheduledExam = () => {
                 <span>Logout</span>
               </button>
             </div>
-
-            {/* Resume Exam Container */}
-            <div className="flex flex-col gap-2 bg-white border border-[#800000]/30 rounded-xl px-3 sm:px-4 py-3 shadow-sm w-full md:w-fit md:mx-auto md:min-w-96">
-              <div className="flex items-center justify-center">
-                <span className="text-[#800000] text-xs sm:text-sm font-bold flex items-center gap-2 tracking-wide">
-                  <Pause size={16} /> Resume Individual Student Exam
-                </span>
-              </div>
-              <div className="gap-2 flex flex-col w-full">
-                <input
-                  type="number"
-                  placeholder="Enter Register No"
-                  className="
-                    w-full
-                    px-3 sm:px-4 py-2.5
-                    text-xs sm:text-sm
-                    font-medium
-                    border-2 border-gray-300
-                    rounded-lg
-                    focus:border-[#800000]
-                    focus:ring-2 focus:ring-[#800000]/30
-                    shadow-inner
-                  "
-                  value={regNo}
-                  onChange={(e) => setRegNo(e.target.value)}
-                />
-
-                <button
-                  onClick={handlePauseExam}
-                  disabled={loading}
-                  className={`
-                    px-4 sm:px-5 py-2.5
-                    rounded-lg
-                    text-xs sm:text-sm font-semibold
-                    text-white
-                    bg-[#800000]
-                    hover:bg-[#660000]
-                    shadow-md
-                    hover:shadow-lg
-                    active:scale-95
-                    transition
-                    disabled:opacity-60
-                    disabled:cursor-not-allowed
-                    w-full
-                  `}
-                >
-                  {loading ? "Resuming..." : "Resume Exam"}
-                </button>
-              </div>
-            </div>
           </div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="text-center mb-4">
             <h1 className="text-lg sm:text-2xl font-bold text-brwn whitespace-nowrap">
-              Scheduled Exam
+              Scheduled Exam History
             </h1>
-            {session.role === "admin" && (
-              <button
-                onClick={() => navigate('/scheduled-exam/history')}
-                className="
-                  inline-flex items-center gap-2
-                  px-3 sm:px-4 py-2
-                  rounded-lg
-                  border border-[#800000]/30
-                  bg-white
-                  text-[#800000]
-                  text-xs sm:text-sm font-medium
-                  shadow-sm
-                  hover:bg-[#800000]
-                  hover:text-white
-                  hover:border-[#800000]
-                  transition-all duration-200
-                  focus:outline-none focus:ring-2 focus:ring-[#800000]/30
-                "
-              >
-                View History
-                <span className="text-base">→</span>
-              </button>
-            )}
           </div>
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
@@ -295,6 +146,7 @@ const ScheduledExam = () => {
                 regulation: "",
                 academicYear: "",
                 semester: "",
+                status: "",
                 date: "",
               })}
               className="text-xs sm:text-sm px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors"
@@ -307,6 +159,13 @@ const ScheduledExam = () => {
             label="Date"
             value={filters.date}
             onChange={(v) => setFilters({ ...filters, date: v })}
+          />
+
+          <Select
+            label="Status"
+            options={status}
+            value={filters.status}
+            onChange={(v) => setFilters({ ...filters, status: v })}
           />
 
           <Select
@@ -354,7 +213,7 @@ const ScheduledExam = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <div ref={tableTopRef} className="bg-white rounded-lg shadow overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="bg-gry border-b">
               <tr>
@@ -373,19 +232,18 @@ const ScheduledExam = () => {
                   Exam Code
                 </TableHead>
                 <TableHead>Status</TableHead>
-                {session.role === "admin" && <TableHead>Action</TableHead>}
               </tr>
             </thead>
             <tbody>
-              {filteredExams.length === 0 && (
+              {paginatedExams.length === 0 && (
                 <tr>
-                  <td colSpan={session.role === "admin" ? 9 : 8} className="text-center py-6 text-gray-500">
+                  <td colSpan={8} className="text-center py-6 text-gray-500">
                     No exams found
                   </td>
                 </tr>
               )}
 
-              {filteredExams.map((exam) => (
+              {paginatedExams.map((exam) => (
                 <tr
                   key={exam.scheduleId}
                   className="border-b hover:bg-gray-50 transition"
@@ -411,29 +269,83 @@ const ScheduledExam = () => {
                       {exam.status}
                     </span>
                   </TableCell>
-                  {session.role === "admin" && (
-                    <TableCell>
-                        <button
-                          onClick={() => handleCancel(exam.scheduleId)}
-                          disabled={exam.status === "cancelled"}
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            exam.status === "cancelled"
-                              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                              : "bg-red-100 text-red-700 hover:bg-red-200"
-                          }`}
-                        >
-                          Cancel
-                        </button>
-                    </TableCell>
-                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-right">
-          Showing {filteredExams.length} exams
-        </p>
+        
+        {/* Pagination Info and Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
+          <p className="text-sm text-gray-500">
+            Showing {startIndex + 1} to {Math.min(endIndex, filteredExams.length)} of {filteredExams.length} exams
+          </p>
+          
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(1, prev - 1));
+                  scrollToTableTop();
+                }}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm font-medium rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              
+              <div className="flex items-center gap-1">
+                {[...Array(totalPages)].map((_, idx) => {
+                  const pageNum = idx + 1;
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    pageNum === 1 ||
+                    pageNum === totalPages ||
+                    (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => {
+                          setCurrentPage(pageNum);
+                          scrollToTableTop();
+                        }}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                          currentPage === pageNum
+                            ? "bg-[#800000] text-white"
+                            : "bg-white border hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  } else if (
+                    pageNum === currentPage - 2 ||
+                    pageNum === currentPage + 2
+                  ) {
+                    return (
+                      <span key={pageNum} className="px-2 text-gray-400">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+              
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                  scrollToTableTop();
+                }}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm font-medium rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
     </>
@@ -502,4 +414,4 @@ function TableCell({ children, className = "" }) {
   );
 }
 
-export default ScheduledExam;
+export default ScheduledExamHistory;

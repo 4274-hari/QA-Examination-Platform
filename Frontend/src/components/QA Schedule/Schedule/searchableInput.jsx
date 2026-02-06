@@ -132,6 +132,8 @@ export function MultiSearchDropdown({
   value,
   onChange,
   placeholder,
+  displayFormat,
+  valueKey,
 }) {
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
@@ -147,19 +149,30 @@ export function MultiSearchDropdown({
     return () => document.removeEventListener("mousedown", handleOutside)
   }, [])
 
-  const filtered = options.filter((opt) =>
-    opt.toLowerCase().includes(query.toLowerCase())
-  )
+  // Handle both object and string options
+  const getItemValue = (item) => {
+    return valueKey ? item[valueKey] : item
+  }
+
+  const getItemDisplay = (item) => {
+    return displayFormat ? displayFormat(item) : (valueKey ? item[valueKey] : item)
+  }
+
+  const filtered = options.filter((opt) => {
+    const display = getItemDisplay(opt)
+    return display.toLowerCase().includes(query.toLowerCase())
+  })
 
   const selectItem = (item) => {
-    if (!value.includes(item)) {
-      onChange([...value, item])
+    const itemValue = getItemValue(item)
+    if (!value.includes(itemValue)) {
+      onChange([...value, itemValue])
     }
     setQuery("")
   }
 
-  const removeItem = (item) => {
-    onChange(value.filter((v) => v !== item))
+  const removeItem = (itemValue) => {
+    onChange(value.filter((v) => v !== itemValue))
   }
 
   return (
@@ -167,7 +180,7 @@ export function MultiSearchDropdown({
       <label className="text-slate-700 font-medium text-sm">{label}</label>
 
       <div className="relative border rounded-md min-h-[48px]
-        flex flex-wrap items-center gap-2 px-3">
+        flex flex-wrap items-center gap-2 px-3 focus-within:ring-2 focus-within:ring-[#fdcc03]/20">
         <Icon className="w-4 h-4 text-slate-400" />
         <input
           value={query}
@@ -175,43 +188,34 @@ export function MultiSearchDropdown({
             setQuery(e.target.value)
             setOpen(true)
           }}
+          onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="flex-1 outline-none text-sm"
+          className="flex-1 outline-none text-sm bg-transparent py-2"
         />
-
-        {value.map((v) => (
-          <span key={v} className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
-            {v}
-            <button
-              type="button"
-              className="ml-1 text-[#800000]"
-              onClick={() => removeItem(v)}
-            >
-              ✕
-            </button>
-          </span>
-        ))}
-
-
       </div>
 
-      {open && (
+      {open && filtered.length > 0 && (
         <div className="absolute z-20 w-full bg-white border
-          rounded-md shadow-md max-h-40 overflow-auto">
-          {filtered.map((item) => (
-            <div
-              key={item}
-              onClick={() => selectItem(item)}
-              className="px-3 py-2 hover:bg-slate-100 cursor-pointer text-sm"
-            >
-              {item}
-            </div>
-          ))}
+          rounded-md shadow-md max-h-60 overflow-auto">
+          {filtered.map((item) => {
+            const itemValue = getItemValue(item)
+            const itemDisplay = getItemDisplay(item)
+            return (
+              <div
+                key={itemValue}
+                onClick={() => selectItem(item)}
+                className="px-3 py-2.5 hover:bg-[#800000]/5 cursor-pointer text-sm border-b last:border-b-0 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-slate-700">{itemDisplay}</span>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
-    </div>
-  )
-}
+        </div>
+      )}
 
 const TIME_SLOT_SINGLE = {
   model: [
@@ -222,7 +226,8 @@ const TIME_SLOT_SINGLE = {
     "08:40 AM - 10:20 AM",
     "10:30 AM - 12:10 PM",
     "12:50 PM - 02:20 PM",
-    "02:30 PM - 04:00 PM"
+    "02:30 PM - 04:00 PM",
+    "04:05 PM - 05:35 PM"
   ]
 }
 
@@ -241,7 +246,8 @@ const TIME_SLOT_MULTIPLE = {
     "12:50 PM - 01:35 PM",
     "01:35 PM - 02:20 PM",
     "02:30 PM - 03:15 PM",
-    "03:15 PM - 4:00 PM"
+    "03:15 PM - 04:00 PM",
+    "04:05 PM - 04:50 PM",
   ]
 }
 
