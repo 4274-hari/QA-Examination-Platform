@@ -81,20 +81,10 @@ async function viewExamCodeHistory(req, res) {
       status: exam.status
     }));
 
-    const multiplier = 100;
-
-const expandedResponse = Array(multiplier)
-  .fill(response)
-  .flat()
-  .map((exam, i) => ({
-    ...exam,
-    scheduleId: `${exam.scheduleId}_${i}` // avoid duplicate keys in frontend
-  }));
-
     return res.status(200).json({
       success: true,
       count: response.length,
-      exams: expandedResponse
+      exams: response
     });
 
   } catch (error) {
