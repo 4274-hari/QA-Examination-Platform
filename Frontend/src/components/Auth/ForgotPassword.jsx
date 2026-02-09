@@ -196,7 +196,7 @@ export default function ForgotPassword() {
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-slate-800 mb-2">Forgot Password?</h2>
             <p className="text-slate-600 text-sm">
-              Enter your email address and we'll send you an OTP to reset your password.
+              Please enter your registered email address to receive a one-time password (OTP) to reset your password.
             </p>
           </div>
 
