@@ -150,7 +150,14 @@ async function sendOtpEmail({ to, otp }) {
                         <tr>
                         <td style="padding-top:24px;">
                             <p style="margin:0 0 4px; padding:0; color:#1e293b; font-size:15px; font-weight:600;">Best regards,</p>
-                            <p style="margin:0; padding:0; color:#800000; font-size:16px; font-weight:700;">WEBOPS Team - VEC</p>
+                             <p style="margin:0; padding:0; font-size:16px; font-weight:700;">
+                                <a href="https://velammal.edu.in/webteam"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="color:#800000; text-decoration:none;">
+                                    WEBOPS Team - VEC
+                                </a>
+                            </p>
                             <p style="margin:4px 0 0; padding:0; color:#64748b; font-size:13px;">QA Examination Platform</p>
                         </td>
                         </tr>
