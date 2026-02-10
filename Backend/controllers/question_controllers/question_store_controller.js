@@ -314,7 +314,7 @@ const { fetchSubjectsWithTopics } = require("../../services/get_topics.service")
 async function getSubject(req, res) {
   try {
 
-    const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Question_Bank_Format_Sample.xls`;
+    const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Question_Bank_Format_Sample.xlsx`;
 
     res.json({ success: true, data: await fetchSubjectsWithTopics(getDb()),s3link });
     
