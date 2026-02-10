@@ -29,7 +29,7 @@ async function existingBatch(req, res) {
     ]).toArray();
 
     
-   const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Student_Database_Format_Sample.xls`;
+   const s3link = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/template/QA_Student_Database_Format_Sample.xlsx`;
 
    return  res.status(200).json({ success: true, result, s3link});
   } catch (err) {
