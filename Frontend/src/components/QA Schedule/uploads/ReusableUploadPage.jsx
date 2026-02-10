@@ -139,8 +139,6 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
         title: "Error!",
         text: msg || `"Error Adding ${selectedOption}"`,
         icon: "error",
-        timer: 1200,
-        showConfirmButton: false,
       });
       setShowInstructions(true);
     } finally {
@@ -186,11 +184,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       fetchUpdatedSubjects();
 
     } catch (error) {
-      Swal.fire(
-        "Error",
-        error?.response?.data?.error || "Failed to delete topic",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: error?.response?.data?.error || "Failed to delete topic",
+        icon: "error",
+      });
     }
   };
 
@@ -237,11 +235,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       fetchUpdatedSubjects();
 
     } catch (error) {
-      Swal.fire(
-        "Error",
-        error?.response?.data?.error || "Failed to delete subject",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: error?.response?.data?.error || "Failed to delete subject",
+        icon: "error",
+      });
     }
   };
 
@@ -364,11 +362,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       });
 
     } catch (error) {
-      Swal.fire(
-        "Error",
-        error?.response?.data?.message || "Failed to delete regulation",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: error?.response?.data?.message || "Failed to delete regulation",
+        icon: "error",
+      });
     }
   };
 
@@ -447,11 +445,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       });
 
     } catch (error) {
-      Swal.fire(
-        "Error",
-        error?.response?.data?.message || "Failed to delete academic year",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: error?.response?.data?.message || "Failed to delete academic year",
+        icon: "error",
+      });
     }
   };
 
@@ -484,7 +482,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
 
   const handleBatchDelete = async () => {
     if (!batchToDelete) {
-      Swal.fire("Batch required", "Enter batch name", "warning");
+      Swal.fire({
+        title: "Batch required",
+        text: "Enter batch name",
+        icon: "warning",
+      });
       return;
     }
 
@@ -531,11 +533,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       setStudentRegs("");
 
     } catch (err) {
-      Swal.fire(
-        "Error",
-        err?.response?.data?.message || "Delete failed",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: err?.response?.data?.message || "Delete failed",
+        icon: "error",
+      });
     }
   };
 
@@ -543,7 +545,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
     const { name, registerno, password, department, batch } = studentForm;
 
     if (!name || !registerno || !password || !department || !batch) {
-      Swal.fire("Error", "All fields are required", "warning");
+      Swal.fire({
+        title: "Error",
+        text: "All fields are required",
+        icon: "warning",
+      });
       return;
     }
 
@@ -567,11 +573,11 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       });
 
     } catch (err) {
-      Swal.fire(
-        "Error",
-        err?.response?.data?.message || "Failed to add student",
-        "error"
-      );
+      Swal.fire({
+        title: "Error",
+        text: err?.response?.data?.message || "Failed to add student",
+        icon: "error",
+      });
     }
   };
 
@@ -837,83 +843,72 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
           )}
 
           {mode === "existingData" && (
-            <div className="w-full flex flex-col justify-center items-center border-t">
+            <div className="w-full flex flex-col justify-center items-center border-t pt-6">
               <p className="text-lg font-semibold mb-6" style={{ color: "#800000" }}>
-                Existing Batches
+                Existing Student Data
               </p>
 
-              {/* BATCHES LIST */}
-              <div className="mb-8">
-                <p className="text-md font-medium mb-4 text-gray-700">Choose Batch</p>
-                <div className="flex flex-wrap gap-3 justify-start mb-3">
-                  {batchDepartmentData.slice(0, expandBatches ? batchDepartmentData.length : 4).map((item) => (
-                    <button
-                      key={item.batch}
-                      onClick={() => setSelectedBatch(item.batch)}
-                      className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 ${
-                        selectedBatch === item.batch ? "shadow-lg scale-105" : "hover:scale-105"
-                      }`}
-                      style={{
-                        backgroundColor: selectedBatch === item.batch ? "#800000" : "#fff",
-                        borderColor: "#800000",
-                        color: selectedBatch === item.batch ? "#ffffff" : "#800000",
+              {/* BATCH AND DEPARTMENT DROPDOWNS */}
+              <div className="w-full max-w-4xl mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Batch Select */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Batch
+                    </label>
+                    <select
+                      value={selectedBatch}
+                      onChange={(e) => {
+                        setSelectedBatch(e.target.value);
+                        setSelectedDepartment("");
+                        setStudentDetails([]);
                       }}
+                      className="w-full px-4 py-3 border-2 rounded-lg text-base font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#800000]/30"
+                      style={{ borderColor: "#800000" }}
                     >
-                      {item.batch}
-                    </button>
-                  ))}
-                </div>
-                {batchDepartmentData.length > 4 && !expandBatches && (
-                  <button
-                    onClick={() => setExpandBatches(true)}
-                    className="px-4 py-2 rounded-lg font-semibold border-2 border-dashed"
-                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
-                  >
-                    ... ({batchDepartmentData.length - 4} more)
-                  </button>
-                )}
-                {expandBatches && (
-                  <button
-                    onClick={() => setExpandBatches(false)}
-                    className="px-4 py-2 rounded-lg font-semibold border-2 border-dashed"
-                    style={{ borderColor: "#800000", color: "#800000", backgroundColor: "#fff" }}
-                  >
-                    Show Less
-                  </button>
-                )}
-              </div>
-
-              {/* DEPARTMENTS LIST */}
-              {selectedBatch && (
-                <div className="w-[70%]">
-                  <p className="text-md font-medium mb-4 text-gray-700">
-                    Departments in {selectedBatch}
-                  </p>
-                  <div className="flex flex-wrap gap-3 justify-start">
-                    {batchDepartmentData
-                      .find((item) => item.batch === selectedBatch)
-                      ?.departments.map((dept) => (
-                        <button
-                          key={dept}
-                          onClick={() => {
-                            setSelectedDepartment(dept);
-                            fetchStudentDetails(selectedBatch, dept);
-                          }}
-                          className={`px-6 py-3 rounded-lg text-base font-semibold border-2 transition-all duration-300 ${
-                            selectedDepartment === dept ? "shadow-lg scale-105" : "hover:shadow-lg hover:scale-105"
-                          }`}
-                          style={{
-                            backgroundColor: selectedDepartment === dept ? "#fdcc03" : "#fff",
-                            borderColor: "#fdcc03",
-                            color: "#800000",
-                          }}
-                        >
-                          {dept}
-                        </button>
+                      <option value="">Choose Batch</option>
+                      {batchDepartmentData.map((item) => (
+                        <option key={item.batch} value={item.batch}>
+                          {item.batch}
+                        </option>
                       ))}
+                    </select>
                   </div>
 
-                  {/* STUDENT DETAILS TABLE */}
+                  {/* Department Select */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Department
+                    </label>
+                    <select
+                      value={selectedDepartment}
+                      onChange={(e) => {
+                        setSelectedDepartment(e.target.value);
+                        if (e.target.value && selectedBatch) {
+                          fetchStudentDetails(selectedBatch, e.target.value);
+                        }
+                      }}
+                      disabled={!selectedBatch}
+                      className="w-full px-4 py-3 border-2 rounded-lg text-base font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#fdcc03]/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ borderColor: "#fdcc03" }}
+                    >
+                      <option value="">Choose Department</option>
+                      {selectedBatch &&
+                        batchDepartmentData
+                          .find((item) => item.batch === selectedBatch)
+                          ?.departments.map((dept) => (
+                            <option key={dept} value={dept}>
+                              {dept}
+                            </option>
+                          ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* STUDENT DETAILS TABLE */}
+              {selectedBatch && selectedDepartment && (
+                <div className="w-full max-w-6xl">
                   {selectedDepartment && (
                     <div ref={tableTopRef} className="mt-8 w-full">
                       <p className="text-md font-medium mb-4 text-gray-700">

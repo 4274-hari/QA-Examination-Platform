@@ -155,16 +155,21 @@ for (const student of exam.students) {
 
   const buffer = await workbook.xlsx.writeBuffer();
 
-  let key;
+  const { department, cie, _id, date, isArrear, isRetest } = schedule;
 
-  if(schedule.department != null){
-    key = `qa-exam/result/${schedule.department
-      .replace(/\s+/g, "_")}/${schedule.cie}/${schedule._id}.xlsx`;
-  } else if (schedule.isArrear === true){
-    key = `qa-exam/result/arrear/${schedule.cie}/${schedule._id}.xlsx`;
-  } else if (schedule.isRetest === true){
-    key = `qa-exam/result/retest/${schedule.cie}/${schedule._id}.xlsx`;
+  const format = (value) => value.replace(/\s+/g, "_");
+
+  let key = "";
+
+  if (department) {
+    const dept = format(department);
+    key = `qa-exam/result/${dept}/${cie}/${dept}${cie}${date}${_id}.xlsx`;
+  } else if (isArrear) {
+    key = `qa-exam/result/arrear/${cie}/arrear${cie}${date}${_id}.xlsx`;
+  } else if (isRetest) {
+    key = `qa-exam/result/retest/${cie}/retest${cie}${date}${_id}.xlsx`;
   }
+
 
   await s3.send(
     new PutObjectCommand({

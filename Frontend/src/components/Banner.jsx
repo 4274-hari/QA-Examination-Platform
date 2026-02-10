@@ -50,7 +50,7 @@ const Banner = ({
         <motion.div
           className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0"
           style={{
-            backgroundImage: `url(${backgroundImage})`,
+            backgroundImage: `url(${backgroundImage ? backgroundImage : "../../public/Banners/examsbanner.webp"})`,
             y: parallax,
           }}
         />

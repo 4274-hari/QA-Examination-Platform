@@ -24,11 +24,7 @@ const deleteSchedules = async () => {
     const scheduleIds = result.map(s => s._id);
 
     await examcollection.deleteMany({
-      scheduleId:{$in:scheduleIds}
-    })
-
-    await collection.deleteMany({
-      _id: { $in: scheduleIds }
+      scheduleId: { $in: scheduleIds }
     })
 
     

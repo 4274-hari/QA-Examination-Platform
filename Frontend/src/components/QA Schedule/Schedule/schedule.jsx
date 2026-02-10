@@ -533,18 +533,74 @@ const Schedule = () => {
           <div ref={regRef} className="space-y-2 relative">
             {/* Input box (same style as others) */}
             {isRetest || isArrear ? (
-              <MultiSearchDropdown
-                key={`batch-${resetKey}`}
-                label="Register Numbers"
-                icon={Hash}
-                options={studentRegs.filter(reg => !registerState.values.includes(reg))}
-                value={registerState.values}
-                onChange={(vals) =>
-                  setRegisterState({ mode: "partial", values: vals })
-                }
-                placeholder="Search register number"
-                multiple
-              />
+              <div className="space-y-2">
+                <MultiSearchDropdown
+                  key={`batch-${resetKey}`}
+                  label="Register Numbers"
+                  icon={Hash}
+                  options={studentRegs.filter(student => !registerState.values.includes(student.registerno))}
+                  value={registerState.values}
+                  onChange={(vals) =>
+                    setRegisterState({ mode: "partial", values: vals })
+                  }
+                  placeholder="Search register number or name"
+                  multiple
+                  displayFormat={(student) => `${student.registerno} - ${student.name}`}
+                  valueKey="registerno"
+                />
+                
+                {/* Selected Students Display */}
+                {registerState.values.length > 0 && (
+                  <div className="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold text-slate-700">
+                        Selected Students ({registerState.values.length})
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setRegisterState({ mode: "none", values: [] })}
+                        className="text-xs text-red-600 hover:text-red-700 font-medium"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                      {registerState.values.map((regNo) => {
+                        const student = studentRegs.find(s => s.registerno === regNo)
+                        return (
+                          <div
+                            key={regNo}
+                            className="flex items-center justify-between bg-white px-3 py-2 rounded-md border border-slate-200 hover:border-[#800000]/30 transition-colors group"
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <Hash className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="text-sm font-medium text-slate-700">
+                                {student?.registerno || regNo}
+                              </span>
+                              <span className="text-sm text-slate-500">-</span>
+                              <span className="text-sm text-slate-600">
+                                {student?.name || 'Unknown'}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setRegisterState(prev => ({
+                                  ...prev,
+                                  values: prev.values.filter(r => r !== regNo)
+                                }))
+                              }}
+                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs font-medium transition-opacity"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <label className="text-slate-700 font-medium text-sm">Register Numbers</label>
@@ -578,7 +634,8 @@ const Schedule = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setRegisterState({ mode: "all", values: filteredRegs })
+                  const allRegNos = studentRegs.map(s => s.registerno)
+                  setRegisterState({ mode: "all", values: allRegNos })
                   setRegDropdownOpen(false)
                 }}
                 className="text-[#800000] font-medium"
@@ -609,32 +666,37 @@ const Schedule = () => {
                   <div className="px-3 py-2 text-sm text-slate-400">
                     Loading students...
                   </div>
-                ) : filteredRegs.length === 0 ? (
+                ) : studentRegs.length === 0 ? (
                   <div className="px-3 py-2 text-sm text-slate-400">
                     No students found
                   </div>
                 ) : (
-                  filteredRegs.map((reg) => {
-                    const selected = registerState.values.includes(reg)
+                  studentRegs.map((student) => {
+                    const regNo = student.registerno
+                    const selected = registerState.values.includes(regNo)
 
                     return (
                       <div
-                        key={reg}
+                        key={regNo}
                         onClick={() => {
                           setRegisterState((prev) => ({
                             mode: "partial",
                             values: selected
-                              ? prev.values.filter((r) => r !== reg)
-                              : [...prev.values, reg],
+                              ? prev.values.filter((r) => r !== regNo)
+                              : [...prev.values, regNo],
                           }))
                         }}
-                        className={`px-3 py-2 cursor-pointer text-sm
+                        className={`px-3 py-2 cursor-pointer text-sm border-b last:border-b-0
                           ${selected
                             ? "bg-[#fdcc03]/20 font-medium"
                             : "hover:bg-slate-100"
                           }`}
                       >
-                        {reg}
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-slate-700">{regNo}</span>
+                          <span className="text-slate-400">-</span>
+                          <span className="text-slate-600">{student.name}</span>
+                        </div>
                       </div>
                     )
                   })

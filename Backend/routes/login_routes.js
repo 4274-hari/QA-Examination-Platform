@@ -7,18 +7,27 @@ const {
 const {
   getStudentform,
 } = require("../controllers/form_controllers/studentform_controller");
+const { forgotpassword, resetPassword, otpValidation } = require("../controllers/staff_controllers/forgot_password_controller");
 const router = express.Router();
 
 /* ===========================
    AUTHENTICATION ROUTES
-   =========================== */
+  =========================== */
 router.post("/signup", signup);
 router.post("/staff/login", staffLogin);
 router.post("/student/login", studentLogin);
 
 /* ===========================
+   PASSWORD RESET ROUTES
+  =========================== */
+
+  router.post('/forgot_password',forgotpassword);
+  router.post('/otp_validation',otpValidation);
+  router.post('/reset_password',resetPassword);
+
+/* ===========================
    STUDENT FORM ROUTES
-   =========================== */
+  =========================== */
 router.get("/students", getStudentform);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { viewExamCode } = require('../controllers/code_controllers/code_view_controller')
+const { viewExamCode, viewExamCodeHistory } = require('../controllers/code_controllers/code_view_controller')
 const { storeExamSchedule, cancelExamSchedule } = require('../controllers/schedule_controllers/exam_schedule_controller');
 const { allowRoles  } = require('../middlewares/role_access_middleware')
 const {Excelgenerator} = require('../controllers/staff_controllers/result_excel_controller');
@@ -25,6 +25,7 @@ router.post("/exam-schedule/cancel", allowRoles("admin"), cancelExamSchedule);
 // EXAM CODE
 // ===========================
 router.get("/exam-code", allowRoles("admin", "staff"), viewExamCode);
+router.get("/exam-code/history", allowRoles("admin"), viewExamCodeHistory);
 
 // ===========================
 // QA FORMS (ADMIN)
