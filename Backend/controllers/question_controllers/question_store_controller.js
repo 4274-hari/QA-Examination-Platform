@@ -103,32 +103,30 @@ function isValidQuestionSheet(ws) {
 function validateQuestionRow(row, n) {
   const errors = [];
 
-  if (!pick(row, ["Question","question"]))
-    throw new Error(`Row ${n}: Missing 'Question'`);
+  if (!pick(row, ["Question", "question"])) {
     errors.push(`Row ${n}: Missing 'Question'`);
+  }
 
-  ["A","B","C","D"].forEach(o => {
-    if (!pick(row, [`Option ${o}`, o, `option ${o.toLowerCase()}`]))
-      throw new Error(`Row ${n}: Missing 'Option ${o}'`);
+  ["A", "B", "C", "D"].forEach(o => {
+    if (!pick(row, [`Option ${o}`, o, `option ${o.toLowerCase()}`])) {
       errors.push(`Row ${n}: Missing 'Option ${o}'`);
+    }
   });
 
-  if (!pick(row, ["Answer(No Option)","Answer","answer","correct_option"]))
-    throw new Error(`Row ${n}: Missing 'Answer(No Option)'`);
+  if (!pick(row, ["Answer(No Option)", "Answer", "answer", "correct_option"])) {
     errors.push(`Row ${n}: Missing 'Answer(No Option)'`);
+  }
 
-  if (!pick(row, ["Topic","topic"]))
-    throw new Error(`Row ${n}: Missing 'Topic'`);
+  if (!pick(row, ["Topic", "topic"])) {
     errors.push(`Row ${n}: Missing 'Topic'`);
+  }
 
-  const diff = pick(row, ["Difficulty Level","Difficulty","difficulty","difficulty level"]);
-  if (normalizeDifficultyLevel(diff) === null)
-      throw new Error(
-      `Row ${n}: Invalid 'Difficulty Level' - must be 1, 2, or 3 (found: '${diff}')`
-    );
+  const diff = pick(row, ["Difficulty Level", "Difficulty", "difficulty", "difficulty level"]);
+  if (normalizeDifficultyLevel(diff) === null) {
     errors.push(
       `Row ${n}: Invalid 'Difficulty Level' - must be 1, 2, or 3 (found: '${diff}')`
     );
+  }
 
   return { isValid: errors.length === 0, errors };
 }
