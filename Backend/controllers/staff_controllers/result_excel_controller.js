@@ -202,8 +202,6 @@ async function ResultStore() {
       return;
     }
     
-    const resultDocs = [];
-    
     const cieMap = {
       cie1 : "CIE I",
       cie2 : "CIE II",
@@ -213,10 +211,16 @@ async function ResultStore() {
     for (const schedule of schedules) {
       try {
         
-        const totalStudents = await studentCollection.countDocuments({
-          batch: schedule.batch,
-          department: schedule.department,
-        });
+        let totalStudents;
+
+        if (schedule.department == null) {
+          totalStudents = schedule.registerNo?.length || 0;
+        } else {
+          totalStudents = await studentCollection.countDocuments({
+            batch: schedule.batch,
+            department: schedule.department,
+          });
+        }
         // Check duplicate BEFORE heavy export
         const exists = await resultCollection.findOne({
           scheduleId: schedule._id
@@ -231,24 +235,29 @@ async function ResultStore() {
           schedule._id
         );
 
-        resultDocs.push({
+        const resultDoc = {
           scheduleId: schedule._id,
           regulation: schedule.regulation,
           academic_year: schedule.academic_year,
           batch: schedule.batch,
           semester: schedule.semester,
           department: schedule.department ?? null,
+          isArrear: schedule.isArrear || null,
+          isRetest: schedule.isRetest || null,
           total_students:totalStudents,
           cie: cieMap[schedule.cie],
           subject: schedule.subject ?? [],
           date: schedule.date,
           excel_link,
-        });
+        };
 
-        await scheduleCollection.updateOne(
-          { _id: schedule._id },
-          { $set: { status: "synced"} }
-        );
+        await Promise.all([
+          resultCollection.insertOne(resultDoc),
+          scheduleCollection.updateOne(
+            { _id: schedule._id },
+            { $set: { status: "synced" } }
+          )
+        ]);
 
         console.log(`[CRON] Synced schedule ${schedule._id}`);
 
@@ -266,15 +275,10 @@ async function ResultStore() {
       }
     }
 
-    if (resultDocs.length) {
-      await resultCollection.insertMany(resultDocs);
-      console.log(`[CRON] Inserted ${resultDocs.length} result docs`);
-    }
-
     console.log("[CRON] QA result sync completed");
 
   } catch (err) {
-    console.error("[CRON] Fatal error in ResultStoreCron:", err);
+    console.error("[CRON] Fail error in ResultStoreCron:", err);
   }
 }
 
