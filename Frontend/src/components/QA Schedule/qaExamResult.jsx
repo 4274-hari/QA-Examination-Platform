@@ -276,7 +276,7 @@ const QAExamResults = () => {
                     className="border-b hover:bg-gray-50 transition"
                   >
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{item.department}</TableCell>
+                    <TableCell>{item.department || (item.isArrear && "Arrear") || (item.isRetest && "Re-Test")}</TableCell>
                     <TableCell>{item.total_students}</TableCell>
                     <TableCell>{Array.isArray(item.subject) ? item.subject.join("/") : item.subject}</TableCell>
                     <TableCell>{item.cie}</TableCell>
