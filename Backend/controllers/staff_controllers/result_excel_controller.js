@@ -242,8 +242,8 @@ async function ResultStore() {
           batch: schedule.batch,
           semester: schedule.semester,
           department: schedule.department ?? null,
-          isArrear: schedule.isArrear || null,
-          isRetest: schedule.isRetest || null,
+          isArrear: schedule.isArrear ?? null,
+          isRetest: schedule.isRetest ?? null,
           total_students:totalStudents,
           cie: cieMap[schedule.cie],
           subject: schedule.subject ?? [],
@@ -310,7 +310,14 @@ async function Excelgenerator(req, res) {
       batch
     };
 
-    if (cie) filter.cie = cie;
+    if (cie) {
+      const cieMap = {
+      cie1 : "CIE I",
+      cie2 : "CIE II",
+      cie3 : "CIE III",
+    }
+      filter.cie = cieMap[cie];
+    }
     if (department) filter.department = department;
     if (semester) filter.semester = semester;
 

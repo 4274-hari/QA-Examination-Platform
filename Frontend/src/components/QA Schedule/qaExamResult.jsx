@@ -281,7 +281,7 @@ const QAExamResults = () => {
                     <TableCell>{Array.isArray(item.subject) ? item.subject.join("/") : item.subject}</TableCell>
                     <TableCell>{item.cie}</TableCell>
                     <TableCell>{item.semester}</TableCell>
-                    <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{item.date}</TableCell>
                     <TableCell>
                       <a href={item.excel_link} className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-full text-xs w-fit font-medium cursor-pointer flex items-center" ><FileSpreadsheet size={16} /></a>
                     </TableCell>
