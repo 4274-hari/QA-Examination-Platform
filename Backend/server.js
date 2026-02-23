@@ -55,7 +55,11 @@ app.use((err, req, res, next) => {
 // Start server
 async function startServer() {
 
-  require("./middlewares/cron")
+   // Only run cron in PM2 instance 0
+  if (process.env.NODE_APP_INSTANCE === "0") {
+    console.log("Starting CRON in instance 0");
+    require("./middlewares/cron");
+  }
   await connectToDatabase();
   app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
