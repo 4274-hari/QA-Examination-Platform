@@ -59,112 +59,69 @@ function computeValidity(date, start, end) {
   };
 }
 
-/* ---------------------------------------------------
-   In-memory scheduler (per-exam timers)
---------------------------------------------------- */
-
-const scheduledJobs = new Map();
-
-/**
- * Schedule one-time exam activation
- */
-function scheduleExamActivation(exam) {
-  const { validFrom, validTill } = computeValidity(
-    exam.date,
-    exam.start,
-    exam.end
-  );
-
-  const delay = validFrom.getTime() - Date.now();
-
-  // Prevent duplicate scheduling
-  if (scheduledJobs.has(exam._id.toString())) return;
-
-  // If already within window → activate immediately
-  if (delay <= 0) {
-    activateExam(exam._id, validFrom, validTill);
-    return;
-  }
-
-  const timeoutId = setTimeout(async () => {
-    await activateExam(exam._id, validFrom, validTill);
-    scheduledJobs.delete(exam._id.toString());
-  }, delay);
-
-  scheduledJobs.set(exam._id.toString(), timeoutId);
-
-}
-
 /**
  * Activate exam and generate unique code
  */
-async function activateExam(examId, validFrom, validTill) {
+async function activateExam() {
   const db = getDb();
   const collection = db.collection("qa_schedule");
+  const now = new Date();
 
-  const exam = await collection.findOne({
-    _id: examId,
-    status: "scheduled"
-  });
-
-  if (!exam) return;
-
-  let examCode;
-  do {
-    examCode = generateExamCode();
-  } while (await collection.findOne({ examCode }));
-
-  await collection.updateOne(
-    { _id: examId },
-    {
-      $set: {
-        examCode,
-        validFrom,
-        validTill,
-        status: "active"
-      }
-    }
-  );
-
-  await generateExam(
-    exam.batch,
-    exam.department,
-    exam.registerNo,
-    exam.cie,
-    exam.subject,
-    exam.topics,
-    exam.date
-  );
-
-}
-
-/* ---------------------------------------------------
-   Re-schedule on server restart (IMPORTANT)
---------------------------------------------------- */
-
-async function reschedulePendingExams() {
-  const db = getDb();
-  const collection = db.collection("qa_schedule");
-
-  const pending = await collection.find({
+  /* -------------------------------
+     1️⃣ Activate Scheduled Exams
+  --------------------------------*/
+  const scheduledExams = await collection.find({
     status: "scheduled"
   }).toArray();
 
-  pending.forEach(scheduleExamActivation);
-}
+  for (const exam of scheduledExams) {
+    const { validFrom, validTill } = computeValidity(
+      exam.date,
+      exam.start,
+      exam.end
+    );
 
-/* ---------------------------------------------------
-   Auto-expire exams (optional helper)
---------------------------------------------------- */
+    if (validFrom <= now) {
+      let examCode;
 
-async function expireFinishedExams() {
-  const db = getDb();
-  const collection = db.collection("qa_schedule");
+      // Ensure unique exam code
+      do {
+        examCode = generateExamCode();
+      } while (await collection.findOne({ examCode }));
 
+      await collection.updateOne(
+        { _id: exam._id, status: "scheduled" }, // prevent race condition
+        {
+          $set: {
+            examCode,
+            validFrom,
+            validTill,
+            status: "active"
+          }
+        }
+      );
+
+      await generateExam(
+        exam.batch,
+        exam.department,
+        exam.registerNo,
+        exam.cie,
+        exam.subject,
+        exam.topics,
+        exam.date
+      );
+
+      console.log(`Exam ${exam._id} activated`);
+    }
+  }
+
+  /* -------------------------------
+     2️⃣ Expire Finished Exams
+  --------------------------------*/
   await collection.updateMany(
     {
       status: "active",
-      validTill: { $lt: new Date() }
+      validTill: { $lt: now }
     },
     {
       $set: { status: "expired" }
@@ -172,14 +129,4 @@ async function expireFinishedExams() {
   );
 }
 
-/* ---------------------------------------------------
-   Exports
---------------------------------------------------- */
-
-module.exports = {
-  generateExamCode,
-  computeValidity,
-  scheduleExamActivation,
-  reschedulePendingExams,
-  expireFinishedExams
-};
+module.exports = {activateExam};

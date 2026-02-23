@@ -1,6 +1,5 @@
 const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
-const {scheduleExamActivation} = require("../code_controllers/code_generator_controller");
 const { createExamFromSchedule } = require("./exam_student_controller");
 
 // normalizer for exam time duration
@@ -162,11 +161,6 @@ async function storeExamSchedule(req, res) {
     ----------------------------- */
 
     await createExamFromSchedule(result.insertedId);
-
-    scheduleExamActivation({
-      ...scheduleDoc,
-      _id: result.insertedId,batch, department, cie, subject, topics, date
-    });
 
     /* -----------------------------
        Response
