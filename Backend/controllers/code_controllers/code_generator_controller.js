@@ -67,6 +67,8 @@ async function activateExam() {
   const collection = db.collection("qa_schedule");
   const now = new Date();
 
+  const TEN_MINUTES = 10 * 60 * 1000;
+
   /* -------------------------------
      1️⃣ Activate Scheduled Exams
   --------------------------------*/
@@ -81,7 +83,9 @@ async function activateExam() {
       exam.end
     );
 
-    if (validFrom <= now) {
+    const activationTime = new Date(validFrom.getTime() - TEN_MINUTES);
+
+    if (now >= activationTime && now <=validFrom) {
       let examCode;
 
       // Ensure unique exam code
