@@ -54,7 +54,7 @@ function computeValidity(date, start, end) {
   const endTime = toDateTime(date, end);
 
   return {
-    validFrom: new Date(startTime.getTime() - 10 * 60 * 1000),
+    validFrom: startTime,
     validTill: endTime
   };
 }
