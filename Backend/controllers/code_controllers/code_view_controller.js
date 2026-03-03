@@ -24,6 +24,7 @@ async function viewExamCode(req, res) {
       academic_year: exam.academic_year,
       batch: exam.batch,
       department: exam.isRetest ? "Re-Test" : exam.isArrear ? "Arrear" : exam.department,
+      totalStudents : exam.registerNo ? exam.registerNo.length : 0,
       cie: exam.cie.toUpperCase(),
       subject: exam.subject,
       date:exam.date,

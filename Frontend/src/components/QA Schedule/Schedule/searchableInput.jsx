@@ -13,6 +13,10 @@ export function SearchableInput({
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
 
+   const safeValue = multiple
+    ? (Array.isArray(value) ? value : [])
+    : value
+
   /* Close dropdown on outside click */
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -27,7 +31,7 @@ export function SearchableInput({
   /* Filter options */
   const filteredOptions = options
     .filter((opt) => {
-      if (multiple) return !value.includes(opt)
+      if (multiple) return !safeValue.includes(opt)
       return true
     })
     .filter((opt) =>
@@ -36,7 +40,7 @@ export function SearchableInput({
 
   const handleSelect = (item) => {
     if (multiple) {
-      onChange([...value, item])
+      onChange([...safeValue, item])
       setQuery("")
     } else {
       onChange(item)
@@ -46,7 +50,7 @@ export function SearchableInput({
   }
 
   const removeItem = (item) => {
-    onChange(value.filter((v) => v !== item))
+    onChange(safeValue.filter((v) => v !== item))
   }
 
   /* Sync single value into input */
@@ -78,7 +82,7 @@ export function SearchableInput({
         <Icon className="text-slate-400 w-4 h-4" />
 
         {multiple &&
-          value.map((v) => (
+          safeValue.map((v) => (
             <span
               key={v}
               className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs"

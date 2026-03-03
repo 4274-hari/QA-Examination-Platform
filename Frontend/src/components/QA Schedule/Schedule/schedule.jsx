@@ -19,7 +19,7 @@ import Swal from "sweetalert2"
 import axios from "axios"
 
 const Schedule = () => {
-  const [departments, setDepartments] = useState("")
+  const [departments, setDepartments] = useState([])
   const [registerState, setRegisterState] = useState({
     mode: "none", // none | partial | all
     values: [],
@@ -144,7 +144,7 @@ const Schedule = () => {
 
   // Year changed → reset dept + register
   useEffect(() => {
-    setDepartments("")
+    setDepartments([])
     setRegDropdownOpen(false);
     setRegisterState({ mode: "none", values: [] })
   }, [activeBatch])
@@ -300,7 +300,7 @@ const Schedule = () => {
       setNormalBatch("")
       setRetestBatch("")
       setArrearBatch("")
-      setDepartments("")
+      setDepartments([])
       setRegisterState({ mode: "none", values: [] })
       setQaSelected("")
       setOtherSubjects("")
@@ -527,12 +527,12 @@ const Schedule = () => {
             options={departmentOptions}
             value={departments}
             onChange={setDepartments}
+            multiple
             placeholder="Select department(s)"
           />
-
           <div ref={regRef} className="space-y-2 relative">
-            {/* Input box (same style as others) */}
-            {isRetest || isArrear ? (
+            {/* Input fields for regNumber for the retest or arrear */}
+            {isArrear || isRetest && (
               <div className="space-y-2">
                 <MultiSearchDropdown
                   key={`batch-${resetKey}`}
@@ -599,107 +599,6 @@ const Schedule = () => {
                       })}
                     </div>
                   </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <label className="text-slate-700 font-medium text-sm">Register Numbers</label>
-                <div
-                  className="relative border border-slate-300 rounded-md min-h-[48px]
-                  flex items-center gap-2 px-3 cursor-pointer
-                  focus-within:ring-2 focus-within:ring-[#fdcc03]/20"
-                  onClick={() => setRegDropdownOpen((v) => !v)}
-                >
-                  <Hash className="w-4 h-4 text-slate-400" />
-
-                  {registerState.mode === "all" ? (
-                    <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
-                      All students selected ({registerState.values.length})
-                    </span>
-                  ) : registerState.values.length > 0 ? (
-                    <span className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs">
-                      {registerState.values.length} students selected
-                    </span>
-                  ) : (
-                    <span className="text-slate-400 text-sm">
-                      Select register numbers
-                    </span>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Actions */}
-            <div className="flex gap-4 text-xs">
-              <button
-                type="button"
-                onClick={() => {
-                  const allRegNos = studentRegs.map(s => s.registerno)
-                  setRegisterState({ mode: "all", values: allRegNos })
-                  setRegDropdownOpen(false)
-                }}
-                className="text-[#800000] font-medium"
-              >
-                Select all students
-              </button>
-
-              {registerState.mode !== "none" && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setRegisterState({ mode: "none", values: [] })
-                  }
-                  className="text-slate-500"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-
-            {/* DROPDOWN — INSIDE REF */}
-            {regDropdownOpen && (
-              <div
-                className="absolute z-20 w-full bg-white border rounded-md
-              shadow-md max-h-60 overflow-auto"
-              >
-                {loadingRegs ? (
-                  <div className="px-3 py-2 text-sm text-slate-400">
-                    Loading students...
-                  </div>
-                ) : studentRegs.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-slate-400">
-                    No students found
-                  </div>
-                ) : (
-                  studentRegs.map((student) => {
-                    const regNo = student.registerno
-                    const selected = registerState.values.includes(regNo)
-
-                    return (
-                      <div
-                        key={regNo}
-                        onClick={() => {
-                          setRegisterState((prev) => ({
-                            mode: "partial",
-                            values: selected
-                              ? prev.values.filter((r) => r !== regNo)
-                              : [...prev.values, regNo],
-                          }))
-                        }}
-                        className={`px-3 py-2 cursor-pointer text-sm border-b last:border-b-0
-                          ${selected
-                            ? "bg-[#fdcc03]/20 font-medium"
-                            : "hover:bg-slate-100"
-                          }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-slate-700">{regNo}</span>
-                          <span className="text-slate-400">-</span>
-                          <span className="text-slate-600">{student.name}</span>
-                        </div>
-                      </div>
-                    )
-                  })
                 )}
               </div>
             )}

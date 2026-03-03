@@ -28,7 +28,6 @@ async function submitAnswer(req, res) {
       });
     }
 
-
     const sessionUpdate = await sessionCol.updateOne(
       { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
       {
@@ -36,15 +35,47 @@ async function submitAnswer(req, res) {
           currentQuestionIndex: questionIndex + 1, // move forward
           lastSeenAt: new Date(),
         },
-      }
+      },
     );
 
     if (sessionUpdate.matchedCount === 0) {
+      // Get latest session
+      const latestSession = await sessionCol.findOne({ registerno });
+
+      // If session already moved ahead, verify question was actually answered
+      if (latestSession && latestSession.currentQuestionIndex > questionIndex) {
+        // Re-fetch exam document
+        const doc = await collection.findOne({
+          scheduleId: session.scheduleId,
+          "students.registerno": registerno,
+        });
+
+        if (!doc) {
+          return res.status(404).json({ message: "Exam record not found" });
+        }
+
+        const student = doc.students.find((s) => s.registerno === registerno);
+
+        if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+        }
+
+        const q = student.questions.find(
+          (q) => q.questionNumber === questionIndex + 1,
+        );
+
+        // ✅ Check if already answered
+        if (q && q.choosedOption) {
+          return res.status(200).json({
+            message: "Answer already processed",
+          });
+        }
+      }
+
       return res.status(400).json({ message: "Invalid question sequence" });
     }
-
     const doc = await collection.findOne({
-      scheduleId:session.scheduleId,
+      scheduleId: session.scheduleId,
       "students.registerno": registerno,
     });
 
@@ -61,11 +92,10 @@ async function submitAnswer(req, res) {
     const q = student.questions.find(
       (q) =>
         q.questionNumber === questionIndex + 1 &&
-        q.question.trim() === question.trim()
+        q.question.trim() === question.trim(),
     );
 
-
-    if (!q ) {
+    if (!q) {
       return res.status(404).json({ message: "Question not found" });
     }
 
@@ -88,10 +118,10 @@ async function submitAnswer(req, res) {
           { "stu.registerno": registerno },
           { "ques.question": q.question },
         ],
-      }
+      },
     );
 
-    res.json({
+    return res.status(200).json({
       message: "Answer updated successfully",
     });
   } catch (err) {
