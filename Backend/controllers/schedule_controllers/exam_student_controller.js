@@ -26,13 +26,17 @@ async function createExamFromSchedule(scheduleId) {
   /* -----------------------------
      Fetch students based on schedule
   ----------------------------- */
-
+  
   let students = [];
 
-  // Case 1: Department + batch based
   if (schedule.department && schedule.batch) {
+
+    const departmentFilter = Array.isArray(schedule.department)
+      ? { $in: schedule.department }
+      : schedule.department;
+
     students = await studentCollection.find({
-      department: schedule.department,
+      department: departmentFilter,
       batch: schedule.batch
     }).toArray();
   }
@@ -48,6 +52,17 @@ async function createExamFromSchedule(scheduleId) {
     await scheduleCollection.deleteOne({ _id: scheduleId });
     throw new Error("No students found for this schedule");
   }
+
+   const registerNumbers = students.map(s => s.registerno);
+
+  await scheduleCollection.updateOne(
+    { _id: schedule._id },
+    {
+      $set: {
+        registerNo: registerNumbers
+      }
+    }
+  );
 
   /* -----------------------------
      Prepare student snapshot

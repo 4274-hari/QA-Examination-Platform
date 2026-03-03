@@ -75,6 +75,21 @@ async function storeExamSchedule(req, res) {
       });
     }
 
+    if(violation <= 0){
+      return res.status(400).json({
+        success: false,
+        message: "Violation must be greater than 0"
+      });
+    }
+
+     // department must be array if provided
+    if (department && !Array.isArray(department)) {
+      return res.status(400).json({
+        success: false,
+        message: "Department must be an array"
+      });
+    }
+
     if (!department && (!registerNo || registerNo.length === 0)) {
       return res.status(400).json({
         success: false,
@@ -86,12 +101,12 @@ async function storeExamSchedule(req, res) {
        Build schedule document
     ----------------------------- */
 
-    const scheduleDoc = {
+    const scheduleDoc = (dept) => ({
       regulation:regulation.toUpperCase(),
       academic_year,
       batch,
       semester,
-      department: department || null,
+      department: dept || null,
       registerNo: registerNo || null,
 
       cie,
@@ -120,47 +135,68 @@ async function storeExamSchedule(req, res) {
       status: "scheduled",
 
       createdAt: new Date()
-    };
+    });
+
+    let insertedIds = [];
 
     /* -----------------------------
     Conflict check
     ----------------------------- */
 
-    const conflictQuery = {
-      date,
-      batch,
-      status: { $ne: "inactive" },
-      $or: [
-        department ? { department } : null,
-        registerNo && registerNo.length
-          ? { registerNo: { $in: registerNo } }
-          : null
-      ].filter(Boolean)
-    };
+      if (department && department.length > 0) {
 
-    const existingSchedule = await collection.findOne(conflictQuery);
+      for (let dept of department) {
 
-    if (existingSchedule) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "An exam is already scheduled for this department or register number on the same date. Please delete the previous schedule and try again.",
-        existingScheduleId: existingSchedule._id
+        // Conflict check per department
+        const conflict = await collection.findOne({
+          date,
+          batch,
+          department: dept,
+          status: { $ne: "inactive" }
+        });
+
+        if (conflict) {
+          return res.status(409).json({
+            success: false,
+            message: `Exam already scheduled for ${dept} on this date.`,
+          });
+        }
+
+        const buildscheduleDoc = scheduleDoc(dept);
+
+        const result = await collection.insertOne(buildscheduleDoc);
+
+        insertedIds.push(result.insertedId);
+
+        await createExamFromSchedule(result.insertedId);
+      }
+
+    } 
+    else if (registerNo && registerNo.length > 0) {
+
+      const conflict = await collection.findOne({
+        date,
+        batch,
+        registerNo: { $in: registerNo },
+        status: { $ne: "inactive" }
       });
+
+      if (conflict) {
+        return res.status(409).json({
+          success: false,
+          message: "Exam already scheduled for given register numbers."
+        });
+      }
+
+       const buildscheduleDoc = scheduleDoc(null);
+
+      const result = await collection.insertOne(buildscheduleDoc);
+
+      insertedIds.push(result.insertedId);
+
+      await createExamFromSchedule(result.insertedId);
+
     }
-
-
-    /* -----------------------------
-       Insert schedule
-    ----------------------------- */
-
-    const result = await collection.insertOne(scheduleDoc);
-
-    /* -----------------------------
-       Schedule one-time activation
-    ----------------------------- */
-
-    await createExamFromSchedule(result.insertedId);
 
     /* -----------------------------
        Response
@@ -168,8 +204,7 @@ async function storeExamSchedule(req, res) {
 
     return res.status(201).json({
       success: true,
-      message: "Exam schedule saved. Code will activate 10 minutes before exam.",
-      scheduleId: result.insertedId
+      message: "Exam schedule saved. Code will activate 10 minutes before exam."
     });
 
   } catch (error) {

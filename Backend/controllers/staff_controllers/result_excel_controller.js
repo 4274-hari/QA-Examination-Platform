@@ -18,6 +18,15 @@ async function exportMarks(scheduleId) {
   });
   if (!exam || !exam.students?.length)
     throw new Error("No exam data");
+
+  const sessions = await db.collection("qa_session")
+    .find({ scheduleId: new ObjectId(scheduleId) })
+    .toArray();
+
+  const sessionMap = {};
+  sessions.forEach(s => {
+    sessionMap[s.registerno] = true;
+  });
   
   const violationMap = {};
 
@@ -146,7 +155,13 @@ for (const student of exam.students) {
 
     const violationCount = violationMap[student.registerno] ?? 0;
 
-    row.push(grandTotal);
+
+    const attended = sessionMap[student.registerno] ? true : false;
+
+    const isAbsent = !attended && grandTotal === 0;
+
+    row.push(isAbsent ? "ABSENT" : grandTotal);
+
     row.push(violationCount);
 
     sheet.getRow(rowIndex).values = row;
@@ -227,6 +242,10 @@ async function ResultStore() {
         });
 
         if (exists) {
+          await scheduleCollection.updateOne(
+            { _id: schedule._id },
+            { $set: { status: "synced" } }
+          );
           console.log(`[CRON] Skipping duplicate schedule ${schedule._id}`);
           continue;
         }

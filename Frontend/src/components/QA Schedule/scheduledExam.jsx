@@ -359,6 +359,7 @@ const ScheduledExam = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
+                <TableHead className="w-36">Total Students</TableHead>
                 <TableHead>Date</TableHead>
                 {/* Mobile Exam Code */}
                 <TableHead className="md:hidden">
@@ -391,6 +392,7 @@ const ScheduledExam = () => {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell>{exam.department}</TableCell>
+                  <TableCell>{exam.totalStudents}</TableCell>
                   <TableCell>{exam.date}</TableCell>
                   {/* Mobile Exam Code */}
                   <TableCell className="md:hidden font-semibold">
