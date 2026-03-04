@@ -39,7 +39,7 @@ export default function LoginForm() {
       const redirectPath =
         data.role === "admin"
           ? "/staff-dashboard"
-          : "/scheduled-exam"
+          : data.role === "staff" ? "/scheduled-exam" : "/user-exam"
 
       setTimeout(() => navigate(redirectPath), 500)
     } catch (err) {
