@@ -42,6 +42,9 @@ const QAExamResults = React.lazy(() =>
 const ScheduledExam = React.lazy(() =>
   import("./components/QA Schedule/scheduledExam.jsx")
 );
+const UserPauseExam = React.lazy(() =>
+  import("./components/QA Schedule/userPauseExam.jsx")
+);
 const StaffPage = React.lazy(() =>
   import("./components/Staff/StaffPage")
 );
@@ -197,6 +200,11 @@ const App = () => {
               <Route path="/scheduled-exam" element={
                 <ProtectedRoute roles={['admin', 'staff']}>
                   <ScheduledExam />
+                </ProtectedRoute>
+              } />
+              <Route path="/user-exam" element={
+                <ProtectedRoute roles={['user']}>
+                  <UserPauseExam />
                 </ProtectedRoute>
               } />
               <Route path="/scheduled-exam/history" element={

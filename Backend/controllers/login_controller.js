@@ -10,8 +10,12 @@ async function signup(req, res) {
     const{ name, role, email, password, phone_no }  = req.body;
 
     if (!name || !role || !email || !password || !phone_no) {
-  return res.status(400).json({ message: "All fields are required" });
-}
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if(role === "admin" || role === "staff" || role === "user"){
+    return res.status(400).json({ message: "Invalid role ( admin or staff or user )" });
+  }
 
 
     // check if exists

@@ -62,7 +62,7 @@ router.post("/addform", allowRoles("admin"), addHandleForm);
 // ===========================
 // EXAM SESSION CONTROL
 // ===========================
-router.post("/exam/pause",allowRoles("admin", "staff"), pauseExamSession);
+router.post("/exam/pause",allowRoles("admin", "staff", "user"), pauseExamSession);
 router.get("/exam/active-sessions", allowRoles("admin", "staff"), getActiveSessions);
 
 
