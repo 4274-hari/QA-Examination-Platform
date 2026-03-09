@@ -1,3 +1,4 @@
+import { X } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 
 export function SearchableInput({
@@ -85,7 +86,7 @@ export function SearchableInput({
           safeValue.map((v) => (
             <span
               key={v}
-              className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs"
+              className="bg-[#fdcc03]/20 px-2 py-1 rounded text-xs flex items-center"
             >
               {v}
               <button
@@ -93,7 +94,7 @@ export function SearchableInput({
                 className="ml-1"
                 onClick={() => removeItem(v)}
               >
-                ✕
+                <X size={16} />
               </button>
             </span>
           ))}
@@ -107,6 +108,11 @@ export function SearchableInput({
           placeholder={placeholder}
           className="flex-1 outline-none text-sm bg-transparent"
         />
+        {label === "Department" && !multiple && value && (
+          <button onClick={() => onChange("")}>
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {open && filteredOptions.length > 0 && (
