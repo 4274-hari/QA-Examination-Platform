@@ -96,7 +96,8 @@ for (const student of exam.students) {
     "S NO",
     "REG NO",
     "NAME",
-    "BRANCH"
+    "BRANCH",
+    "SECTION"
   ];
 
   subjects.forEach(subject => {
@@ -138,7 +139,8 @@ for (const student of exam.students) {
       sNo++,
       student.registerno,
       student.name,
-      student.department
+      student.department,
+      student.section
     ];
 
     let grandTotal = 0;
