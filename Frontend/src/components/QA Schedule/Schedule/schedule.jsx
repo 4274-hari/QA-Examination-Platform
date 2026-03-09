@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react"
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   GraduationCap,
   Building2,
@@ -11,82 +11,89 @@ import {
   ListOrdered,
   CalendarRange,
   BookCheck,
-} from "lucide-react"
-import { Dropdown, MultiSearchDropdown, SearchableInput } from "./searchableInput"
-import Banner from "../../Banner"
-import { useNavigate } from "react-router"
-import Swal from "sweetalert2"
-import axios from "axios"
+} from "lucide-react";
+import {
+  Dropdown,
+  MultiSearchDropdown,
+  SearchableInput,
+} from "./searchableInput";
+import Banner from "../../Banner";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const Schedule = () => {
-  const [departments, setDepartments] = useState([])
+  const [regularDepartments, setRegularDepartments] = useState([]);
+  const [department, setDepartment] = useState("");
   const [registerState, setRegisterState] = useState({
     mode: "none", // none | partial | all
     values: [],
-  })
+  });
   const [regDropdownOpen, setRegDropdownOpen] = useState(false);
-  const regRef = useRef(null)
-  const [qaSelected, setQaSelected] = useState("")
-  const [otherSubjects, setOtherSubjects] = useState("")
-  const [violationLimit, setViolationLimit] = useState("")
-  const [date, setDate] = useState("")
-  const [time, setTime] = useState("")
-  const [examType, setExamType] = useState("")
-  const [semesters, setSemesters ] = useState(["SEM I", "SEM II"])
-  const [semester, setSemester] = useState("");  
-  const [regulations, setRegulations] = useState([])
+  const regRef = useRef(null);
+  const [qaSelected, setQaSelected] = useState("");
+  const [otherSubjects, setOtherSubjects] = useState("");
+  const [violationLimit, setViolationLimit] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [examType, setExamType] = useState("");
+  const [semesters, setSemesters] = useState(["SEM I", "SEM II"]);
+  const [semester, setSemester] = useState("");
+  const [regulations, setRegulations] = useState([]);
   const [regulation, setRegulation] = useState("");
   const [acadamicYears, setAcadamicYears] = useState([]);
   const [acadamicYear, setAcadamicYear] = useState("");
-  const [years, setYears] = useState([])
-  const [departmentOptions, setDepartmentOptions] = useState([])
-  const [studentRegs, setStudentRegs] = useState([])
-  const [loadingRegs, setLoadingRegs] = useState(false)
-  const [topics, setTopics] = useState({})
-  const [subjectTopics, setSubjectTopics] = useState([])
-  const [isRetest, setIsRetest] = useState(false)
-  const [isArrear, setIsArrear] = useState(false)
-  const [normalBatch, setNormalBatch] = useState("")
-  const [retestBatch, setRetestBatch] = useState("")
-  const [arrearBatch, setArrearBatch] = useState("")
-  const activeBatch = isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch
-  const heading = isRetest ? "Retest" : isArrear ? "Arrear" : "Regular"
-  const [resetKey, setResetKey] = useState(0)
+  const [years, setYears] = useState([]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [studentRegs, setStudentRegs] = useState([]);
+  const [loadingRegs, setLoadingRegs] = useState(false);
+  const [topics, setTopics] = useState({});
+  const [subjectTopics, setSubjectTopics] = useState([]);
+  const [isRetest, setIsRetest] = useState(false);
+  const [isArrear, setIsArrear] = useState(false);
+  const [normalBatch, setNormalBatch] = useState("");
+  const [retestBatch, setRetestBatch] = useState("");
+  const [arrearBatch, setArrearBatch] = useState("");
+  const activeBatch = isRetest
+    ? retestBatch
+    : isArrear
+      ? arrearBatch
+      : normalBatch;
+  const heading = isRetest ? "Retest" : isArrear ? "Arrear" : "Regular";
+  const [resetKey, setResetKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!activeBatch) return
+    if (!activeBatch) return;
 
-   const fetchStudents = async () => {
-  setLoadingRegs(true)
+    const fetchStudents = async () => {
+      setLoadingRegs(true);
 
-  try {
-    const payload = {
-      department: departments,
-      batch: isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch,
-    }
+      try {
+        const payload = {
+          department: department,
+          batch: isRetest ? retestBatch : isArrear ? arrearBatch : normalBatch,
+        };
 
-    const url = "/api/main-backend/examiner/forms/register-number"
-    const res = await axios.post(url, payload)
+        const url = "/api/main-backend/examiner/forms/register-number";
+        const res = await axios.post(url, payload);
 
-    setStudentRegs(res.data.students || [])
+        setStudentRegs(res.data.students || []);
 
-    // ✅ ONLY reset in Regular mode
-    if (!isRetest && !isArrear) {
-      setRegisterState({ mode: "none", values: [] })
-    }
+        // ✅ ONLY reset in Regular mode
+        if (!isRetest && !isArrear) {
+          setRegisterState({ mode: "none", values: [] });
+        }
+      } catch (err) {
+        console.error("Failed to fetch students", err);
+        setStudentRegs([]);
+      } finally {
+        setLoadingRegs(false);
+      }
+    };
 
-  } catch (err) {
-    console.error("Failed to fetch students", err)
-    setStudentRegs([])
-  } finally {
-    setLoadingRegs(false)
-  }
-}
-
-
-    fetchStudents()
-  }, [activeBatch, departments, isRetest, isArrear])
+    fetchStudents();
+  }, [activeBatch, department, isRetest, isArrear]);
 
   useEffect(() => {
     // Reset QA / Other subjects and topics when batch changes
@@ -98,113 +105,113 @@ const Schedule = () => {
     setDate("");
     setExamType("");
     setTime("");
-    setViolationLimit("")
-
+    setViolationLimit("");
   }, [activeBatch]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/api/main-backend/examiner/forms")
-        const data = res.data        
-        setYears(data.batch || [])
-        setDepartmentOptions(data.departments || "")
-        setSubjectTopics(data.subjects || [])
-        setAcadamicYears(data.academic_year || [])
-        setSemesters(data.semesters || [])
-        setRegulations(data.regulation || [])
+        const res = await axios.get("/api/main-backend/examiner/forms");
+        const data = res.data;
+        
+        setYears(data.batch || []);
+        setDepartmentOptions(data.departments || "");
+        setSubjectTopics(data.subjects || []);
+        setAcadamicYears(data.academic_year || []);
+        setSemesters(data.semesters || []);
+        setRegulations(data.regulation || []);
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error("Error fetching data:", error);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const filteredRegs = studentRegs
+  const filteredRegs = studentRegs;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (regRef.current && !regRef.current.contains(e.target)) {
-        setRegDropdownOpen(false)
+        setRegDropdownOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Dept changed → reset registers
   useEffect(() => {
-    if (isRetest || isArrear) return; 
-    setRegisterState({ mode: "none", values: [] })
+    if (isRetest || isArrear) return;
+    setRegisterState({ mode: "none", values: [] });
     setRegDropdownOpen(false);
-  }, [departments, isRetest, isArrear])
-
+  }, [department, isRetest, isArrear]);
 
   // Year changed → reset dept + register
   useEffect(() => {
-    setDepartments([])
+    setRegularDepartments([]);
     setRegDropdownOpen(false);
-    setRegisterState({ mode: "none", values: [] })
-  }, [activeBatch])
+    setRegisterState({ mode: "none", values: [] });
+  }, [activeBatch]);
 
   const qaSubject = useMemo(
-    () => subjectTopics.find(s => s.subject_name === "QA")?.subject_name || "",
-    [subjectTopics]
-  )
+    () =>
+      subjectTopics.find((s) => s.subject_name === "QA")?.subject_name || "",
+    [subjectTopics],
+  );
 
   const remainingSubjects = useMemo(
     () =>
       subjectTopics
-        .filter(s => s.subject_name !== "QA")
-        .map(s => s.subject_name),
-    [subjectTopics]
-  )
+        .filter((s) => s.subject_name !== "QA")
+        .map((s) => s.subject_name),
+    [subjectTopics],
+  );
 
   const selectedSubjects = useMemo(() => {
-    const subjects = []
-    if (qaSelected) subjects.push(qaSelected)
-    if (otherSubjects) subjects.push(otherSubjects)
-    return subjects
-  }, [qaSelected, otherSubjects])
+    const subjects = [];
+    if (qaSelected) subjects.push(qaSelected);
+    if (otherSubjects) subjects.push(otherSubjects);
+    return subjects;
+  }, [qaSelected, otherSubjects]);
 
   const getTopicsForSubject = (sub) => {
-    return subjectTopics.find(s => s.subject_name === sub)?.topics || []
-  }
+    return subjectTopics.find((s) => s.subject_name === sub)?.topics || [];
+  };
 
   useEffect(() => {
     if (!selectedSubjects.length) {
-      setTopics({})
-      return
+      setTopics({});
+      return;
     }
 
-    const initial = {}
-    selectedSubjects.forEach(sub => {
-      initial[sub] = []
-    })
+    const initial = {};
+    selectedSubjects.forEach((sub) => {
+      initial[sub] = [];
+    });
 
-    setTopics(initial)
-  }, [selectedSubjects])
+    setTopics(initial);
+  }, [selectedSubjects]);
 
   useEffect(() => {
-    setNormalBatch("")
-    setRetestBatch("")
-    setArrearBatch("")
-    setStudentRegs([])
-    setRegDropdownOpen(false)
-    setViolationLimit("")
-    setRegulation("")
-    setAcadamicYear("")
-    setSemester("")
-    setResetKey(prev => prev + 1)
-  }, [isRetest, isArrear])
+    setNormalBatch("");
+    setRetestBatch("");
+    setArrearBatch("");
+    setStudentRegs([]);
+    setRegDropdownOpen(false);
+    setViolationLimit("");
+    setRegulation("");
+    setAcadamicYear("");
+    setSemester("");
+    setResetKey((prev) => prev + 1);
+  }, [isRetest, isArrear]);
 
   function parseTimeSlot(timeSlot) {
-    if (!timeSlot) return { start: "", end: "" }
+    if (!timeSlot) return { start: "", end: "" };
 
-    const [start, end] = timeSlot.split(" - ")
-    return { start, end }
+    const [start, end] = timeSlot.split(" - ");
+    return { start, end };
   }
 
   const submitExamSchedule = async () => {
@@ -214,20 +221,24 @@ const Schedule = () => {
         title: "Missing Details",
         text: "Please fill all required fields before submitting.",
         confirmButtonColor: "#800000",
-      })
-      return
+      });
+      return;
     }
 
-    const numericViolationLimit = Number(violationLimit)
+    const numericViolationLimit = Number(violationLimit);
 
-    if (!violationLimit || Number.isNaN(numericViolationLimit) || numericViolationLimit <= 0) {
+    if (
+      !violationLimit ||
+      Number.isNaN(numericViolationLimit) ||
+      numericViolationLimit <= 0
+    ) {
       await Swal.fire({
         icon: "warning",
         title: "Violation Limit Required",
         text: "Enter a positive number for violation limit.",
         confirmButtonColor: "#800000",
-      })
-      return
+      });
+      return;
     }
 
     if (selectedSubjects.length === 0) {
@@ -236,11 +247,11 @@ const Schedule = () => {
         title: "Subject Required",
         text: "Please select at least one subject",
         confirmButtonColor: "#800000",
-      })
-      return
+      });
+      return;
     }
 
-    const { start, end } = parseTimeSlot(time)
+    const { start, end } = parseTimeSlot(time);
 
     const payload = {
       batch: activeBatch,
@@ -256,11 +267,11 @@ const Schedule = () => {
       violation: numericViolationLimit,
       regulation,
       academic_year: acadamicYear,
-      semester
-    }
+      semester,
+    };
 
     if (!isRetest && !isArrear) {
-      payload.department = departments
+      payload.department = department;
     }
 
     // 🔄 Show loading
@@ -269,9 +280,9 @@ const Schedule = () => {
       text: "Please wait",
       allowOutsideClick: false,
       didOpen: () => {
-        Swal.showLoading()
+        Swal.showLoading();
       },
-    })
+    });
 
     try {
       const res = await fetch("/api/main-backend/examiner/exam-schedule", {
@@ -280,12 +291,12 @@ const Schedule = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to schedule exam")
+        throw new Error(data.message || "Failed to schedule exam");
       }
 
       // ✅ Success popup
@@ -294,35 +305,35 @@ const Schedule = () => {
         title: "Exam Scheduled",
         text: "The exam has been scheduled successfully.",
         confirmButtonColor: "#800000",
-      })
+      });
 
       // 🔁 Reset form
-      setNormalBatch("")
-      setRetestBatch("")
-      setArrearBatch("")
-      setDepartments([])
-      setRegisterState({ mode: "none", values: [] })
-      setQaSelected("")
-      setOtherSubjects("")
-      setDate("")
-      setTime("")
-      setExamType("")
-      setViolationLimit("")
-      setRegulation("")
-      setAcadamicYear("")
-      setSemester("")
-      setTopics([])
+      setNormalBatch("");
+      setRetestBatch("");
+      setArrearBatch("");
+      setRegularDepartments([]);
+      setRegisterState({ mode: "none", values: [] });
+      setQaSelected("");
+      setOtherSubjects("");
+      setDate("");
+      setTime("");
+      setExamType("");
+      setViolationLimit("");
+      setRegulation("");
+      setAcadamicYear("");
+      setSemester("");
+      setTopics([]);
     } catch (error) {
-      console.error("Schedule error:", error)
+      console.error("Schedule error:", error);
 
       Swal.fire({
         icon: "error",
         title: "Scheduling Failed",
         text: error.message || "Something went wrong",
         confirmButtonColor: "#800000",
-      })
+      });
     }
-  }
+  };
 
   return (
     <>
@@ -338,26 +349,30 @@ const Schedule = () => {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
                 <Power size={16} className="text-slate-500" />
-                <label className="text-sm font-medium text-slate-700">Retest</label>
+                <label className="text-sm font-medium text-slate-700">
+                  Retest
+                </label>
                 <input
                   type="checkbox"
                   checked={isRetest}
                   onChange={(e) => {
-                    setIsRetest(e.target.checked)
-                    if (e.target.checked) setIsArrear(false)
+                    setIsRetest(e.target.checked);
+                    if (e.target.checked) setIsArrear(false);
                   }}
                   className="h-4 w-4 accent-[#800000] cursor-pointer"
                 />
               </div>
               <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border shadow-sm">
                 <Power size={16} className="text-slate-500" />
-                <label className="text-sm font-medium text-slate-700">Arrear</label>
+                <label className="text-sm font-medium text-slate-700">
+                  Arrear
+                </label>
                 <input
                   type="checkbox"
                   checked={isArrear}
                   onChange={(e) => {
-                    setIsArrear(e.target.checked)
-                    if (e.target.checked) setIsRetest(false)
+                    setIsArrear(e.target.checked);
+                    if (e.target.checked) setIsRetest(false);
                   }}
                   className="h-4 w-4 accent-[#800000] cursor-pointer"
                 />
@@ -378,7 +393,9 @@ const Schedule = () => {
           </div>
           <div className="flex gap-1 grid grid-cols-2 gap-2 md:flex md:gap-1">
             <button
-              onClick={() => navigate("/upload", { state: { page: "student" } })}
+              onClick={() =>
+                navigate("/upload", { state: { page: "student" } })
+              }
               className="
               inline-flex items-center gap-2
               px-4 py-2
@@ -399,7 +416,9 @@ const Schedule = () => {
               <span className="text-base">→</span>
             </button>
             <button
-              onClick={() => navigate("/upload", { state: { page: "question" } })}
+              onClick={() =>
+                navigate("/upload", { state: { page: "question" } })
+              }
               className="
               inline-flex items-center gap-2
               px-4 py-2
@@ -478,7 +497,8 @@ const Schedule = () => {
         <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border p-8 space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-brwn text-center flex-1">
-              CIE Schedule {`For ${heading} Candidates`} </h2>
+              CIE Schedule {`For ${heading} Candidates`}{" "}
+            </h2>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
@@ -516,92 +536,125 @@ const Schedule = () => {
             icon={GraduationCap}
             options={years}
             value={activeBatch}
-            onChange={isRetest ? setRetestBatch : isArrear ? setArrearBatch : setNormalBatch}
+            onChange={
+              isRetest
+                ? setRetestBatch
+                : isArrear
+                  ? setArrearBatch
+                  : setNormalBatch
+            }
             placeholder="Select Batch"
           />
 
-          <SearchableInput
-            key={`dept-${resetKey}`}
-            label="Department"
-            icon={Building2}
-            options={departmentOptions}
-            value={departments}
-            onChange={setDepartments}
-            multiple
-            placeholder="Select department(s)"
-          />
+          {isArrear || isRetest ? (
+            <SearchableInput
+              key={`dept-${resetKey}`}
+              label="Department"
+              icon={Building2}
+              options={departmentOptions}
+              value={department}
+              onChange={setDepartment}
+              placeholder="Select department"
+            />
+          ) : (
+            <SearchableInput
+              key={`dept-${resetKey}`}
+              label="Department"
+              icon={Building2}
+              options={departmentOptions}
+              value={regularDepartments}
+              onChange={setRegularDepartments}
+              multiple
+              placeholder="Select department(s)"
+            />
+          )}
+
           <div ref={regRef} className="space-y-2 relative">
             {/* Input fields for regNumber for the retest or arrear */}
-            {isArrear || isRetest && (
-              <div className="space-y-2">
-                <MultiSearchDropdown
-                  key={`batch-${resetKey}`}
-                  label="Register Numbers"
-                  icon={Hash}
-                  options={studentRegs.filter(student => !registerState.values.includes(student.registerno))}
-                  value={registerState.values}
-                  onChange={(vals) =>
-                    setRegisterState({ mode: "partial", values: vals })
-                  }
-                  placeholder="Search register number or name"
-                  multiple
-                  displayFormat={(student) => `${student.registerno} - ${student.name}`}
-                  valueKey="registerno"
-                />
-                
-                {/* Selected Students Display */}
-                {registerState.values.length > 0 && (
-                  <div className="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-slate-700">
-                        Selected Students ({registerState.values.length})
-                      </h4>
-                      <button
-                        type="button"
-                        onClick={() => setRegisterState({ mode: "none", values: [] })}
-                        className="text-xs text-red-600 hover:text-red-700 font-medium"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
-                      {registerState.values.map((regNo) => {
-                        const student = studentRegs.find(s => s.registerno === regNo)
-                        return (
-                          <div
-                            key={regNo}
-                            className="flex items-center justify-between bg-white px-3 py-2 rounded-md border border-slate-200 hover:border-[#800000]/30 transition-colors group"
-                          >
-                            <div className="flex items-center gap-2 flex-1">
-                              <Hash className="w-3.5 h-3.5 text-slate-400" />
-                              <span className="text-sm font-medium text-slate-700">
-                                {student?.registerno || regNo}
-                              </span>
-                              <span className="text-sm text-slate-500">-</span>
-                              <span className="text-sm text-slate-600">
-                                {student?.name || 'Unknown'}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setRegisterState(prev => ({
-                                  ...prev,
-                                  values: prev.values.filter(r => r !== regNo)
-                                }))
-                              }}
-                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs font-medium transition-opacity"
+            {isArrear ||
+              (isRetest && (
+                <div className="space-y-2">
+                  <MultiSearchDropdown
+                    key={`batch-${resetKey}`}
+                    label="Register Numbers"
+                    icon={Hash}
+                    options={studentRegs.filter(
+                      (student) =>
+                        !registerState.values.includes(student.registerno),
+                    )}
+                    value={registerState.values}
+                    onChange={(vals) =>
+                      setRegisterState({ mode: "partial", values: vals })
+                    }
+                    placeholder="Search register number or name"
+                    multiple
+                    displayFormat={(student) =>
+                      `${student.registerno} - ${student.name}`
+                    }
+                    valueKey="registerno"
+                  />
+
+                  {/* Selected Students Display */}
+                  {registerState.values.length > 0 && (
+                    <div className="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold text-slate-700">
+                          Selected Students ({registerState.values.length})
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setRegisterState({ mode: "none", values: [] })
+                          }
+                          className="text-xs text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                        {registerState.values.map((regNo) => {
+                          const student = studentRegs.find(
+                            (s) => s.registerno === regNo,
+                          );
+                          return (
+                            <div
+                              key={regNo}
+                              className="flex items-center justify-between bg-white px-3 py-2 rounded-md border border-slate-200 hover:border-[#800000]/30 transition-colors group"
                             >
-                              Remove
-                            </button>
-                          </div>
-                        )
-                      })}
+                              <div className="flex items-center gap-2 flex-1">
+                                <Hash className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="text-sm font-medium text-slate-700">
+                                  {student?.registerno || regNo}
+                                </span>
+                                <span className="text-sm text-slate-500">
+                                  -
+                                </span>
+                                <span className="text-sm text-slate-600">
+                                  {student?.name || "Unknown"}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setRegisterState((prev) => ({
+                                    ...prev,
+                                    values: prev.values.filter(
+                                      (r) => r !== regNo,
+                                    ),
+                                  }));
+                                }}
+                                className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs font-medium transition-opacity"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              ))}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -635,9 +688,9 @@ const Schedule = () => {
                 options={getTopicsForSubject(sub)}
                 value={topics[sub] || []}
                 onChange={(selected) =>
-                  setTopics(prev => ({
+                  setTopics((prev) => ({
                     ...prev,
-                    [sub]: selected
+                    [sub]: selected,
                   }))
                 }
                 multiple
@@ -671,11 +724,11 @@ const Schedule = () => {
               onChange={setTime}
               type={{
                 examType,
-                subjectCount: selectedSubjects.length
+                subjectCount: selectedSubjects.length,
               }}
             />
           </div>
-        
+
           <Input
             label="Violation Limit"
             icon={ListChecks}
@@ -695,8 +748,8 @@ const Schedule = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 function Input({ label, icon: Icon, type, value, onChange, placeholder = "" }) {
   return (
@@ -714,7 +767,7 @@ function Input({ label, icon: Icon, type, value, onChange, placeholder = "" }) {
         />
       </div>
     </div>
-  )
+  );
 }
 
 export default Schedule;
