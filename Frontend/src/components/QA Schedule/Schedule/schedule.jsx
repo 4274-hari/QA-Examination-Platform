@@ -271,7 +271,7 @@ const Schedule = () => {
     };
 
     if (!isRetest && !isArrear) {
-      payload.department = department;
+      payload.department = regularDepartments;
     }
 
     // 🔄 Show loading
@@ -571,8 +571,7 @@ const Schedule = () => {
 
           <div ref={regRef} className="space-y-2 relative">
             {/* Input fields for regNumber for the retest or arrear */}
-            {isArrear ||
-              (isRetest && (
+            {(isArrear || isRetest) && (
                 <div className="space-y-2">
                   <MultiSearchDropdown
                     key={`batch-${resetKey}`}
@@ -654,7 +653,7 @@ const Schedule = () => {
                     </div>
                   )}
                 </div>
-              ))}
+              )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
