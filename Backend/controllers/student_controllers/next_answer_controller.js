@@ -8,7 +8,7 @@ async function submitAnswer(req, res) {
 
     const { question, choosedOption, questionIndex } = req.body;
 
-    if (!question || !choosedOption) {
+    if (!question || !choosedOption || typeof questionIndex !== "number") {
       return res.status(400).json({ message: "Missing fields" });
     }
 
@@ -20,7 +20,9 @@ async function submitAnswer(req, res) {
 
     const session = await sessionCol.findOne({ registerno });
 
-    if (!session) return res.sendStatus(404);
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
 
     if (session.status !== "ACTIVE") {
       return res.status(403).json({
@@ -28,62 +30,28 @@ async function submitAnswer(req, res) {
       });
     }
 
-    const sessionUpdate = await sessionCol.updateOne(
-      { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
-      {
-        $set: {
-          currentQuestionIndex: questionIndex + 1, // move forward
-          lastSeenAt: new Date(),
-        },
-      },
-    );
-
-    if (sessionUpdate.matchedCount === 0) {
-      // Get latest session
-      const latestSession = await sessionCol.findOne({ registerno });
-
-      // If session already moved ahead, verify question was actually answered
-      if (latestSession && latestSession.currentQuestionIndex > questionIndex) {
-        // Re-fetch exam document
-        const doc = await collection.findOne({
-          scheduleId: session.scheduleId,
-          "students.registerno": registerno,
-        });
-
-        if (!doc) {
-          return res.status(404).json({ message: "Exam record not found" });
-        }
-
-        const student = doc.students.find((s) => s.registerno === registerno);
-
-        if (!student) {
-          return res.status(404).json({ message: "Student not found" });
-        }
-
-        const q = student.questions.find(
-          (q) => q.questionNumber === questionIndex + 1,
-        );
-
-        // ✅ Check if already answered
-        if (q && q.choosedOption) {
-          return res.status(200).json({
-            message: "Answer already processed",
-          });
-        }
-      }
-
-      return res.status(400).json({ message: "Invalid question sequence" });
+    // Prevent skipping questions
+    if (session.currentQuestionIndex !== questionIndex) {
+      return res.status(400).json({
+        message: "Invalid question sequence",
+      });
     }
-    const doc = await collection.findOne({
-      scheduleId: session.scheduleId,
-      "students.registerno": registerno,
-    });
+
+    const doc = await collection.findOne(
+      {
+        scheduleId: session.scheduleId,
+        "students.registerno": registerno,
+      },
+      {
+        projection: { "students.$": 1 },
+      }
+    );
 
     if (!doc) {
       return res.status(404).json({ message: "Exam record not found" });
     }
 
-    const student = doc.students.find((s) => s.registerno === registerno);
+    const student = doc.students[0];
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -92,7 +60,7 @@ async function submitAnswer(req, res) {
     const q = student.questions.find(
       (q) =>
         q.questionNumber === questionIndex + 1 &&
-        q.question.trim() === question.trim(),
+        String(q.question).trim() === String(question).trim()
     );
 
     if (!q) {
@@ -100,12 +68,15 @@ async function submitAnswer(req, res) {
     }
 
     if (q.choosedOption) {
-      return res.status(409).json({ message: "Question already answered" });
+      return res.status(200).json({
+        message: "Question already answered",
+      });
     }
 
-    const isCorrect = q.correct_option.trim() === choosedOption.trim();
+    const isCorrect =
+      String(q.correct_option).trim() === String(choosedOption).trim();
 
-    await collection.updateOne(
+    const result = await collection.updateOne(
       { _id: doc._id },
       {
         $set: {
@@ -116,17 +87,34 @@ async function submitAnswer(req, res) {
       {
         arrayFilters: [
           { "stu.registerno": registerno },
-          { "ques.question": q.question },
+          { "ques.questionNumber": questionIndex + 1 },
         ],
-      },
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(409).json({
+        message: "Answer already processed",
+      });
+    }
+
+    await sessionCol.updateOne(
+      { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
+      {
+        $set: {
+          currentQuestionIndex: questionIndex + 1,
+          lastSeenAt: new Date(),
+        },
+      }
     );
 
     return res.status(200).json({
       message: "Answer updated successfully",
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 

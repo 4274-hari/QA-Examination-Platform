@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Pause, Power } from "lucide-react";
 import { useNavigate } from "react-router";
 import Banner from "../Banner";
+import Swal from "sweetalert2";
 
 const ScheduledExamHistory = () => {
   const [filters, setFilters] = useState({
@@ -93,6 +94,36 @@ const ScheduledExamHistory = () => {
   const scrollToTableTop = () => {
     tableTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const showRegisterNumbers = (students = []) => {
+  if (!Array.isArray(students) || students.length === 0) {
+    Swal.fire({
+      title: "No Students",
+      text: "No register numbers available",
+      icon: "info",
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: `Register Numbers (${students.length})`,
+    width: 450,
+    html: `
+      <div style="
+        max-height:350px;
+        overflow-y:auto;
+        text-align:left;
+        font-family:monospace;
+        padding:5px;
+      ">
+        ${students
+          .sort((a, b) => Number(a) - Number(b))
+          .map((reg, i) => `<div style="padding:4px 0">${i + 1}. ${reg}</div>`)
+          .join("")}
+      </div>
+    `,
+  });
+};
 
   return (
     <>
@@ -218,6 +249,7 @@ const ScheduledExamHistory = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
+                <TableHead className="w-36">Total Students</TableHead>
                 <TableHead>Date</TableHead>
                 {/* Mobile Exam Code */}
                 <TableHead className="md:hidden">
@@ -249,6 +281,14 @@ const ScheduledExamHistory = () => {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell>{exam.department}</TableCell>
+                   <TableCell>
+                    <span
+                      onClick={() => showRegisterNumbers(exam.register_numbers)}
+                      className="cursor-pointer text-black-600 hover:underline font-medium"
+                    >
+                      {exam.totalStudents}
+                    </span>
+                  </TableCell>
                   <TableCell>{exam.date}</TableCell>
                   {/* Mobile Exam Code */}
                   <TableCell className="md:hidden font-semibold">
