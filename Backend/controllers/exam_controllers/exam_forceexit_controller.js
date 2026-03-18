@@ -1,4 +1,3 @@
-
 const { getDb } = require("../../config/db");
 
 async function forceExit(req, res) {
@@ -40,6 +39,8 @@ async function forceExit(req, res) {
       case "Exam session is no longer active":
       case "Session verification error":
       case "HeartBeat error":
+      case "Heartbeat timeout":
+      case "Session paused":
           await collection.updateOne(
           { _id: student._id },
           {
@@ -65,6 +66,15 @@ async function forceExit(req, res) {
         return res.status(200).json({ message: "Your exam time is up" });
 
       default:
+        await collection.updateOne(
+          { _id: student._id },
+          {
+            $set: {
+              status: "PAUSED",
+              isOnline:false,
+            },
+          }
+        );
         return res.status(400).json({ message: "Invalid reason provided" });
     }
   } catch (error) {

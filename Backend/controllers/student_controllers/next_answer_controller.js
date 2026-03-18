@@ -2,70 +2,57 @@ const { getDb } = require("../../config/db");
 
 async function submitAnswer(req, res) {
   try {
-    const db = getDb();
-    const collection = db.collection("qa_exam");
-    const sessionCol = db.collection("qa_exam_sessions");
-
-    const { question, choosedOption, questionIndex } = req.body;
-
-    if (!question || !choosedOption) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    if (!req.session || !req.session.user) {
+    if (!req.session?.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const { registerno } = req.session.user;
+    const { question, choosedOption, questionIndex } = req.body;
 
-    const session = await sessionCol.findOne({ registerno });
-
-    if (!session) return res.sendStatus(404);
-
-    if (session.status !== "ACTIVE") {
-      return res.status(403).json({
-        message: "Session not active",
-      });
+    if (!choosedOption || typeof questionIndex !== "number" || !question) {
+      return res.status(400).json({ message: "Missing fields" });
     }
 
-    const sessionUpdate = await sessionCol.updateOne(
-      { registerno, status: "ACTIVE", currentQuestionIndex: questionIndex },
-      {
-        $set: {
-          currentQuestionIndex: questionIndex + 1, // move forward
-          lastSeenAt: new Date(),
-        },
-      },
-    );
+    const db = getDb();
+    const examCol = db.collection("qa_exam");
+    const sessionCol = db.collection("qa_exam_sessions");
 
-    if (sessionUpdate.matchedCount === 0) {
-      // Get latest session
-      const latestSession = await sessionCol.findOne({ registerno });
+    // 1️⃣ Get active session
+    const session = await sessionCol.findOne({ registerno });
 
-      // If session already moved ahead, verify question was actually answered
-      if (latestSession && latestSession.currentQuestionIndex > questionIndex) {
-        // Re-fetch exam document
-        const doc = await collection.findOne({
-          scheduleId: session.scheduleId,
-          "students.registerno": registerno,
-        });
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    if (session.status !== "ACTIVE") {
+      return res.status(403).json({ message: "Session not active" });
+    }
+
+    // 2️⃣ Prevent skipping questions
+    if (session.currentQuestionIndex !== questionIndex) {
+
+      // If client retries same request after success
+      if (session.currentQuestionIndex > questionIndex) {
+
+        const doc = await examCol.findOne(
+          {
+            scheduleId: session.scheduleId,
+            "students.registerno": registerno,
+          },
+          { projection: { "students.$": 1 } }
+        );
 
         if (!doc) {
           return res.status(404).json({ message: "Exam record not found" });
         }
 
-        const student = doc.students.find((s) => s.registerno === registerno);
+        const student = doc.students[0];
 
-        if (!student) {
-          return res.status(404).json({ message: "Student not found" });
-        }
-
-        const q = student.questions.find(
-          (q) => q.questionNumber === questionIndex + 1,
+        const q = student?.questions?.find(
+          (q) => q.questionNumber === questionIndex + 1
         );
 
-        // ✅ Check if already answered
-        if (q && q.choosedOption) {
+        if (q?.choosedOption) {
           return res.status(200).json({
             message: "Answer already processed",
           });
@@ -74,38 +61,35 @@ async function submitAnswer(req, res) {
 
       return res.status(400).json({ message: "Invalid question sequence" });
     }
-    const doc = await collection.findOne({
-      scheduleId: session.scheduleId,
-      "students.registerno": registerno,
-    });
+
+    // 3️⃣ Get correct option
+    const doc = await examCol.findOne(
+      {
+        scheduleId: session.scheduleId,
+        "students.registerno": registerno,
+      },
+      { projection: { "students.$": 1 } }
+    );
 
     if (!doc) {
       return res.status(404).json({ message: "Exam record not found" });
     }
 
-    const student = doc.students.find((s) => s.registerno === registerno);
+    const student = doc.students[0];
 
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    const q = student.questions.find(
-      (q) =>
-        q.questionNumber === questionIndex + 1 &&
-        q.question.trim() === question.trim(),
+    const q = student?.questions?.find(
+      (q) => q.questionNumber === questionIndex + 1
     );
 
     if (!q) {
       return res.status(404).json({ message: "Question not found" });
     }
 
-    if (q.choosedOption) {
-      return res.status(409).json({ message: "Question already answered" });
-    }
+    const isCorrect =
+      String(q.correct_option).trim() === String(choosedOption).trim();
 
-    const isCorrect = q.correct_option.trim() === choosedOption.trim();
-
-    await collection.updateOne(
+    // 4️⃣ Atomic update (prevents double answering)
+    const result = await examCol.updateOne(
       { _id: doc._id },
       {
         $set: {
@@ -116,17 +100,51 @@ async function submitAnswer(req, res) {
       {
         arrayFilters: [
           { "stu.registerno": registerno },
-          { "ques.question": q.question },
+          {
+            "ques.questionNumber": questionIndex + 1,
+            "ques.choosedOption": { $exists: false },
+          },
         ],
-      },
+      }
     );
 
+    // If no update → already answered
+    if (result.modifiedCount === 0) {
+      return res.status(200).json({
+        message: "Answer already processed",
+      });
+    }
+
+    // 5️⃣ Move session forward
+    const sessionUpdate = await sessionCol.updateOne(
+      {
+        registerno,
+        status: "ACTIVE",
+        currentQuestionIndex: questionIndex,
+      },
+      {
+        $set: {
+          currentQuestionIndex: questionIndex + 1,
+          lastSeenAt: new Date(),
+        },
+      }
+    );
+
+    if (sessionUpdate.modifiedCount === 0) {
+      return res.status(409).json({
+        message: "Session update failed",
+      });
+    }
+
     return res.status(200).json({
-      message: "Answer updated successfully",
+      message: "Answer submitted successfully",
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
 

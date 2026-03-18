@@ -88,7 +88,7 @@ const QuestionPage = () => {
         if (err.response?.data?.status === "TIME_UP") {
           await submitExam(true);
         } else {
-          forceExit(err.response?.data || { message: "Time up" });
+          await forceExit(err.response?.data || { message: "Time up" });
         }
       }
     };
@@ -123,7 +123,7 @@ const QuestionPage = () => {
       try {
         const res = await axios.get("/api/main-backend/exam/qa/session/status");
         if (res.data.status !== "ACTIVE") {
-          forceExit({ message: "Session verification error" });
+          await forceExit({ message: "Session verification error" });
         }
       } catch (err) {
         console.error("Session verification error:", err);
@@ -183,7 +183,7 @@ const QuestionPage = () => {
       try {
         await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
-        forceExit(err.response?.data || { message: "HeartBeat error"});
+        await forceExit(err.response?.data || { message: "HeartBeat error"});
       }
     }, 15000);
 
@@ -340,7 +340,7 @@ const QuestionPage = () => {
       });
       
       if (res.data.terminated) {
-        forceExit({ reason: "Violation limit exceeded" });
+       await forceExit({ reason: "Violation limit exceeded" });
         return;
       }
 
@@ -581,7 +581,7 @@ const QuestionPage = () => {
 
   // ACTIONS
   const forceExit = async (data) => {
-    const reason = data.reason || data.message || "Exam session is no longer active";
+    const reason = data?.reason || data?.message || "Exam session is no longer active";
     
     try {
       // Call backend to update session status
