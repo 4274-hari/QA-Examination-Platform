@@ -83,11 +83,11 @@ const QuestionBank = () => {
 
     return (
         <>
-            <Banner
+            {/* <Banner
                 backgroundImage="./Banners/examsbanner.webp"
                 headerText="office of controller of examinations"
                 subHeaderText="COE"
-            />
+            /> */}
 
             <div className="min-h-screen bg-gray-100 py-8">
                 <div className="max-w-6xl mx-auto px-6">
