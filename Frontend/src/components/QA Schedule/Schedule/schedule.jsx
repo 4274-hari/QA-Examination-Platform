@@ -63,6 +63,15 @@ const Schedule = () => {
   const [resetKey, setResetKey] = useState(0);
   const navigate = useNavigate();
 
+  const downloadInstruction = () => {
+  const link = document.createElement("a");
+  link.href = "/CIE_Instruction.pdf";
+  link.download = "CIE_Instruction.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
   useEffect(() => {
     if (!activeBatch) return;
 
@@ -377,6 +386,28 @@ const Schedule = () => {
                   className="h-4 w-4 accent-[#800000] cursor-pointer"
                 />
               </div>
+               <a
+ href="/CIE_Instruction.pdf"
+                  target="_blank"
+  rel="noopener noreferrer"
+              className="
+              inline-flex items-center gap-2
+              px-4 py-2
+              rounded-lg
+              border border-[#800000]/30
+              bg-white
+              text-[#800000]
+              text-sm font-medium
+              shadow-sm
+              hover:bg-[#800000]
+              hover:text-prim
+              hover:border-[#800000]
+              transition-all duration-200
+              focus:outline-none focus:ring-2 focus:ring-[#800000]/30
+            "
+            >
+              Instruction
+            </a> 
             </div>
             <button
               className="qa-logout-btn md:hidden"
@@ -480,7 +511,7 @@ const Schedule = () => {
               View Scheduled Exams
               <span className="text-base">→</span>
             </button>
-            <button
+            {/* <button
               onClick={() => navigate("/questionBank")}
               className="
               inline-flex items-center gap-2
@@ -500,7 +531,7 @@ const Schedule = () => {
             >
               Download
               <span className="text-base">→</span>
-            </button>
+            </button> */}
           </div>
           <button
             className="qa-logout-btn !hidden md:!flex"

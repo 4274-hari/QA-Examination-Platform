@@ -648,6 +648,25 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
                 <AlertCircle size={16} />
               </button>
 
+                {uploadFor === "question" && (
+    <button
+      onClick={() =>
+         
+        navigate("/questionBank",{ state: { page: "question" } })
+      }
+      
+      className="flex items-center gap-2 px-3 py-2 rounded-md border"
+      style={{
+        borderColor: "#f0c000",
+        color: "#000",
+        backgroundColor: "#fff",
+      }}
+    >
+      <Download size={16} />
+      <span>Download Question Bank</span>
+    </button>
+  )}
+
               <a
                 href={s3link || "#"}
                 download
