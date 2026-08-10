@@ -26,7 +26,7 @@ async function forceExit(req, res) {
           {
             $set: {
               status: "TERMINATED",
-              terminatedReason: "SESSION_ABANDONED",
+              terminatedReason: "VIOLATION_LIMIT_EXCEEDED",
               isOnline:false,
               endedAt: new Date(),
             },

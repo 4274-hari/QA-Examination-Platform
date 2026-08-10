@@ -15,14 +15,40 @@ async function registerViolation(req, res) {
   const scheduledoc  = await schedulecol.findOne({
     _id:session.scheduleId});
 
-  const violationlimit = scheduledoc.violation;
+  const violationlimit = Number(scheduledoc?.violation);
+  const allowedViolationTypes = new Set([
+    "fullscreenExit",
+    "tabSwitch",
+    "windowBlur",
+    "pagehide",
+    "printScreen",
+    "screenshot"
+  ]);
 
+  if (!allowedViolationTypes.has(type) || !Number.isFinite(violationlimit) || violationlimit <= 0) {
+    return res.status(400).json({ message: "Invalid violation request" });
+  }
 
-  const currentTotal =
-    (session.violations.fullscreenExit || 0) +
-    (session.violations.tabSwitch || 0);
+  // Increment first, then calculate the total from the persisted document. This
+  // prevents two near-simultaneous browser/Electron events from using stale data.
+  const updateResult = await sessionCol.findOneAndUpdate(
+    { _id: session._id, status: "ACTIVE" },
+    { $inc: { [`violations.${type}`]: 1 } },
+    { returnDocument: "after" }
+  );
 
-  const total = currentTotal + 1;
+  const updatedSession = updateResult.value;
+  if (!updatedSession) {
+    return res.status(409).json({
+      status: session.status,
+      message: "Exam session is no longer active"
+    });
+  }
+
+  const total = Object.values(updatedSession.violations || {}).reduce(
+    (sum, count) => sum + (Number(count) || 0),
+    0
+  );
 
   const { findStudentExam, studentExamFilter } = require("../../services/qa_exam_service");
   const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
@@ -54,13 +80,6 @@ async function registerViolation(req, res) {
       totalViolations: total
     });
   }
-
-  await sessionCol.updateOne(
-    { _id: session._id },
-    { $inc: { [`violations.${type}`]: 1 } }
-  );
-
-  const updatedSession = await sessionCol.findOne({ _id: session._id });
 
   res.json({ 
     success: true, 
