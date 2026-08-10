@@ -37,7 +37,7 @@ async function registerViolation(req, res) {
     { returnDocument: "after" }
   );
 
-  const updatedSession = updateResult.value;
+  const updatedSession = updateResult;
   if (!updatedSession) {
     return res.status(409).json({
       status: session.status,
