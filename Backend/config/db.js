@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+const { ensureQaExamIndexes } = require('../services/qa_exam_indexes');
 require('dotenv').config();
 
 const mongoUri = process.env.MONGO_URI;
@@ -13,6 +14,7 @@ async function connectToDatabase() {
         console.log("Connected to MongoDB");
         db = client.db(dbName);
         logdb = client.db(logsdbname)
+        await ensureQaExamIndexes(db);
         console.log(`Connected to database: ${dbName}`);
         console.log(`Connected to database: ${logsdbname}`);
     } catch (error) {

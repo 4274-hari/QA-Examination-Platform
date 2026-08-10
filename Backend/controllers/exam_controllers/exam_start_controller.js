@@ -21,6 +21,10 @@ async function startExam(req, res) {
 
     const { registerno } = user;
 
+    if (!ObjectId.isValid(scheduleId) || !ObjectId.isValid(examId)) {
+      return res.status(400).json({ success: false, message: "Invalid exam session details" });
+    }
+
     // Verify schedule and exam exist
     const schedule = await scheduleCollection.findOne({ 
       _id: new ObjectId(scheduleId),
@@ -34,6 +38,23 @@ async function startExam(req, res) {
       });
     }
 
+    const examCollection = db.collection("qa_exam");
+    const examIdObject = new ObjectId(examId);
+    const studentExam = await examCollection.findOne({
+      _id: examIdObject,
+      scheduleId: schedule._id,
+      registerno,
+      isStudentExam: true,
+    });
+    const legacyExam = studentExam ? null : await examCollection.findOne({
+      _id: examIdObject,
+      scheduleId: schedule._id,
+      "students.registerno": registerno,
+    });
+    if (!studentExam && !legacyExam) {
+      return res.status(403).json({ success: false, message: "Exam is not assigned to this student" });
+    }
+
     // Check if session already exists
     const existingSession = await sessionCollection.findOne({
       scheduleId: new ObjectId(scheduleId),
@@ -42,6 +63,7 @@ async function startExam(req, res) {
 
     if (existingSession) {
       if (existingSession.status === "ACTIVE") {
+        req.session.qaExamScheduleId = scheduleId;
         return res.status(200).json({
           success: true,
           message: "Exam session already active",
@@ -61,6 +83,7 @@ async function startExam(req, res) {
             }
           }
         );
+        req.session.qaExamScheduleId = scheduleId;
 
         return res.status(200).json({
           success: true,
@@ -85,7 +108,7 @@ async function startExam(req, res) {
     await sessionCollection.insertOne({
       sessionId,
       scheduleId: new ObjectId(scheduleId),
-      examId: new ObjectId(examId),
+      examId: examIdObject,
       studentId: user.id,
       registerno,
       department: user.department,
@@ -115,6 +138,7 @@ async function startExam(req, res) {
       createdAt: now,
       updatedAt: now
     });
+    req.session.qaExamScheduleId = scheduleId;
 
     return res.status(201).json({
       success: true,

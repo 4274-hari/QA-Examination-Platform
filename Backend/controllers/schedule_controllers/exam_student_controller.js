@@ -1,8 +1,9 @@
 const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
+const { buildStudentExam } = require("../../services/qa_exam_service");
 
 /**
- * Create qa_exam doc and attach students for a schedule
+ * Create one qa_exam document per student for a schedule.
  */
 async function createExamFromSchedule(scheduleId) {
   const db = getDb();
@@ -78,39 +79,13 @@ async function createExamFromSchedule(scheduleId) {
     section: s.section
   }));
 
-  /* -----------------------------
-     Create qa_exam document
-  ----------------------------- */
-
-  const examDoc = {
-    scheduleId: schedule._id,
-
-    isRetest:schedule.isRetest,
-
-    isArrear:schedule.isArrear,
-
-    regulation : schedule.regulation,
-
-    academic_year: schedule.academic_year,
-
-    semester: schedule.semester,
-
-    subject: schedule.subject,
-    cie: schedule.cie,
-    batch: schedule.batch,
-
-    students: studentList,
-
-    date:schedule.date,
-
-    createdAt: new Date()
-  };
-
-  await examCollection.insertOne(examDoc);
+  const examDocs = studentList.map((student) => buildStudentExam(schedule, student));
+  await examCollection.insertMany(examDocs, { ordered: true });
 
 
   return {
-    examId: examDoc._id,
+    // A student-specific examId is returned later by code validation.
+    examId: null,
     totalStudents: studentList.length
   };
 }

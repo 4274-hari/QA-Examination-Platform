@@ -3,10 +3,7 @@ const { getDb } = require("../../config/db");
 async function getRemainingTime(req, res) {
   const db = getDb();
   const sessionCol = db.collection("qa_exam_sessions");
-
-  const { registerno } = req.session.user;
-
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session || session.status !== "ACTIVE") {
     return res.status(403).json({

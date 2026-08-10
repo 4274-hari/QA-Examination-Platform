@@ -7,11 +7,12 @@ async function markOffline(req, res) {
   const sessionCol = db.collection("qa_exam_sessions");
 
   const { registerno } = req.session.user;
+  const session = req.examSession;
 
   console.log(`📴 Marking ${registerno} offline...`); 
 
   const result = await sessionCol.updateOne(
-    { registerno, status: "ACTIVE" },
+    { _id: session._id, status: "ACTIVE" },
     {
       $set: {
         status: "PAUSED",
@@ -33,9 +34,7 @@ async function resumeSession(req, res) {
   const db = getDb();
   const sessionCol = db.collection("qa_exam_sessions");
 
-  const { registerno } = req.session.user;
-
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session || !["PAUSED"].includes(session.status)) {
     return res.status(403).json({
@@ -45,7 +44,7 @@ async function resumeSession(req, res) {
   }
 
   await sessionCol.updateOne(
-    { registerno },
+    { _id: session._id },
     {
       $set: {
         status: "ACTIVE",
@@ -64,8 +63,7 @@ async function getResumeData(req, res) {
   const sessionCol = db.collection("qa_exam_sessions");
 
   const { registerno } = req.session.user;
-
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session) {
     return res.status(404).json({ status: "NO_SESSION" });
@@ -78,13 +76,10 @@ async function getResumeData(req, res) {
     });
   }
 
-  const examDoc = await examCol.findOne({
-    "students.registerno": registerno
-  });
-
-  const student = examDoc.students.find(
-    s => s.registerno === registerno
-  );
+  const { findStudentExam } = require("../../services/qa_exam_service");
+  const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
+  if (!examRecord) return res.status(404).json({ status: "NO_EXAM" });
+  const student = examRecord.student;
 
   // 🔥 ONLY questions already ATTEMPTED / SERVED
   const answeredQuestions = student.questions
@@ -110,21 +105,16 @@ async function getResumeQuestions(req, res) {
   const sessionCol = db.collection("qa_exam_sessions");
 
   const { registerno } = req.session.user;
-
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session || session.status !== "ACTIVE") {
     return res.status(403).json({ message: "Session not active" });
   }
 
-  const exam = await examCol.findOne({
-    _id: session.examId,
-    "students.registerno": registerno
-  });
-
-  const student = exam.students.find(
-    s => s.registerno === registerno
-  );
+  const { findStudentExam: findStudentExamForResume } = require("../../services/qa_exam_service");
+  const examRecord = await findStudentExamForResume(examCol, session.scheduleId, registerno);
+  if (!examRecord) return res.status(404).json({ message: "Exam not found" });
+  const { exam, student } = examRecord;
 
   res.json({
     subject: exam.subject,

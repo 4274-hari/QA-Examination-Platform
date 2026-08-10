@@ -13,13 +13,19 @@ async function exportMarks(scheduleId) {
   });
   if (!schedule) throw new Error("Schedule not found");
 
-  const exam = await db.collection("qa_exam").findOne({
-    scheduleId: new ObjectId(scheduleId)
-  });
-  if (!exam || !exam.students?.length)
+  const examCollection = db.collection("qa_exam");
+  const studentExams = await examCollection.find({
+    scheduleId: new ObjectId(scheduleId),
+    isStudentExam: true,
+  }).toArray();
+  const legacyExam = studentExams.length
+    ? null
+    : await examCollection.findOne({ scheduleId: new ObjectId(scheduleId) });
+  const students = studentExams.length ? studentExams : legacyExam?.students;
+  if (!students?.length)
     throw new Error("No exam data");
 
-  const sessions = await db.collection("qa_session")
+  const sessions = await db.collection("qa_exam_sessions")
     .find({ scheduleId: new ObjectId(scheduleId) })
     .toArray();
 
@@ -30,13 +36,13 @@ async function exportMarks(scheduleId) {
   
   const violationMap = {};
 
-for (const student of exam.students) {
+for (const student of students) {
   violationMap[student.registerno] = student.violation?? 0;
 }
 
   const subjectTopicMap = {};
 
-  for (const student of exam.students) {
+  for (const student of students) {
     for (const q of student.questions || []) {
       if (!q.subject || !q.topic) continue;
 
@@ -115,7 +121,7 @@ for (const student of exam.students) {
   let rowIndex = headerRowIndex + 1;
   let sNo = 1;
 
-  for (const student of exam.students) {
+  for (const student of students) {
     const subjectMarks = {};
     subjects.forEach(s => {
       subjectMarks[s] = Object.fromEntries(

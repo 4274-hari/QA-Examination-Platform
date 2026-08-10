@@ -191,17 +191,25 @@ async function generateExam(
       throw new Error("Exam schedule not found");
     }
 
-    const studentMatch = department
-      ? { "students.department":department,"students.batch": batch }   
-      : { "students.registerno": { $in: registerno } };            
-
-    // Find exam by scheduleId only
-    const examDoc = await examCol.findOne({
+    const studentExams = await examCol.find({
       scheduleId: scheduleDoc._id,
-      ...studentMatch
-    });
+      isStudentExam: true,
+    }).toArray();
 
-    if (!examDoc) {
+    // Compatibility fallback while legacy schedule-level records are being
+    // migrated. New schedules always take the first branch.
+    const studentMatch = department
+      ? { "students.department": department, "students.batch": batch }
+      : { "students.registerno": { $in: registerno } };
+    const legacyExam = studentExams.length
+      ? null
+      : await examCol.findOne({ scheduleId: scheduleDoc._id, ...studentMatch });
+
+    const examStudents = studentExams.length
+      ? studentExams
+      : legacyExam?.students;
+
+    if (!examStudents?.length) {
       throw new Error("Exam not found");
     }
 
@@ -254,7 +262,7 @@ async function generateExam(
       }
     }
 
-    const updatedStudents = examDoc.students.map((student, studentIndex) => {
+    const updatedStudents = examStudents.map((student, studentIndex) => {
       
       const questionsBySubject = {};
       
@@ -328,15 +336,20 @@ async function generateExam(
       };
     });
 
-    await examCol.updateOne(
-      { _id: examDoc._id },
-      {
-        $set: {
-          students: updatedStudents,
-          generatedAt: new Date(),
+    const generatedAt = new Date();
+    if (studentExams.length) {
+      await examCol.bulkWrite(updatedStudents.map((student) => ({
+        updateOne: {
+          filter: { _id: student._id, isStudentExam: true },
+          update: { $set: { questions: student.questions, generatedAt } },
         },
-      }
-    );
+      })));
+    } else {
+      await examCol.updateOne(
+        { _id: legacyExam._id },
+        { $set: { students: updatedStudents, generatedAt } }
+      );
+    }
 
     return {
       message: "Exam generated successfully",

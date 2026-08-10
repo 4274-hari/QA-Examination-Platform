@@ -2,8 +2,8 @@ const { getDb } = require("../../config/db");
 
 async function forceExit(req, res) {
   try {
-    const { reason, registerno } = req.body;
-    console.log(reason, registerno);
+    const { reason } = req.body;
+    const registerno = req.session?.user?.registerno;
 
     if (!reason || !registerno) {
       return res.status(400).json({ message: "Missing reason or registerno" });
@@ -13,9 +13,7 @@ async function forceExit(req, res) {
 
     const collection = db.collection("qa_exam_sessions");
 
-    const student = await collection.findOne({
-      registerno,
-    });
+    const student = req.examSession;
 
     if (!student) {
       return res.status(400).json({ message: "Student record is not found" });

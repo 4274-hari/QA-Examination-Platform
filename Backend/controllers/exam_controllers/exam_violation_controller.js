@@ -8,7 +8,7 @@ async function registerViolation(req, res) {
   const { type } = req.body;
   const { registerno } = req.session.user;
 
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session) return res.sendStatus(404);
 
@@ -24,23 +24,22 @@ async function registerViolation(req, res) {
 
   const total = currentTotal + 1;
 
- await examCol.updateOne(
-  { "students.registerno": registerno },
-  {
-    $set: {
-      "students.$[student].violation": total
-    }
-  },
-  {
-    arrayFilters: [
-      { "student.registerno": registerno }
-    ]
+  const { findStudentExam, studentExamFilter } = require("../../services/qa_exam_service");
+  const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
+  if (!examRecord) return res.sendStatus(404);
+  if (examRecord.isLegacy) {
+    await examCol.updateOne(
+      { _id: examRecord.exam._id },
+      { $set: { "students.$[student].violation": total } },
+      { arrayFilters: [{ "student.registerno": registerno }] }
+    );
+  } else {
+    await examCol.updateOne(studentExamFilter(session.scheduleId, registerno), { $set: { violation: total } });
   }
-);
 
   if (total >= violationlimit) {
     await sessionCol.updateOne(
-      { registerno },
+      { _id: session._id },
       {
         $set: {
           status: "TERMINATED",
@@ -57,11 +56,11 @@ async function registerViolation(req, res) {
   }
 
   await sessionCol.updateOne(
-    { registerno },
+    { _id: session._id },
     { $inc: { [`violations.${type}`]: 1 } }
   );
 
-  const updatedSession = await sessionCol.findOne({ registerno });
+  const updatedSession = await sessionCol.findOne({ _id: session._id });
 
   res.json({ 
     success: true, 

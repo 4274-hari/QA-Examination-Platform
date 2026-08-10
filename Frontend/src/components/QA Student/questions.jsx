@@ -183,7 +183,11 @@ const QuestionPage = () => {
       try {
         await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
-        await forceExit(err.response?.data || { message: "HeartBeat error"});
+        // A transport/server blip must not end a valid exam. The backend
+        // remains authoritative for PAUSED, TERMINATED, and COMPLETED states.
+        if (err.response?.data?.status) {
+          await forceExit(err.response.data);
+        }
       }
     }, 15000);
 

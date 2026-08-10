@@ -33,10 +33,17 @@ const SessionClean = async () => {
 
       if (now >= cleanupTime ) {
         
-        const exam = await qaExamCol.findOne({ scheduleId: schedule._id });
-        if (!exam?.students?.length) continue;
-
-        const registerNumbers = exam.students.map((s) => s.registerno);
+        const studentExams = await qaExamCol.find(
+          { scheduleId: schedule._id, isStudentExam: true },
+          { projection: { registerno: 1 } }
+        ).toArray();
+        const legacyExam = studentExams.length
+          ? null
+          : await qaExamCol.findOne({ scheduleId: schedule._id }, { projection: { students: 1 } });
+        const registerNumbers = studentExams.length
+          ? studentExams.map((exam) => exam.registerno)
+          : legacyExam?.students?.map((student) => student.registerno) || [];
+        if (!registerNumbers.length) continue;
 
         const result = await sessionCol.deleteMany({
           scheduleId: schedule._id,
