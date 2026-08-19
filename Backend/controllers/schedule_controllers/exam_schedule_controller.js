@@ -38,13 +38,13 @@ async function storeExamSchedule(req, res) {
       date,
       start,
       end,
+      duration,
       violation,
       isRetest,
       isArrear
     } = req.body;
     
     // call durationcalculate
-    const duration = calculateDuration(start, end);
 
     const cieMap = {
       "CIE I": "cie1",

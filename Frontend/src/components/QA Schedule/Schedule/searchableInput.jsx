@@ -1,5 +1,5 @@
-import { X } from "lucide-react"
-import { useState, useRef, useEffect } from "react"
+import { X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 export function SearchableInput({
   label,
@@ -10,65 +10,61 @@ export function SearchableInput({
   placeholder,
   multiple = false,
 }) {
-  const [query, setQuery] = useState("")
-  const [open, setOpen] = useState(false)
-  const wrapperRef = useRef(null)
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
 
-   const safeValue = multiple
-    ? (Array.isArray(value) ? value : [])
-    : value
+  const safeValue = multiple ? (Array.isArray(value) ? value : []) : value;
 
   /* Close dropdown on outside click */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   /* Filter options */
   const filteredOptions = options
     .filter((opt) => {
-      if (multiple) return !safeValue.includes(opt)
-      return true
+      if (multiple) return !safeValue.includes(opt);
+      return true;
     })
-    .filter((opt) =>
-      opt.toLowerCase().includes(query?.toLowerCase())
-    )
+    .filter((opt) => opt.toLowerCase().includes(query?.toLowerCase()));
 
   const handleSelect = (item) => {
     if (multiple) {
-      onChange([...safeValue, item])
-      setQuery("")
+      onChange([...safeValue, item]);
+      setQuery("");
     } else {
-      onChange(item)
-      setQuery(item)
-      setOpen(false)
+      onChange(item);
+      setQuery(item);
+      setOpen(false);
     }
-  }
+  };
 
   const removeItem = (item) => {
-    onChange(safeValue.filter((v) => v !== item))
-  }
+    onChange(safeValue.filter((v) => v !== item));
+  };
 
   /* Sync single value into input */
   useEffect(() => {
     if (!multiple) {
-      setQuery(value || "")
+      setQuery(value || "");
     }
-  }, [value, multiple])
+  }, [value, multiple]);
 
   useEffect(() => {
     if (
       (!multiple && !value) ||
       (multiple && Array.isArray(value) && value.length === 0)
     ) {
-      setQuery("")
+      setQuery("");
     }
-  }, [value, multiple])
+  }, [value, multiple]);
 
   return (
     <div ref={wrapperRef} className="relative space-y-2">
@@ -102,8 +98,8 @@ export function SearchableInput({
         <input
           value={query}
           onChange={(e) => {
-            setQuery(e.target.value)
-            setOpen(true)
+            setQuery(e.target.value);
+            setOpen(true);
           }}
           placeholder={placeholder}
           className="flex-1 outline-none text-sm bg-transparent"
@@ -132,7 +128,7 @@ export function SearchableInput({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function MultiSearchDropdown({
@@ -145,58 +141,64 @@ export function MultiSearchDropdown({
   displayFormat,
   valueKey,
 }) {
-  const [query, setQuery] = useState("")
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
     const handleOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleOutside)
-    return () => document.removeEventListener("mousedown", handleOutside)
-  }, [])
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
 
   // Handle both object and string options
   const getItemValue = (item) => {
-    return valueKey ? item[valueKey] : item
-  }
+    return valueKey ? item[valueKey] : item;
+  };
 
   const getItemDisplay = (item) => {
-    return displayFormat ? displayFormat(item) : (valueKey ? item[valueKey] : item)
-  }
+    return displayFormat
+      ? displayFormat(item)
+      : valueKey
+        ? item[valueKey]
+        : item;
+  };
 
   const filtered = options.filter((opt) => {
-    const display = getItemDisplay(opt)
-    return display.toLowerCase().includes(query.toLowerCase())
-  })
+    const display = getItemDisplay(opt);
+    return display.toLowerCase().includes(query.toLowerCase());
+  });
 
   const selectItem = (item) => {
-    const itemValue = getItemValue(item)
+    const itemValue = getItemValue(item);
     if (!value.includes(itemValue)) {
-      onChange([...value, itemValue])
+      onChange([...value, itemValue]);
     }
-    setQuery("")
-  }
+    setQuery("");
+  };
 
   const removeItem = (itemValue) => {
-    onChange(value.filter((v) => v !== itemValue))
-  }
+    onChange(value.filter((v) => v !== itemValue));
+  };
 
   return (
     <div ref={ref} className="relative space-y-2">
       <label className="text-slate-700 font-medium text-sm">{label}</label>
 
-      <div className="relative border rounded-md min-h-[48px]
-        flex flex-wrap items-center gap-2 px-3 focus-within:ring-2 focus-within:ring-[#fdcc03]/20">
+      <div
+        className="relative border rounded-md min-h-[48px]
+        flex flex-wrap items-center gap-2 px-3 focus-within:ring-2 focus-within:ring-[#fdcc03]/20"
+      >
         <Icon className="w-4 h-4 text-slate-400" />
         <input
           value={query}
           onChange={(e) => {
-            setQuery(e.target.value)
-            setOpen(true)
+            setQuery(e.target.value);
+            setOpen(true);
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
@@ -205,11 +207,13 @@ export function MultiSearchDropdown({
       </div>
 
       {open && filtered.length > 0 && (
-        <div className="absolute z-20 w-full bg-white border
-          rounded-md shadow-md max-h-60 overflow-auto">
+        <div
+          className="absolute z-20 w-full bg-white border
+          rounded-md shadow-md max-h-60 overflow-auto"
+        >
           {filtered.map((item) => {
-            const itemValue = getItemValue(item)
-            const itemDisplay = getItemDisplay(item)
+            const itemValue = getItemValue(item);
+            const itemDisplay = getItemDisplay(item);
             return (
               <div
                 key={itemValue}
@@ -217,103 +221,216 @@ export function MultiSearchDropdown({
                 className="px-3 py-2.5 hover:bg-[#800000]/5 cursor-pointer text-sm border-b last:border-b-0 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-slate-700">{itemDisplay}</span>
+                  <span className="font-medium text-slate-700">
+                    {itemDisplay}
+                  </span>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       )}
-        </div>
-      )}
+    </div>
+  );
+}
 
 const TIME_SLOT_SINGLE = {
   model: [
-    "09:00 AM - 12:00 PM",
-    "01:00 PM - 04:00 PM"
+    {
+      start: "09:00 AM",
+      end: "12:05 PM",
+      duration: 180,
+    },
+    {
+      start: "01:00 PM",
+      end: "04:05 PM",
+      duration: 180,
+    },
   ],
+
   internal: [
-    "08:40 AM - 10:20 AM",
-    "10:30 AM - 12:10 PM",
-    "12:50 PM - 02:20 PM",
-    "02:30 PM - 04:00 PM",
-    "04:05 PM - 05:35 PM"
-  ]
-}
+    {
+      start: "08:40 AM",
+      end: "10:25 AM",
+      duration: 100,
+    },
+    {
+      start: "10:30 AM",
+      end: "12:15 PM",
+      duration: 100,
+    },
+    {
+      start: "12:50 PM",
+      end: "02:25 PM",
+      duration: 90,
+    },
+    {
+      start: "02:30 PM",
+      end: "04:05 PM",
+      duration: 90,
+    },
+    {
+      start: "04:05 PM",
+      end: "05:40 PM",
+      duration: 90,
+    },
+  ],
+};
 
 const TIME_SLOT_MULTIPLE = {
   model: [
-    "08:40 AM - 10:20 AM",
-    "10:30 AM - 12:10 PM",
-    "12:50 PM - 02:20 PM",
-    "02:30 PM - 04:00 PM"
+    {
+      start: "08:40 AM",
+      end: "10:25 AM",
+      duration: 100,
+    },
+    {
+      start: "10:30 AM",
+      end: "12:15 PM",
+      duration: 100,
+    },
+    {
+      start: "12:50 PM",
+      end: "02:25 PM",
+      duration: 90,
+    },
+    {
+      start: "02:30 PM",
+      end: "04:05 PM",
+      duration: 90,
+    },
   ],
-  internal: [
-    "08:40 AM - 09:30 AM",
-    "09:30 AM - 10:20 AM",
-    "10:30 AM - 11:20 AM",
-    "11:20 AM - 12:10 PM",
-    "12:50 PM - 01:35 PM",
-    "01:35 PM - 02:20 PM",
-    "02:30 PM - 03:15 PM",
-    "03:15 PM - 04:00 PM",
-    "04:05 PM - 04:50 PM",
-  ]
-}
 
-const EXAM_TYPE = [
-  "CIE I", "CIE II", "CIE III"
-]
+  internal: [
+    {
+      start: "08:40 AM",
+      end: "09:35 AM",
+      duration: 50,
+    },
+    {
+      start: "09:30 AM",
+      end: "10:25 AM",
+      duration: 50,
+    },
+    {
+      start: "10:30 AM",
+      end: "11:25 AM",
+      duration: 50,
+    },
+    {
+      start: "11:20 AM",
+      end: "12:15 PM",
+      duration: 50,
+    },
+    {
+      start: "12:50 PM",
+      end: "01:40 PM",
+      duration: 50,
+    },
+    {
+      start: "01:35 PM",
+      end: "02:25 PM",
+      duration: 50,
+    },
+    {
+      start: "02:30 PM",
+      end: "03:20 PM",
+      duration: 50,
+    },
+    {
+      start: "03:15 PM",
+      end: "04:05 PM",
+      duration: 50,
+    },
+    {
+      start: "04:05 PM",
+      end: "04:55 PM",
+      duration: 50,
+    },
+  ],
+};
+
+const EXAM_TYPE = ["CIE I", "CIE II", "CIE III"];
 
 const typeMap = {
   "CIE I": "internal",
   "CIE II": "internal",
-  "CIE III": "model"
-}
+  "CIE III": "model",
+};
 
 const getTimeSlots = (type, subjectCount) => {
-  if (!type) return []
+  if (!type) return [];
 
-  const examKey = typeMap[type]
+  const examKey = typeMap[type];
 
   return subjectCount == 1
     ? TIME_SLOT_MULTIPLE[examKey]
-    : TIME_SLOT_SINGLE[examKey]
-}
+    : TIME_SLOT_SINGLE[examKey];
+};
 
-export function Dropdown({ label, icon: Icon, value, values = [], onChange, type, placeholder }) {
+export function Dropdown({
+  label,
+  icon: Icon,
+  value,
+  values = [],
+  onChange,
+  type,
+  placeholder,
+}) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-slate-700">{label}</label>
       <div className="relative">
         <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={
+            label === "Exam Time"
+              ? value
+                ? `${value.start}|${value.end}|${value.duration}`
+                : ""
+              : value || ""
+          }
+          onChange={(e) => {
+            if (label === "Exam Time") {
+              const [start, end, duration] = e.target.value.split("|");
+
+              onChange({
+                start,
+                end,
+                duration: Number(duration),
+              });
+            } else {
+              onChange(e.target.value);
+            }
+          }}
           disabled={label === "Exam Time" && !type}
           className="pl-10 h-12 w-full border border-slate-300 rounded-md
           focus:ring-2 focus:ring-[#fdcc03]/20 bg-white"
         >
           <option value="">{placeholder}</option>
           {label === "Exam Time"
-            ? getTimeSlots(type.examType, type.subjectCount)?.map(time => (
-                <option key={time} value={time}>
-                  {time}
+            ? getTimeSlots(type.examType, type.subjectCount)?.map((time) => (
+                <option
+                  key={`${time.start}-${time.end}`}
+                  value={`${time.start}|${time.end}|${time.duration}`}
+                >
+                  {time.start} - {time.end}
                 </option>
               ))
-            : label === "Name Of The Examination" 
-            ? EXAM_TYPE.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))
-            : values.length > 0 && values?.map((sem,idx) => (
-              <option key={idx} value={sem}>
-                {sem}
-              </option>
-            ))}
+            : label === "Name Of The Examination"
+              ? EXAM_TYPE.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))
+              : values.length > 0 &&
+                values?.map((sem, idx) => (
+                  <option key={idx} value={sem}>
+                    {sem}
+                  </option>
+                ))}
         </select>
       </div>
     </div>
-  )
+  );
 }
