@@ -35,7 +35,7 @@ const Schedule = () => {
   const [otherSubjects, setOtherSubjects] = useState("");
   const [violationLimit, setViolationLimit] = useState("");
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState(null);
   const [examType, setExamType] = useState("");
   const [semesters, setSemesters] = useState(["SEM I", "SEM II"]);
   const [semester, setSemester] = useState("");
@@ -251,7 +251,7 @@ const Schedule = () => {
       return;
     }
 
-    const { start, end } = parseTimeSlot(time);
+    const { start, end ,duration} = time;
 
     const payload = {
       batch: activeBatch,
@@ -261,6 +261,7 @@ const Schedule = () => {
       date,
       start,
       end,
+      duration,
       topics,
       isRetest,
       isArrear,
