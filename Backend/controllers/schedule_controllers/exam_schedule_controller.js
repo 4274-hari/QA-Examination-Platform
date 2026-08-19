@@ -111,7 +111,7 @@ async function storeExamSchedule(req, res) {
 
       cie,
       subject: Array.isArray(subject) && subject.length === 1 && subject[0] === "QA"
-        ? ["QA", "CS"]
+        ? ["QA"]
         : subject,
 
       isRetest,
@@ -251,7 +251,7 @@ async function cancelExamSchedule(req, res) {
       { _id: scheduleObjectId }
     );
 
-    await examCollection.deleteOne(
+    await examCollection.deleteMany(
       { scheduleId: scheduleObjectId }
     );
 

@@ -2,8 +2,6 @@ const { getDb } = require("../../config/db");
 
 async function getSessionStatus(req, res) {
   const db = getDb();
-  const sessionCol = db.collection("qa_exam_sessions");
-
   const user = req.session?.user;
   
   if (!user || !user.registerno) {
@@ -13,9 +11,7 @@ async function getSessionStatus(req, res) {
     });
   }
 
-  const { registerno } = user;
-  
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session) {
     return res.status(404).json({ 

@@ -3,10 +3,7 @@ const { getDb } = require("../../config/db");
 async function heartbeat(req, res) {
   const db = getDb();
   const sessionCol = db.collection("qa_exam_sessions");
-
-  const { registerno } = req.session.user;
-
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session) {
     return res.status(403).json({ status: "TERMINATED" });
@@ -79,10 +76,11 @@ async function heartbeat(req, res) {
   }
 
   await sessionCol.updateOne(
-    { registerno },
+    { _id: session._id },
     {
       $set: {
-        lastSeenAt: new Date()
+        lastSeenAt: new Date(),
+        isOnline: true,
       }
     }
   );

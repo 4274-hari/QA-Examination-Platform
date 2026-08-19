@@ -11,7 +11,7 @@ function sessionMiddleware() {
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
-      ttl: 3 * 60 * 60
+      ttl: 4 * 60 * 60
     }),
 
     cookie: {

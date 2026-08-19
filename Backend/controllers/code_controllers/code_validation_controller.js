@@ -1,4 +1,5 @@
 const { getDb } = require("../../config/db");
+const { findStudentExam } = require("../../services/qa_exam_service");
 
 async function validateExamCode(req, res) {
   try {
@@ -55,22 +56,19 @@ if (now < validFrom || now > validTill) {
   });
 }
 
-    // 5. Get exam details
-    const exam = await examCollection.findOne({ scheduleId: schedule._id });
-
-    if (!exam) {
+    // 5. Get this student's exam document. New documents are indexed by
+    // scheduleId + registerno; old nested records remain a read-only fallback.
+    const examRecord = await findStudentExam(examCollection, schedule._id, registerno);
+    if (!examRecord) {
       return res.status(404).json({
         success: false,
         message: "Exam details are unavailable. Please contact the administrator."
       });
     }
+    const { exam, student: studentFound } = examRecord;
 
     // 6. Check student eligibility
-    const studentFound = exam.students.find(
-      student => student.registerno === registerno
-    );
-
-    if (!studentFound) {
+    if (studentFound.department !== department || studentFound.batch !== batch) {
       return res.status(403).json({
         success: false,
         message: "Access denied. You are not authorized to attend this exam."
@@ -109,28 +107,8 @@ if (now < validFrom || now > validTill) {
 
       // If ACTIVE or PAUSED, allow resumption
       if (existingSession.status === "ACTIVE" || existingSession.status === "PAUSED") {
-        // Get questions with student's previous answers
-        const result = await examCollection.aggregate([
-          { $match: { scheduleId: schedule._id } },
-          { $unwind: "$students" },
-          {
-            $match: {
-              "students.registerno": registerno,
-              "students.department": department,
-              "students.batch": batch
-            }
-          },
-          {
-            $project: {
-              _id: 0,
-              questions: "$students.questions"
-            }
-          }
-        ]).toArray();
-
-        // Calculate total questions based on exam type
         const examType = schedule.cie || schedule.examType;
-        const totalQuestions = result[0]?.questions?.length
+        const totalQuestions = studentFound.questions?.length;
 
         return res.status(200).json({
           success: true,
@@ -138,7 +116,7 @@ if (now < validFrom || now > validTill) {
           isResume: true,
           examDetails: {
             subject: exam.subject,
-            questions: result[0]?.questions || [],
+            questions: studentFound.questions || [],
             totalQuestions: totalQuestions,
             examType: examType,
             date: schedule.date,
@@ -148,47 +126,18 @@ if (now < validFrom || now > validTill) {
             currentQuestionIndex: existingSession.currentQuestionIndex || 0,
             timeRemaining: Math.max(0, existingSession.endsAt - now) / 1000, // seconds
             scheduleId: schedule._id.toString(),
-            examId: exam._id.toString()
+            examId: examRecord.isLegacy ? exam._id.toString() : studentFound._id.toString()
           }
         });
       }
     }
 
-    // 9. Get questions for new exam (without answers)
-    const result = await examCollection.aggregate([
-      { $match: { scheduleId: schedule._id } },
-      { $unwind: "$students" },
-      {
-        $match: {
-          "students.registerno": registerno,
-          "students.department": department,
-          "students.batch": batch
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          name: "$students.name",
-          questions: {
-            $map: {
-              input: "$students.questions",
-              as: "q",
-              in: {
-                question: "$$q.question",
-                A: "$$q.A",
-                B: "$$q.B",
-                C: "$$q.C",
-                D: "$$q.D",
-                E: "$$q.E"
-                // Don't send answer or selectedAnswer
-              }
-            }
-          }
-        }
-      }
-    ]).toArray();
+    // 9. Return questions for a new exam without answer fields.
+    const questions = (studentFound.questions || []).map(({ question, A, B, C, D, E }) => ({
+      question, A, B, C, D, E,
+    }));
 
-    if (!result.length) {
+    if (!questions.length) {
       return res.status(404).json({
         success: false,
         message: "No questions found for this student"
@@ -198,18 +147,18 @@ if (now < validFrom || now > validTill) {
     // 10. Return exam details (don't create session yet)
     // Calculate total questions based on exam type
     const examType = schedule.cie || schedule.examType;
-    const totalQuestions = result[0]?.questions?.length
+    const totalQuestions = questions.length;
 
     return res.status(200).json({
       success: true,
       message: "Exam code validated successfully. You are eligible to take this exam.",
       isResume: false,
-      name:result[0].name,
+      name: studentFound.name,
       examDetails: {
         scheduleId: schedule._id.toString(),
-        examId: exam._id.toString(),
+        examId: examRecord.isLegacy ? exam._id.toString() : studentFound._id.toString(),
         subject: exam.subject,
-        questions: result[0]?.questions || [],
+        questions,
         totalQuestions: totalQuestions,
         examType: examType,
         date: schedule.date,

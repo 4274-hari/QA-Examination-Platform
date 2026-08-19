@@ -1,5 +1,6 @@
 const { getDb } = require("../../config/db");
 const { ObjectId } = require("mongodb");
+const { findStudentExam, studentExamFilter } = require("../../services/qa_exam_service");
 
 
 async function qaResult(req, res) {
@@ -16,33 +17,26 @@ async function qaResult(req, res) {
     
     const { scheduleId } = req.body;  
 
-    const scheduleObjectId = new ObjectId(scheduleId);
-
-    if (!ObjectId.isValid(scheduleId)) {
-      return res.status(400).json({ message: "Invalid scheduleId" });
-    }
-
     if (!scheduleId) {
       return res.status(400).json({
         message: "scheduleId is required"
       });
     }
 
-    // 🎯 Find EXACT exam
-    const examDoc = await collection.findOne({
-      scheduleId:scheduleObjectId,
-      "students.registerno": registerno
-    });
+    if (!ObjectId.isValid(scheduleId)) {
+      return res.status(400).json({ message: "Invalid scheduleId" });
+    }
+    const scheduleObjectId = new ObjectId(scheduleId);
 
-    if (!examDoc) {
+    // 🎯 Find EXACT exam
+    const examRecord = await findStudentExam(collection, scheduleObjectId, registerno);
+    if (!examRecord) {
       return res.status(404).json({
         message: "Exam record not found for this schedule"
       });
     }
 
-    const student = examDoc.students.find(
-      s => s.registerno === registerno
-    );
+    const { exam: examDoc, student } = examRecord;
 
     if (!student) {
       return res.status(404).json({
@@ -56,18 +50,18 @@ async function qaResult(req, res) {
     ).length;
 
     // 🔒 Mark completion ONLY for this exam
-    await collection.updateOne(
-      {
-        scheduleId,
-        "students.registerno": registerno
-      },
-      {
-        $set: {
-          "students.$.isComplete": true,
-          "students.$.completedAt": new Date()
-        }
-      }
-    );
+    const completedAt = new Date();
+    if (examRecord.isLegacy) {
+      await collection.updateOne(
+        { scheduleId: scheduleObjectId, "students.registerno": registerno },
+        { $set: { "students.$.isComplete": true, "students.$.completedAt": completedAt } }
+      );
+    } else {
+      await collection.updateOne(
+        studentExamFilter(scheduleObjectId, registerno),
+        { $set: { isComplete: true, completedAt } }
+      );
+    }
 
     // 🧹 Update ONLY this exam session
     await sessionCollection.updateOne(

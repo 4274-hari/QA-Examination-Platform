@@ -8,39 +8,64 @@ async function registerViolation(req, res) {
   const { type } = req.body;
   const { registerno } = req.session.user;
 
-  const session = await sessionCol.findOne({ registerno });
+  const session = req.examSession;
 
   if (!session) return res.sendStatus(404);
 
   const scheduledoc  = await schedulecol.findOne({
     _id:session.scheduleId});
 
-  const violationlimit = scheduledoc.violation;
+  const violationlimit = Number(scheduledoc?.violation);
+  const allowedViolationTypes = new Set([
+    "fullscreenExit",
+    "tabSwitch",
+    "windowBlur",
+    "pagehide",
+    "printScreen",
+    "screenshot"
+  ]);
 
-
-  const currentTotal =
-    (session.violations.fullscreenExit || 0) +
-    (session.violations.tabSwitch || 0);
-
-  const total = currentTotal + 1;
-
- await examCol.updateOne(
-  { "students.registerno": registerno },
-  {
-    $set: {
-      "students.$[student].violation": total
-    }
-  },
-  {
-    arrayFilters: [
-      { "student.registerno": registerno }
-    ]
+  if (!allowedViolationTypes.has(type) || !Number.isFinite(violationlimit) || violationlimit <= 0) {
+    return res.status(400).json({ message: "Invalid violation request" });
   }
-);
+
+  // Increment first, then calculate the total from the persisted document. This
+  // prevents two near-simultaneous browser/Electron events from using stale data.
+  const updateResult = await sessionCol.findOneAndUpdate(
+    { _id: session._id, status: "ACTIVE" },
+    { $inc: { [`violations.${type}`]: 1 } },
+    { returnDocument: "after" }
+  );
+
+  const updatedSession = updateResult;
+  if (!updatedSession) {
+    return res.status(409).json({
+      status: session.status,
+      message: "Exam session is no longer active"
+    });
+  }
+
+  const total = Object.values(updatedSession.violations || {}).reduce(
+    (sum, count) => sum + (Number(count) || 0),
+    0
+  );
+
+  const { findStudentExam, studentExamFilter } = require("../../services/qa_exam_service");
+  const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
+  if (!examRecord) return res.sendStatus(404);
+  if (examRecord.isLegacy) {
+    await examCol.updateOne(
+      { _id: examRecord.exam._id },
+      { $set: { "students.$[student].violation": total } },
+      { arrayFilters: [{ "student.registerno": registerno }] }
+    );
+  } else {
+    await examCol.updateOne(studentExamFilter(session.scheduleId, registerno), { $set: { violation: total } });
+  }
 
   if (total >= violationlimit) {
     await sessionCol.updateOne(
-      { registerno },
+      { _id: session._id },
       {
         $set: {
           status: "TERMINATED",
@@ -55,13 +80,6 @@ async function registerViolation(req, res) {
       totalViolations: total
     });
   }
-
-  await sessionCol.updateOne(
-    { registerno },
-    { $inc: { [`violations.${type}`]: 1 } }
-  );
-
-  const updatedSession = await sessionCol.findOne({ registerno });
 
   res.json({ 
     success: true, 

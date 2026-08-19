@@ -1,4 +1,6 @@
 const { getDb } = require("../../config/db");
+const { ObjectId } = require("mongodb");
+const { findStudentExam, studentExamFilter } = require("../../services/qa_exam_service");
 
 async function submitAnswer(req, res) {
   try {
@@ -18,7 +20,12 @@ async function submitAnswer(req, res) {
     const sessionCol = db.collection("qa_exam_sessions");
 
     // 1️⃣ Get active session
-    const session = await sessionCol.findOne({ registerno });
+    const sessionFilter = { registerno, status: "ACTIVE" };
+    const activeScheduleId = req.session.qaExamScheduleId;
+    if (activeScheduleId && ObjectId.isValid(activeScheduleId)) {
+      sessionFilter.scheduleId = new ObjectId(activeScheduleId);
+    }
+    const session = await sessionCol.findOne(sessionFilter, { sort: { startedAt: -1 } });
 
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
@@ -34,19 +41,12 @@ async function submitAnswer(req, res) {
       // If client retries same request after success
       if (session.currentQuestionIndex > questionIndex) {
 
-        const doc = await examCol.findOne(
-          {
-            scheduleId: session.scheduleId,
-            "students.registerno": registerno,
-          },
-          { projection: { "students.$": 1 } }
-        );
-
-        if (!doc) {
+        const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
+        if (!examRecord) {
           return res.status(404).json({ message: "Exam record not found" });
         }
 
-        const student = doc.students[0];
+        const student = examRecord.student;
 
         const q = student?.questions?.find(
           (q) => q.questionNumber === questionIndex + 1
@@ -63,19 +63,11 @@ async function submitAnswer(req, res) {
     }
 
     // 3️⃣ Get correct option
-    const doc = await examCol.findOne(
-      {
-        scheduleId: session.scheduleId,
-        "students.registerno": registerno,
-      },
-      { projection: { "students.$": 1 } }
-    );
-
-    if (!doc) {
+    const examRecord = await findStudentExam(examCol, session.scheduleId, registerno);
+    if (!examRecord) {
       return res.status(404).json({ message: "Exam record not found" });
     }
-
-    const student = doc.students[0];
+    const student = examRecord.student;
 
     const q = student?.questions?.find(
       (q) => q.questionNumber === questionIndex + 1
@@ -89,24 +81,28 @@ async function submitAnswer(req, res) {
       String(q.correct_option).trim() === String(choosedOption).trim();
 
     // 4️⃣ Atomic update (prevents double answering)
-    const result = await examCol.updateOne(
-      { _id: doc._id },
-      {
-        $set: {
+    const result = examRecord.isLegacy
+      ? await examCol.updateOne(
+        { _id: examRecord.exam._id },
+        { $set: {
           "students.$[stu].questions.$[ques].choosedOption": choosedOption,
           "students.$[stu].questions.$[ques].isCorrect": isCorrect,
-        },
-      },
-      {
-        arrayFilters: [
+        } },
+        { arrayFilters: [
           { "stu.registerno": registerno },
-          {
-            "ques.questionNumber": questionIndex + 1,
-            "ques.choosedOption": { $exists: false },
-          },
-        ],
-      }
-    );
+          { "ques.questionNumber": questionIndex + 1, "ques.choosedOption": { $exists: false } },
+        ] }
+      )
+      : await examCol.updateOne(
+        {
+          ...studentExamFilter(session.scheduleId, registerno),
+          questions: { $elemMatch: { questionNumber: questionIndex + 1, choosedOption: { $exists: false } } },
+        },
+        { $set: {
+          "questions.$.choosedOption": choosedOption,
+          "questions.$.isCorrect": isCorrect,
+        } }
+      );
 
     // If no update → already answered
     if (result.modifiedCount === 0) {

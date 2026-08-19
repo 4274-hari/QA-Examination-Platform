@@ -57,6 +57,8 @@ const QuestionPage = () => {
   // ✅ Refs to track states
   const isFullscreenWarningShown = useRef(false);
   const offlineAlertShown = useRef(false);
+  const violationInFlight = useRef(false);
+  const lastViolationAt = useRef(0);
 
   // SAFETY CHECK
   useEffect(() => {
@@ -183,7 +185,11 @@ const QuestionPage = () => {
       try {
         await axios.post("/api/main-backend/exam/qa/session/heartbeat");
       } catch (err) {
-        await forceExit(err.response?.data || { message: "HeartBeat error"});
+        // A transport/server blip must not end a valid exam. The backend
+        // remains authoritative for PAUSED, TERMINATED, and COMPLETED states.
+        if (err.response?.data?.status) {
+          await forceExit(err.response.data);
+        }
       }
     }, 15000);
 
@@ -334,13 +340,25 @@ const QuestionPage = () => {
 
   // VIOLATION TRACKING - Electron IPC based detection
   const registerViolation = async (type, message) => {
+    // Electron and the browser can report the same focus change together.
+    // Keep one server-side record for that single user action.
+    if (violationInFlight.current || Date.now() - lastViolationAt.current < 1000) {
+      return;
+    }
+
+    violationInFlight.current = true;
+    lastViolationAt.current = Date.now();
     try {
       const res = await axios.post("/api/main-backend/exam/qa/session/violation", {
         type,
       });
       
       if (res.data.terminated) {
-       await forceExit({ reason: "Violation limit exceeded" });
+       await forceExit({
+          status: "TERMINATED",
+          terminated: true,
+          reason: "Violation limit exceeded"
+        });
         return;
       }
 
@@ -363,8 +381,31 @@ const QuestionPage = () => {
       });
     } catch (err) {
       console.error("Violation registration error:", err);
+      if (err.response?.data?.terminated || err.response?.data?.status === "TERMINATED") {
+        await forceExit({
+          ...err.response.data,
+          status: "TERMINATED",
+          terminated: true,
+          reason: "Violation limit exceeded"
+        });
+      }
+    } finally {
+      violationInFlight.current = false;
     }
   };
+
+  // Electron reports OS-level focus/fullscreen changes. Previously these events
+  // were emitted by main.js but never consumed by the React exam screen.
+  useEffect(() => {
+    if (!window.electronAPI?.onViolation) return;
+
+    const handleElectronViolation = (type, message) => {
+      registerViolation(type === "windowBlur" ? "windowBlur" : type, message);
+    };
+
+    window.electronAPI.onViolation(handleElectronViolation);
+    return () => window.electronAPI.offViolation?.();
+  }, []);
 
   // page hide
   useEffect(() => {
@@ -584,11 +625,14 @@ const QuestionPage = () => {
     const reason = data?.reason || data?.message || "Exam session is no longer active";
     
     try {
-      // Call backend to update session status
-      await axios.post("/api/main-backend/exam/qa/session/forceexit", {
-        reason,
-        registerno: student.registerno
-      });
+      // The violation endpoint has already persisted termination. Do not send a
+      // second request that could replace its termination reason.
+      if (!data?.terminated && data?.status !== "TERMINATED") {
+        await axios.post("/api/main-backend/exam/qa/session/forceexit", {
+          reason,
+          registerno: student.registerno
+        });
+      }
     } catch (error) {
       console.error("Force exit error:", error);
     } finally {
