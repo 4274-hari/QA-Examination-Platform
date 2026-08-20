@@ -180,12 +180,19 @@ const uploadStudentExcel = async (req, res) => {
 
       const excelRows = [];
       const excelRegs = [];
+console.log("Lenght : ",sheet.rowCount);
 
       // First pass
       for (let rowIndex = 2; rowIndex <= sheet.rowCount; rowIndex++) {
         const r = sheet.getRow(rowIndex).values.slice(1);
         const reg = String(r[2] || "").trim();
         excelRegs.push(reg);
+
+        const hasData = r.some(value => value !== null && value !== undefined && String(value).trim() !== "");
+        
+        if (!hasData) {
+          continue;
+        }
 
         excelRows.push({
           rowIndex,
