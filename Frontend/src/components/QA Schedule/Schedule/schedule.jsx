@@ -11,6 +11,7 @@ import {
   ListOrdered,
   CalendarRange,
   BookCheck,
+  FileText
 } from "lucide-react";
 import {
   Dropdown,
@@ -113,7 +114,7 @@ const Schedule = () => {
       try {
         const res = await axios.get("/api/main-backend/examiner/forms");
         const data = res.data;
-        
+
         setYears(data.batch || []);
         setDepartmentOptions(data.departments || "");
         setSubjectTopics(data.subjects || []);
@@ -251,7 +252,7 @@ const Schedule = () => {
       return;
     }
 
-    const { start, end ,duration} = time;
+    const { start, end, duration } = time;
 
     const payload = {
       batch: activeBatch,
@@ -378,7 +379,7 @@ const Schedule = () => {
                   className="h-4 w-4 accent-[#800000] cursor-pointer"
                 />
               </div>
-                           <button
+            <button
   onClick={() => {
     const link = document.createElement("a");
     link.href = "/CIE_Instruction.pdf";
@@ -398,12 +399,11 @@ const Schedule = () => {
     hover:text-white
     hover:border-[#800000]
     transition-all duration-200
-    focus:outline-none focus:ring-2 focus:ring-[#800000]/30
   "
 >
+  <FileText size={16} />
   Instruction
 </button>
- 
             </div>
             <button
               className="qa-logout-btn md:hidden"
@@ -620,88 +620,86 @@ const Schedule = () => {
           <div ref={regRef} className="space-y-2 relative">
             {/* Input fields for regNumber for the retest or arrear */}
             {(isArrear || isRetest) && (
-                <div className="space-y-2">
-                  <MultiSearchDropdown
-                    key={`batch-${resetKey}`}
-                    label="Register Numbers"
-                    icon={Hash}
-                    options={studentRegs.filter(
-                      (student) =>
-                        !registerState.values.includes(student.registerno),
-                    )}
-                    value={registerState.values}
-                    onChange={(vals) =>
-                      setRegisterState({ mode: "partial", values: vals })
-                    }
-                    placeholder="Search register number or name"
-                    multiple
-                    displayFormat={(student) =>
-                      `${student.registerno} - ${student.name}`
-                    }
-                    valueKey="registerno"
-                  />
-
-                  {/* Selected Students Display */}
-                  {registerState.values.length > 0 && (
-                    <div className="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-semibold text-slate-700">
-                          Selected Students ({registerState.values.length})
-                        </h4>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setRegisterState({ mode: "none", values: [] })
-                          }
-                          className="text-xs text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Clear All
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
-                        {registerState.values.map((regNo) => {
-                          const student = studentRegs.find(
-                            (s) => s.registerno === regNo,
-                          );
-                          return (
-                            <div
-                              key={regNo}
-                              className="flex items-center justify-between bg-white px-3 py-2 rounded-md border border-slate-200 hover:border-[#800000]/30 transition-colors group"
-                            >
-                              <div className="flex items-center gap-2 flex-1">
-                                <Hash className="w-3.5 h-3.5 text-slate-400" />
-                                <span className="text-sm font-medium text-slate-700">
-                                  {student?.registerno || regNo}
-                                </span>
-                                <span className="text-sm text-slate-500">
-                                  -
-                                </span>
-                                <span className="text-sm text-slate-600">
-                                  {student?.name || "Unknown"}
-                                </span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setRegisterState((prev) => ({
-                                    ...prev,
-                                    values: prev.values.filter(
-                                      (r) => r !== regNo,
-                                    ),
-                                  }));
-                                }}
-                                className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs font-medium transition-opacity"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+              <div className="space-y-2">
+                <MultiSearchDropdown
+                  key={`batch-${resetKey}`}
+                  label="Register Numbers"
+                  icon={Hash}
+                  options={studentRegs.filter(
+                    (student) =>
+                      !registerState.values.includes(student.registerno),
                   )}
-                </div>
-              )}
+                  value={registerState.values}
+                  onChange={(vals) =>
+                    setRegisterState({ mode: "partial", values: vals })
+                  }
+                  placeholder="Search register number or name"
+                  multiple
+                  displayFormat={(student) =>
+                    `${student.registerno} - ${student.name}`
+                  }
+                  valueKey="registerno"
+                />
+
+                {/* Selected Students Display */}
+                {registerState.values.length > 0 && (
+                  <div className="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold text-slate-700">
+                        Selected Students ({registerState.values.length})
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setRegisterState({ mode: "none", values: [] })
+                        }
+                        className="text-xs text-red-600 hover:text-red-700 font-medium"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                      {registerState.values.map((regNo) => {
+                        const student = studentRegs.find(
+                          (s) => s.registerno === regNo,
+                        );
+                        return (
+                          <div
+                            key={regNo}
+                            className="flex items-center justify-between bg-white px-3 py-2 rounded-md border border-slate-200 hover:border-[#800000]/30 transition-colors group"
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <Hash className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="text-sm font-medium text-slate-700">
+                                {student?.registerno || regNo}
+                              </span>
+                              <span className="text-sm text-slate-500">-</span>
+                              <span className="text-sm text-slate-600">
+                                {student?.name || "Unknown"}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setRegisterState((prev) => ({
+                                  ...prev,
+                                  values: prev.values.filter(
+                                    (r) => r !== regNo,
+                                  ),
+                                }));
+                              }}
+                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs font-medium transition-opacity"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
