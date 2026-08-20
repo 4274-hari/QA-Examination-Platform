@@ -3,6 +3,7 @@ import { ArrowLeft, Power, AlertCircle, Trash2, Check, Download } from "lucide-r
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import QuestionBank from "./../../QA Schedule/questionBank" // correct path
 
 const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, instructions, s3link, enableBatchDelete = false, batchdetails = [] }) => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -14,7 +15,7 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const [topics, setTopics] = useState([]);
   const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState("");
-  const [studentRegs, setStudentRegs] = useState("");
+  const [studentRegs, setStudentRegs] = useState("");   
   const [batchList, setBatchList] = useState([]);
   const [regulations, setRegulations] = useState([]);
   const [acadamicYears, setAcadamicYears] = useState([]);
@@ -37,6 +38,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const itemsPerPage = 50;
   const tableTopRef = useRef(null);
   const navigate = useNavigate();
+
+  const [showQuestionBank, setShowQuestionBank] = useState(false);
 
   useEffect(() => {
     setSubjects(options)
@@ -591,6 +594,12 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
 
   return (
+     <>
+    {showQuestionBank ? (
+  <QuestionBank />
+) : (
+ 
+
     <>
       {showInstructions ? (
         <div className="flex items-center justify-center m-6">
@@ -647,6 +656,21 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
               >
                 <AlertCircle size={16} />
               </button>
+
+                {uploadFor === "question" && (
+    <button
+  onClick={() => setShowQuestionBank(true)}
+  className="flex items-center gap-2 px-3 py-2 rounded-md border"
+  style={{
+    borderColor: "#f0c000",
+    color: "#000",
+    backgroundColor: "#fff",
+  }}
+>
+  <Download size={16} />
+  <span>Download Question Bank</span>
+</button>
+  )}
 
               <a
                 href={s3link || "#"}
@@ -1194,6 +1218,8 @@ const ReusableUploadPage = ({ title, description, options, apiUrl, uploadFor, in
       </div>
       )}
     </>
+       )}
+     </>
   );
 };
 
