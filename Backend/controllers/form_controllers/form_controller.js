@@ -71,6 +71,7 @@ async function getQaForm(req, res) {
     const academic_year = await fetchAcademic_year(db);
 
     const regulation = await fetchRegulation(db);
+    const instruction = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/qa-exam/instruction/APTITUDE APPLICATION GUIDELINES.pdf`;
 
     res.status(200).json({
       regulation,
@@ -79,7 +80,8 @@ async function getQaForm(req, res) {
       semesters,
       departments,
       subjectList: formData?.subjects || [],
-      subjects
+      subjects,
+      instruction
     });
 
   } catch (error) {

@@ -55,6 +55,7 @@ const Schedule = () => {
   const [normalBatch, setNormalBatch] = useState("");
   const [retestBatch, setRetestBatch] = useState("");
   const [arrearBatch, setArrearBatch] = useState("");
+  const [Instruction, setInstruction] = useState("");
   const activeBatch = isRetest
     ? retestBatch
     : isArrear
@@ -121,6 +122,7 @@ const Schedule = () => {
         setAcadamicYears(data.academic_year || []);
         setSemesters(data.semesters || []);
         setRegulations(data.regulation || []);
+        setInstruction(data.instruction || "");
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -379,31 +381,51 @@ const Schedule = () => {
                   className="h-4 w-4 accent-[#800000] cursor-pointer"
                 />
               </div>
-            <button
-  onClick={() => {
-    const link = document.createElement("a");
-    link.href = "/CIE_Instruction.pdf";
-    link.download = "CIE_Instruction.pdf";
-    link.click();
-  }}
-  className="
-    inline-flex items-center gap-2
-    px-4 py-2
-    rounded-lg
-    border border-[#800000]/30
-    bg-white
-    text-[#800000]
-    text-sm font-medium
-    shadow-sm
-    hover:bg-[#800000]
-    hover:text-white
-    hover:border-[#800000]
-    transition-all duration-200
-  "
->
-  <FileText size={16} />
-  Instruction
-</button>
+        <button
+          onClick={() => {
+            if (!Instruction) {
+              Swal.fire({
+                icon: "warning",
+                title: "Instruction Not Available",
+                text: "Schedule instruction file is not available.",
+                confirmButtonColor: "#800000",
+              });
+              return;
+            }
+
+            const link = document.createElement("a");
+
+            link.href = Instruction;
+
+            link.download = "SCHEDULE_INSTRUCTION.pdf";
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}
+          disabled={!Instruction}
+          className="
+            inline-flex items-center gap-2
+            px-4 py-2
+            rounded-lg
+            border border-[#800000]/30
+            bg-white
+            text-[#800000]
+            text-sm font-medium
+            shadow-sm
+            hover:bg-[#800000]
+            hover:text-white
+            hover:border-[#800000]
+            transition-all duration-200
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
+        >
+          <FileText size={16} />
+          Instruction
+        </button>
             </div>
             <button
               className="qa-logout-btn md:hidden"
