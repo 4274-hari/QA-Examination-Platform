@@ -56,6 +56,7 @@ const Schedule = () => {
   const [retestBatch, setRetestBatch] = useState("");
   const [arrearBatch, setArrearBatch] = useState("");
   const [Instruction, setInstruction] = useState("");
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
   const activeBatch = isRetest
     ? retestBatch
     : isArrear
@@ -202,6 +203,7 @@ const Schedule = () => {
     setRetestBatch("");
     setArrearBatch("");
     setStudentRegs([]);
+    setSelectedDepartments([]);
     setRegDropdownOpen(false);
     setViolationLimit("");
     setRegulation("");
@@ -273,11 +275,12 @@ const Schedule = () => {
       academic_year: acadamicYear,
       semester,
     };
+  const departmentsToSend =
+  isRetest || isArrear
+    ? selectedDepartments
+    : regularDepartments;
 
-    if (!isRetest && !isArrear) {
-      payload.department = regularDepartments;
-    }
-
+payload.department = departmentsToSend;
     // 🔄 Show loading
     Swal.fire({
       title: "Scheduling Exam...",
@@ -316,6 +319,7 @@ const Schedule = () => {
       setRetestBatch("");
       setArrearBatch("");
       setRegularDepartments([]);
+      setSelectedDepartments([]);
       setRegisterState({ mode: "none", values: [] });
       setQaSelected("");
       setOtherSubjects("");
@@ -623,7 +627,15 @@ const Schedule = () => {
               icon={Building2}
               options={departmentOptions}
               value={department}
-              onChange={setDepartment}
+              onChange={(value) => {
+  setDepartment(value);
+
+  if (value) {
+    setSelectedDepartments((prev) =>
+      prev.includes(value) ? prev : [...prev, value]
+    );
+  }
+}}
               placeholder="Select department"
             />
           ) : (

@@ -320,7 +320,7 @@ export default function StudentLoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder=""
+              placeholder="DD-MM-YYYY"
               required
             />
             <label>Password*</label>

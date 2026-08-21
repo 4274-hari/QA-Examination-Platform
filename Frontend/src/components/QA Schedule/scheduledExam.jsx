@@ -74,6 +74,8 @@ const ScheduledExam = () => {
         const responce = await axios.get("/api/main-backend/examiner/exam-code");
 
         setExamData(responce.data.exams);
+        console.log("Testing : ",responce.data.exams,departments);
+        
         
       } catch (error) {
         console.error("Error fetching QA Exam schedules", error);
@@ -359,6 +361,7 @@ const ScheduledExam = () => {
             <thead className="bg-gry border-b">
               <tr>
                 <TableHead>Department</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead className="w-36">Total Students</TableHead>
                 <TableHead>Date</TableHead>
                 {/* Mobile Exam Code */}
@@ -391,7 +394,57 @@ const ScheduledExam = () => {
                   key={exam.scheduleId}
                   className="border-b hover:bg-gray-50 transition"
                 >
-                  <TableCell>{exam.department}</TableCell>
+
+              <TableCell>
+<div
+  className="
+    min-h-[60px]
+    max-h-[120px]
+    max-w-[650px]
+    overflow-y-auto
+
+    [scrollbar-width:thin]
+    [scrollbar-color:#cbd5e1_transparent]
+
+    [&::-webkit-scrollbar]:w-[3px]
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-slate-300
+    [&::-webkit-scrollbar-thumb]:rounded-full
+
+    [&::-webkit-scrollbar-button]:hidden
+    [&::-webkit-scrollbar-button]:w-0
+    [&::-webkit-scrollbar-button]:h-0
+    [&::-webkit-scrollbar-button]:bg-transparent
+    [&::-webkit-scrollbar-button]:hidden
+[&::-webkit-scrollbar-button]:w-0
+[&::-webkit-scrollbar-button]:h-0
+[&::-webkit-scrollbar-button]:min-h-0
+[&::-webkit-scrollbar-button]:min-w-0
+  "
+>
+    <div className="flex flex-wrap gap-1">
+      {Array.isArray(exam.department)
+        ? exam.department.map((dept, index) => (
+            <div
+              key={index}
+              className="
+                bg-slate-50
+                shadow-sm
+                border border-slate-200
+                rounded-md
+                px-2 py-1
+                text-xs text-slate-700
+              "
+            >
+              {dept}
+            </div>
+          ))
+        : exam.department || "-"}
+    </div>
+  </div>
+</TableCell>
+                  <TableCell>{exam.category}</TableCell>
+
                   <TableCell>{exam.totalStudents}</TableCell>
                   <TableCell>{exam.date}</TableCell>
                   {/* Mobile Exam Code */}

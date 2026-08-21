@@ -95,6 +95,13 @@ form button {
   padding: 0 4px;
   color: #800000;
 }
+.input-group input::placeholder {
+  color: transparent;
+}
+
+.input-group input:focus::placeholder {
+  color: #999;
+}
 
 .input-group select {
   width: 100%;

@@ -29,10 +29,10 @@ function toDateTime(dateStr, timeStr) {
   return new Date(utcTime);
 }
 /* ---------------------------------------------------
-   Exam code generator (6 chars A–Z 0–9)
+   Exam code generator (6 chars  0–9)
 --------------------------------------------------- */
 
-const CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const CHARSET = "0123456789";
 
 function generateExamCode() {
   const bytes = crypto.randomBytes(6);

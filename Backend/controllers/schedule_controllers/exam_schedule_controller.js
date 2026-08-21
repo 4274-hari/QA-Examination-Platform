@@ -143,35 +143,60 @@ async function storeExamSchedule(req, res) {
     Conflict check
     ----------------------------- */
 
-      if (department && department.length > 0) {
+          if (department && department.length > 0) {
 
-      for (let dept of department) {
+        if (isRetest || isArrear) {
 
-        // Conflict check per department
-        const conflict = await collection.findOne({
-          date,
-          batch,
-          department: dept,
-          status: { $ne: "inactive" }
-        });
-
-        if (conflict) {
-          return res.status(409).json({
-            success: false,
-            message: `Exam already scheduled for ${dept} on this date.`,
+          const conflict = await collection.findOne({
+            date,
+            batch,
+            department: { $in: department },
+            status: { $ne: "inactive" }
           });
+
+          if (conflict) {
+            return res.status(409).json({
+              success: false,
+              message: "Exam already scheduled for one of the selected departments on this date."
+            });
+          }
+
+          const buildscheduleDoc = scheduleDoc(department);
+
+          const result = await collection.insertOne(buildscheduleDoc);
+
+          insertedIds.push(result.insertedId);
+
+          await createExamFromSchedule(result.insertedId);
+
+        } else {
+
+          for (let dept of department) {
+
+            const conflict = await collection.findOne({
+              date,
+              batch,
+              department: dept,
+              status: { $ne: "inactive" }
+            });
+
+            if (conflict) {
+              return res.status(409).json({
+                success: false,
+                message: `Exam already scheduled for ${dept} on this date.`,
+              });
+            }
+
+            const buildscheduleDoc = scheduleDoc(dept);
+
+            const result = await collection.insertOne(buildscheduleDoc);
+
+            insertedIds.push(result.insertedId);
+
+            await createExamFromSchedule(result.insertedId);
+          }
         }
-
-        const buildscheduleDoc = scheduleDoc(dept);
-
-        const result = await collection.insertOne(buildscheduleDoc);
-
-        insertedIds.push(result.insertedId);
-
-        await createExamFromSchedule(result.insertedId);
-      }
-
-    } 
+      } 
     else if (registerNo && registerNo.length > 0) {
 
       const conflict = await collection.findOne({

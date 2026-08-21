@@ -184,7 +184,7 @@ for (const student of students) {
 
   let key = "";
 
-  if (department) {
+  if (department && ! (isArrear || isRetest)) {
     const dept = format(department);
     key = `qa-exam/result/${dept}/${cie}/${dept}${cie}${date}${_id}.xlsx`;
   } else if (isArrear) {
