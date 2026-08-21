@@ -258,8 +258,7 @@ console.log("Lenght : ",sheet.rowCount);
           section: row.sec,
           password: dob,
           phone: row.mobile || "",
-          email: row.email ? String(row.email).toLowerCase() : ""
-        });
+          email: row.email ? String( typeof row.email === "object"? row.email.text : row.email ).trim().toLowerCase() : "" });
       }
 
       if (studentsToInsert.length) {
