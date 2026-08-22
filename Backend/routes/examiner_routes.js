@@ -13,7 +13,8 @@ const { addSubject, deleteSubject} = require("../controllers/staff_controllers/s
 const { handleBatchStudent, addStudent } = require("../controllers/staff_controllers/student_handle_controller");
 const { deleteHandleForm, addHandleForm } = require('../controllers/staff_controllers/form_handle_controller');
 const { existingBatch, getStudentsdetails } = require('../controllers/form_controllers/getexistingbatch_controller');
-const {getSubjectList, downloadQuestionBank} = require("../controllers/staff_controllers/question_download_controller")
+const {getSubjectList, downloadQuestionBank} = require("../controllers/staff_controllers/question_download_controller");
+const { downloadStudentExamPDF, studentResult } = require('../controllers/staff_controllers/studentExamReselt');
 
 // ===========================
 // EXAM SCHEDULE (ADMIN)
@@ -52,6 +53,7 @@ router.post("/students", allowRoles("admin"), addStudent);
 router.post("/students/upload", allowRoles("admin"), uploadStudentExcel);
 router.get("/students/existingbatch", allowRoles("admin"), existingBatch);
 router.post('/students/existingdetails',allowRoles("admin"),getStudentsdetails)
+router.post('/students/examresult',allowRoles("admin"),studentResult)
 
 // ===========================
 // REGULATION AND ACADEMIC YEAR MANAGEMENT (ADMIN)
