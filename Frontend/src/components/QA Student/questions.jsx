@@ -927,6 +927,7 @@ const QuestionPage = () => {
       </div>
 
       <div className="quest_page relative select-none" style={{ paddingTop: "20px" }}>
+        <div className="quest_section">
         <div className="quest_left">
           <h2 className="quest_title">Question</h2>
           <h3 className="quest_question">
@@ -935,7 +936,6 @@ const QuestionPage = () => {
         </div>
 
         <div className="quest_center">
-          <h2 className="quest_options_title">Options</h2>
           <div className="quest_options_container" key={current}>
             {q?.options.map((opt, index) => (
               <label key={index} className="quest_option">
@@ -962,6 +962,7 @@ const QuestionPage = () => {
             )}
           </div>
         </div>
+      </div>
 
         <div className="quest_right">
           <h2 className="quest_progress_title">Progress</h2>

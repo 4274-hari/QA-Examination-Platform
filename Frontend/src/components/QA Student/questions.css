@@ -12,7 +12,7 @@
 
 /* LEFT COLUMN */
 .quest_left {
-  width: 30%;
+  width: 95%;
 }
 
 .quest_title {
@@ -29,8 +29,12 @@
 
 /* CENTER COLUMN */
 .quest_center {
-  width: 40%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   text-align: center;
+  align-items: center;
+  justify-content: center ;
 }
 
 .quest_options_title {
@@ -44,8 +48,16 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-width: 40%;
+  max-width: 50%;
 }
 
+.quest_section{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0px 20px;
+}
 .quest_option {
   display: flex;
   align-items: center;
