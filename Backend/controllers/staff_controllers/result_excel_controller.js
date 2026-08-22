@@ -79,7 +79,7 @@ for (const student of students) {
   ];
 
   if (schedule.department != null) {
-    meta.push(["Department", schedule.department]);
+    meta.push(["Department", Array.isArray(schedule.department) ? schedule.department.join(", ") : schedule.department]);
   } else if (schedule.isArrear === true) {
     meta.push(["Exam Type", "Arrear"]);
   } else if (schedule.isRetest === true) {
