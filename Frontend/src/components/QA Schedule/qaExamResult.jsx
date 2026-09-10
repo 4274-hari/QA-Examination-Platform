@@ -10,7 +10,7 @@ const QAExamResults = () => {
 
   return (
     <>
-      {activeTab === "results" ? (
+      {true || activeTab === "results" ? (
         <ExamResultsView setActiveTab={setActiveTab} />
       ) : (
         <DownloadStudentResultView setActiveTab={setActiveTab} />
@@ -166,7 +166,7 @@ const ExamResultsView = ({ setActiveTab }) => {
             </h1>
 
             <div className="flex gap-3 items-center">
-              <button
+              {/* <button
                 className="px-4 py-1 border border-[#800000] text-[#800000] rounded-lg font-medium hover:bg-[#800000] hover:text-white transition flex items-center gap-2 text-sm"
                 onClick={() => setActiveTab("download")}
                 title="Student Results"
@@ -174,7 +174,7 @@ const ExamResultsView = ({ setActiveTab }) => {
               >
                 <FileText size={18} />
                 <span>Student Results</span>
-              </button>
+              </button> */}
 
               <button
                 className="qa-logout-btn"
